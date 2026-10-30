@@ -1,0 +1,71 @@
+# ---------------------------------------------------------------
+# Laravel 9 + Vite + Tailwind + Docker Sail (DECAA.ID web)
+# ---------------------------------------------------------------
+
+# Dependensi (dipasang ulang lewat composer install / npm install)
+/vendor
+/node_modules
+
+# Hasil build frontend: /public/build SENGAJA ikut di-commit
+# (jalankan "npm run build" sebelum commit, supaya hosting tidak perlu npm)
+/public/hot
+
+# Symlink storage (dibuat dengan php artisan storage:link)
+/public/storage
+
+# Environment dan rahasia (JANGAN PERNAH di-commit; .env.example tetap di-commit)
+.env
+.env.backup
+.env.production
+.env.*.local
+auth.json
+/storage/*.key
+*.pem
+*.key
+
+# Cache dan log
+/storage/logs/*.log
+.phpunit.result.cache
+.phpunit.cache
+.php-cs-fixer.cache
+.phpactor.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker Sail / data lokal
+docker-compose.override.yml
+/docker-data
+/mysql-data
+
+# Upload lokal (konten gambar dari admin nanti)
+/public/uploads
+
+# Dump database dan arsip lokal
+*.sql
+*.sqlite
+*.sqlite-journal
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Homestead / Vagrant
+/.vagrant
+Homestead.json
+Homestead.yaml
+
+# IDE dan editor
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+*.swp
+*.swo
+*~
+
+# Sistem operasi
+.DS_Store
+Thumbs.db
+Desktop.ini

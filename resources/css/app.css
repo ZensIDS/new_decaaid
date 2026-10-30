@@ -1,0 +1,93 @@
+@import '@fontsource-variable/plus-jakarta-sans';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+        scroll-padding-top: 6rem;
+    }
+
+    body {
+        @apply bg-white font-sans text-slate-600 antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-bold tracking-tight text-ink;
+    }
+
+    ::selection {
+        @apply bg-brand-700 text-white;
+    }
+
+    :focus-visible {
+        @apply outline outline-2 outline-offset-2 outline-brand-500;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    /* Semua tombol: Capitalize Each Word (tautan bergaya tombol memakai class `capitalize`) */
+    button {
+        text-transform: capitalize;
+    }
+}
+
+@layer components {
+    /* Jarak vertikal standar antar section */
+    .section-y {
+        @apply py-16 md:py-24;
+    }
+
+    /* Label kecil di atas judul section */
+    .eyebrow {
+        @apply text-sm font-semibold uppercase tracking-widest text-accent-500;
+    }
+
+    /* Muncul halus saat scroll (dipakai <x-ui.reveal>). Keadaan awal dari CSS,
+       bukan dari Alpine, supaya tidak berkedip sebelum JavaScript siap. */
+    .reveal {
+        opacity: 0;
+        transform: translateY(1rem);
+        transition: opacity 700ms ease-out, transform 700ms ease-out;
+    }
+
+    .reveal.is-shown {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Hormati pengguna yang mematikan animasi di perangkatnya */
+/* Gerak melayang pelan untuk elemen dekoratif (hero) */
+@keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+    animation: float-slow 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
