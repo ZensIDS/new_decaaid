@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Helper global (lroute, switch_url) tanpa perlu mengubah composer.json
-        require_once app_path('Support/helpers.php');
+        require_once app_path('Support/Helpers.php');
     }
 
     /**
