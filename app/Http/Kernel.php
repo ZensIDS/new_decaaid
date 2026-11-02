@@ -63,5 +63,12 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+
+        // Admin (BA1)
+        'admin.locale' => \App\Http\Middleware\Admin\SetAdminLocale::class,
+        'admin.noindex' => \App\Http\Middleware\Admin\AdminNoIndex::class,
+        'admin.active' => \App\Http\Middleware\Admin\EnsureAdminActive::class,
+        'admin.role' => \App\Http\Middleware\Admin\EnsureAdminRole::class,
+        'admin.password' => \App\Http\Middleware\Admin\EnsurePasswordChanged::class,
     ];
 }

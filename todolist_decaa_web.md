@@ -2,8 +2,8 @@
 
 > Tujuan: website korporat berkelas profesional tinggi yang mengikuti prinsip referensi (Kawan Lama Group), dengan admin panel buatan sendiri yang ramah pengguna, SEO kuat, performa cepat, dan dukungan dwibahasa (ID/EN).
 
-**Versi:** 27 (diperbarui 2 Nov 2026)
-**Status:** **Tahap B (Admin): QA1-QA18 sudah dijawab dan dicatat sebagai K27-K32. Dimulai dari Tahap B-awal (login, dashboard dummy, CRUD pengguna), menunggu aba-aba "mulai" darimu. Belum ada kode admin yang dikerjakan.** A0 (fondasi) menunggu verifikasimu; A1 (design system) menunggu dicek lewat `/style-guide`; A2 (layout global) dan A3 (beranda) file sudah dikirim, menunggu dicek di browser; A4 (Tentang Kami), A5 (Pilar Bisnis), A6 (Portofolio & Klien), A7 (Berita), A8 (Komunitas, Karir, Kontak), dan A9 (halaman pendukung) file sudah dikirim, menunggu dicek di browser. **Sedang berjalan: Revisi Tampilan Halaman Depan (Bagian 7, setelah A10)**, dimulai dari Beranda; Beranda putaran 2 sudah dikirim, menunggu kamu cek di browser. **Tentang Kami (putaran 1 dan 2) sudah dikirim**, menunggu kamu cek di browser. **Pilar Bisnis (daftar + detail) sudah didesain ulang**, menunggu kamu cek di browser. **Klien & Mitra sudah didesain ulang dengan logo asli**, menunggu kamu cek di browser. **Detail Berita (single page) sudah didesain ulang**, menunggu kamu cek di browser. Halaman lain menyusul satu per satu. **Putaran revisi dari dokumen `Revisi_Website_decaaid.pdf` (2 Nov 2026) sedang berjalan, fokus tampilan dulu; bahan yang belum jelas dikosongkan.** R1 (slogan, Pilar Bisnis = 8 jenis bisnis + brand, menu, hapus Jajaran Kepemimpinan, Karir ikut pilar) sudah dikirim, menunggu kamu cek di browser. Lihat bagian "REVISI DARI DOKUMEN PDF".
+**Versi:** 33 (diperbarui 2 Nov 2026)
+**Status:** **Tahap B (Admin): QA1-QA18 sudah dijawab dan dicatat sebagai K27-K32. Sedang berjalan: Tahap B-awal (login, dashboard dummy, CRUD pengguna); BA1 (fondasi login dan pengguna), BA2 (layout admin, komponen, login, dashboard dummy), dan BA4 putaran 1 (revisi tampilan) sudah dikirim; **BA3 (CRUD pengguna, profil, log aktivitas) sudah dikirim, menunggu dicek di Docker-mu**; badge "Admin" di dekat logo sidebar sudah dihapus. Berikutnya: putaran revisi desain admin (BA4) bila ada masukan, lalu modul konten pertama (Berita, B3d).** A0 (fondasi) menunggu verifikasimu; A1 (design system) menunggu dicek lewat `/style-guide`; A2 (layout global) dan A3 (beranda) file sudah dikirim, menunggu dicek di browser; A4 (Tentang Kami), A5 (Pilar Bisnis), A6 (Portofolio & Klien), A7 (Berita), A8 (Komunitas, Karir, Kontak), dan A9 (halaman pendukung) file sudah dikirim, menunggu dicek di browser. **Sedang berjalan: Revisi Tampilan Halaman Depan (Bagian 7, setelah A10)**, dimulai dari Beranda; Beranda putaran 2 sudah dikirim, menunggu kamu cek di browser. **Tentang Kami (putaran 1 dan 2) sudah dikirim**, menunggu kamu cek di browser. **Pilar Bisnis (daftar + detail) sudah didesain ulang**, menunggu kamu cek di browser. **Klien & Mitra sudah didesain ulang dengan logo asli**, menunggu kamu cek di browser. **Detail Berita (single page) sudah didesain ulang**, menunggu kamu cek di browser. Halaman lain menyusul satu per satu. **Putaran revisi dari dokumen `Revisi_Website_decaaid.pdf` (2 Nov 2026) sedang berjalan, fokus tampilan dulu; bahan yang belum jelas dikosongkan.** R1 (slogan, Pilar Bisnis = 8 jenis bisnis + brand, menu, hapus Jajaran Kepemimpinan, Karir ikut pilar) sudah dikirim, menunggu kamu cek di browser. Lihat bagian "REVISI DARI DOKUMEN PDF".
 **Legenda:** `[ ]` belum, `[~]` file dikirim / menunggu verifikasi darimu, `[x]` selesai dan terverifikasi, **(I)** ide tambahan.
 
 ---
@@ -18,6 +18,9 @@
 6. Setiap pengiriman menyertakan **path tujuan file** dan perintah yang perlu dijalankan (jika ada).
 7. Aset (logo, foto) ditaruh di `public/img/...`; sampai foto asli siap, tampilan memakai **placeholder** yang rapi (tidak ada gambar rusak).
 8. Data dummy yang berisi fakta (nomor telepon, sosmed, angka, nama klien) **ditandai `DUMMY`** di kode dan diganti setelah desain di-ACC.
+9. **Info lokasi file wajib jelas.** Nama kartu unduhan hanya menampilkan nama file (mis. `form.blade`), jadi setiap pengiriman menyertakan **daftar `path tujuan → nama file`** di teks balasan (nama file yang sama seperti `index.blade` atau `form.blade` sering muncul di folder berbeda). Path mengikuti struktur proyek, mis. `resources/views/pages/admin/users/form.blade.php`.
+10. **Pola desain admin dikunci** (lihat "Pola Desain Admin" di Tahap B): semua modul admin berikutnya memakai komponen dan gaya yang sama, tidak membuat gaya baru.
+11. **Arsip yang dikirim ke Claude** (zip): `app`, `config`, `database`, `lang`, `resources`, `routes`, dan `todolist_decaa_web.md`. Tambahkan `tailwind.config.cjs` dan `vite.config.js` bila ada masalah gaya/build. **Jangan** sertakan `.env` (berisi kunci rahasia), `vendor`, `node_modules`, `storage`, `public/build`, `.git`; folder `__MACOSX` dan `.DS_Store` dari zip Mac boleh diabaikan. `public/img` hanya bila ada masalah gambar.
 
 ---
 
@@ -625,30 +628,56 @@ Atas permintaanmu, admin dimulai dari kerangka yang bisa langsung dilihat dan di
 - Akun awal: Super Admin `decaa@decaa.id`, dibuat lewat perintah artisan (bukan form daftar), `must_change_password = true`. Password awal tidak ditulis di berkas ini. Aturan password baru: minimal 10 karakter, kombinasi huruf dan angka.
 
 **BA1. Fondasi login dan pengguna**
-- [ ] Migration: tambah kolom di `users`: `role` (`super_admin|admin|editor`), `is_active`, `must_change_password`, `last_login_at`
-- [ ] `app/Models/User.php`: konstanta peran, helper `isSuperAdmin()`, dst.
-- [ ] Perintah artisan pembuat Super Admin (idempoten; email default `decaa@decaa.id`)
-- [ ] `routes/admin.php` (prefiks `/admin`, tanpa prefiks bahasa) dimuat dari `RouteServiceProvider`
-- [ ] Middleware: `admin.active` (tolak akun nonaktif), `admin.role:*`, `admin.password` (paksa ganti password), `admin.noindex` (header `X-Robots-Tag` + meta); `Authenticate` diarahkan ke login admin; locale admin dikunci `id`
-- [ ] Login: batas percobaan (throttle per email + IP), pesan galat generik, "ingat saya", regenerasi sesi; logout lewat POST
-- [ ] `lang/id/validation.php` dan `lang/id/auth.php` (pesan Indonesia untuk admin)
+- [~] Migration: tambah kolom di `users`: `role` (`super_admin|admin|editor`), `is_active`, `must_change_password`, `last_login_at`
+- [~] `app/Models/User.php`: konstanta peran, helper `isSuperAdmin()`, dst.
+- [~] Perintah artisan pembuat Super Admin (idempoten; email default `decaa@decaa.id`)
+- [~] `routes/admin.php` (prefiks `/admin`, tanpa prefiks bahasa) dimuat dari `RouteServiceProvider`
+- [~] Middleware: `admin.active` (tolak akun nonaktif), `admin.role:*`, `admin.password` (paksa ganti password), `admin.noindex` (header `X-Robots-Tag` + meta); `Authenticate` diarahkan ke login admin; locale admin dikunci `id`
+- [~] Login: batas percobaan (throttle per email + IP), pesan galat generik, "ingat saya", regenerasi sesi; logout lewat POST
+- [~] `lang/id/validation.php` dan `lang/id/auth.php` (pesan Indonesia untuk admin)
 
 **BA2. Layout admin dan dashboard**
-- [ ] `layouts/admin.blade.php`: sidebar (menu per peran), topbar (nama, peran, keluar), breadcrumb, responsif (sidebar jadi drawer di HP)
-- [ ] Komponen `components/admin/*`: tombol, input, select, toggle, kartu, tabel, badge status, modal konfirmasi, toast, state kosong
-- [ ] Halaman login (desain sendiri, memakai logo DECAA.ID) dan halaman ganti password wajib
-- [ ] Dashboard dummy (lihat asumsi); sidebar memuat menu modul mendatang dalam keadaan nonaktif ("Segera")
-- [ ] Memakai build Vite dan Tailwind yang sama dengan situs publik (tanpa mengubah `vite.config.js`); bila `content` Tailwind belum mencakup `resources/views/**/*.blade.php`, kuminta file konfigurasinya
+- [~] `layouts/admin.blade.php`: sidebar menurut peran (`App\Support\AdminMenu`), topbar (menu pengguna: Ganti Password, Keluar; tautan Lihat Situs), responsif (sidebar jadi drawer di HP, Esc/klik latar menutup), tautan \"Lewati ke isi\". Breadcrumb lewat komponen `<x-admin.page-header>` (bukan di layout, supaya tiap halaman mengisinya sendiri). Layout kedua `layouts/admin-guest.blade.php` untuk Masuk dan Ganti Password wajib (tanpa sidebar; layar lebar: panel merek kiri + formulir kanan)
+- [~] Komponen `components/admin/*` (`<x-admin.nama>`): `button`, `input`, `select`, `toggle`, `card`, `badge` (termasuk nada `dummy`), `table`, `modal`, `confirm` (modal konfirmasi hapus, satu modal untuk banyak baris), `toast` (otomatis membaca `session('status')`/`session('error')`; event `toast` dari Alpine), `empty`, `icon`, `page-header`, `stat-card`
+- [~] Halaman Masuk (desain sendiri, tombol tampilkan/sembunyikan password, tombol Masuk dikunci saat diproses) dan Ganti Password (versi wajib tanpa sidebar; versi sukarela di dalam layout admin dengan breadcrumb)
+- [~] Dashboard dummy: 4 kartu ringkasan (Pesan Baru, Berita Draf, Terjemahan Belum Ditinjau, Item Dummy Tersisa), Aktivitas Terbaru (DUMMY), Pintasan nonaktif, **Kesiapan Konten** (checklist item DUMMY dari Bagian \"Daftar DUMMY\", 0 dari 9). Semua angka dan aktivitas ditandai badge Dummy
+- [~] Sidebar memuat semua modul mendatang berlabel \"Segera\" (nonaktif); item aktif otomatis saat `route` diisi di `AdminMenu`. Visibilitas per peran: Super Admin semua; Admin semua konten + pesan + situs; Editor hanya Berita, Proyek, Penghargaan (usulan QA5)
+- [~] Memakai build Vite dan Tailwind yang sama; warna memakai nilai langsung (`#1B3590`, `#E5352E`, navy `#0B1437`) sehingga tidak bergantung pada token `brand`/`accent`. Tidak ada perubahan `vite.config.js`
+- [ ] **Verifikasi oleh kamu:** `npm run dev`/`build`, buka `/admin/login` dan `/admin`; cek lebar 360, 768, 1024, 1440 px; sidebar HP (buka/tutup); menu pengguna; kedua halaman Ganti Password (wajib dan sukarela). Bila kelas Tailwind admin tidak bergaya, kirim `tailwind.config.cjs` (pastikan `content` memuat `./resources/views/**/*.blade.php`)
+- [ ] Logo putih `img/logo/decaaid-white.png` dipakai di sidebar dan panel Masuk; bila kosong gambar tidak tampil
+- [ ] Catatan penimpaan: `layouts/admin.blade.php`, `pages/admin/dashboard.blade.php`, `pages/admin/auth/login.blade.php`, `pages/admin/password.blade.php`, dan `DashboardController.php` dari BA1 **ditimpa** versi BA2 (tidak ada file lama yang perlu dihapus)
 
 **BA3. CRUD Pengguna dan profil**
-- [ ] Daftar pengguna: cari, filter peran dan status, paginasi
-- [ ] Tambah / ubah / nonaktifkan-aktifkan / hapus (hanya Super Admin); reset password oleh Super Admin (password sementara + wajib ganti)
-- [ ] Pengaman: tidak bisa menonaktifkan atau menghapus diri sendiri; selalu tersisa minimal 1 Super Admin aktif
-- [ ] Profil sendiri: ubah nama dan password
-- [ ] Tabel `activity_logs` (siapa, aksi, sasaran, waktu, IP) dan pencatatan login, logout, serta perubahan pengguna; "Aktivitas terbaru" di dashboard membaca tabel ini
-- [ ] Uji: salah password berulang (throttle), akun nonaktif, peran tidak berhak membuka `/admin/users` (403), Super Admin terakhir tidak bisa dihapus
+- [~] Daftar pengguna (`/admin/pengguna`): cari nama/email, filter peran dan status, paginasi 10 per halaman, penanda "Password Sementara", login terakhir
+- [~] Tambah (password sementara dengan tombol **Buat Otomatis**, salin, tampilkan) / ubah (nama, email, peran, aktif) / aktifkan-nonaktifkan / hapus, semuanya hanya Super Admin dan lewat modal konfirmasi
+- [~] Reset password oleh Super Admin (password sementara + `must_change_password`; cookie "ingat saya" lama dicabut)
+- [~] Pengaman: tidak bisa mengubah peran/status, menonaktifkan, atau menghapus **diri sendiri** dari layar ini; selalu tersisa minimal 1 Super Admin aktif (`User::isLastActiveSuperAdmin()`, dicek di ubah, nonaktifkan, dan hapus)
+- [~] Profil sendiri (`/admin/profil`, semua peran): ubah nama; email dan peran read-only; tautan ke Ganti Password; menu "Profil Saya" di topbar
+- [~] Tabel `activity_logs` + `ActivityLog::record()` (tidak pernah menggagalkan aksi utama); tercatat: masuk, keluar, ganti password, ubah profil, tambah/ubah/aktifkan/nonaktifkan/reset password/hapus pengguna. Nama pelaku disalin ke log sehingga tetap terbaca bila akun dihapus
+- [~] Layar **Log Aktivitas** (`/admin/log-aktivitas`, hanya Super Admin): cari, filter jenis, paginasi 25; "Aktivitas Terbaru" di dashboard kini membaca tabel ini (badge Dummy di kartu itu dihapus)
+- [~] Keputusan kecil: pengguna **boleh dihapus** (sesuai K30, hapus hanya Super Admin) selain dinonaktifkan; log lama tidak hilang. Percobaan login gagal belum dicatat (bisa ditambahkan bila perlu)
+- [ ] **Perintah yang dijalankan:** `php artisan migrate` (membuat tabel `activity_logs`); bila Vite berjalan, tidak perlu build ulang selain `npm run build` untuk produksi
+- [ ] **Verifikasi oleh kamu:** (1) `/admin/pengguna` tampil dan menu Pengguna/Log Aktivitas aktif untuk Super Admin; (2) tambah pengguna Editor, masuk dengan akun itu, wajib ganti password, `/admin/pengguna` memberi 403; (3) nonaktifkan lalu coba masuk (ditolak); (4) coba nonaktifkan/hapus diri sendiri dan Super Admin terakhir (ditolak dengan pesan); (5) reset password pengguna lalu masuk dengan password sementara; (6) Log Aktivitas dan dashboard menampilkan semua kejadian tadi; (7) lebar 360, 768, 1024, 1440 px
+- [ ] Catatan penimpaan: `routes/admin.php`, `layouts/admin`, `pages/admin/dashboard`, `components/admin/icon`, `AdminMenu.php`, `DashboardController`, `LoginController`, `PasswordController`, dan `app/Models/User.php` **ditimpa** versi BA3 (tidak ada file lama yang perlu dihapus)
+
+#### Pola Desain Admin (standar untuk semua modul berikutnya)
+
+Disepakati 2 Nov 2026 setelah BA3 dicek di browser. Modul baru (Berita, Pilar & Brand, dst.) **wajib mengikuti pola ini**:
+- **Sidebar gelap** navy `#0B1437`, logo putih (`on_dark`), item aktif bergradasi biru (`#2B4BC4` ke `#4A6CF0`), hover putih transparan, judul grup huruf kapital kecil abu terang, item belum jadi redup berlabel "Segera". Sidebar **otomatis scroll ke menu aktif** (skrip di `layouts/admin`) dan mengingat posisi scroll di halaman tanpa menu aktif
+- **Halaman daftar:** `<x-admin.page-header>` (breadcrumb + judul + tombol aksi), kotak cari/filter putih rounded-2xl di atas tabel, `<x-admin.table>`, `<x-admin.pager>` di bawah, keadaan kosong `<x-admin.empty>`, aksi berbahaya lewat `<x-admin.confirm>` (satu modal per jenis aksi). Ikon aksi per baris (ubah, nonaktifkan, hapus) dengan `title` dan `aria-label`
+- **Halaman tambah/ubah:** grid 3 kolom (`lg:grid-cols-3`); kolom kiri (2/3) berisi kartu `<x-admin.form-section icon title description>` per kelompok isian; kolom kanan (1/3) berisi **kartu pratinjau** (header gradasi tinggi `h-24`, avatar/gambar menumpuk di tepi bawah header dengan `-mt-10`, nama lalu detail ringkas) dan **tombol Simpan + Batal di dalam kartu itu** (menempel saat scroll, `lg:sticky lg:top-24`). Form dibungkus `<form class="contents">` agar kartu kiri dan kanan tetap satu grid; form kedua (mis. reset password) ditaruh **di luar** form utama
+- **Pilihan bernilai sedikit** (peran, jenis, status) memakai **kartu radio** (`sr-only` + `peer-checked`), bukan dropdown; saklar `<x-admin.toggle>` ditaruh dalam kotak abu muda
+- **Kolom password:** `<x-admin.password-field>` (Buat Otomatis, Salin, Tampilkan)
+- **Tab bahasa ID | EN** (K32) dipasang di dalam `form-section` untuk konten dwibahasa
+- Pratinjau langsung memakai Alpine (`x-model` pada `x-admin.input`); teks tombol Capitalize Each Word (K17); merah hanya untuk hapus/peringatan; semua teks admin Bahasa Indonesia
+- **Hindari** variant Tailwind yang baru (`group-has-*`); pakai `peer-checked` dan varian arbitrer `[&_.kelas]:`
+- Komponen yang sudah ada: `button`, `input`, `select`, `toggle`, `card`, `form-section`, `password-field`, `badge`, `table`, `pager`, `modal`, `confirm`, `toast`, `empty`, `icon`, `page-header`, `stat-card`
 
 **BA4. Poles desain admin**
+- [~] Putaran 1 (sidebar terang, topbar kaca, kartu dan tombol bergradasi) sudah dikirim (v30)
+- [~] Putaran 2 (kecil): **badge "Admin" di dekat logo sidebar dihapus** (`layouts/admin.blade.php`); ikon panah `chevron-right` di tombol "Lihat Situs" ternyata belum ada di `components/admin/icon` dan ditambahkan, bersama ikon `pencil`, `trash`, `power`, `arrow-left`, `arrow-right`
+- [~] Putaran 3: **sidebar digelapkan** (putih terlalu terang), **auto-scroll ke menu aktif**, halaman **tambah/ubah pengguna dan Profil Saya didesain ulang** (kartu per bagian, kartu radio peran, kartu pratinjau avatar di kanan). Perbaikan: nama pada kartu pratinjau sempat tertutup blok biru (margin negatif), kini avatar menumpuk di tepi header. File: `layouts/admin`, `components/admin/form-section` dan `password-field` (baru), `pages/admin/users/form`, `pages/admin/profile`. Hasil dikunci sebagai **Pola Desain Admin** di atas
+- [~] Putaran 4: logo di sidebar diperkecil (`h-8` menjadi `h-6`, ukuran bisa diatur lewat class itu). File: `layouts/admin`
 - [ ] Putaran revisi desain login, layout, dan dashboard berdasarkan masukanmu (seperti revisi halaman depan), lalu dikunci sebagai pola untuk semua modul
 
 *Pengiriman: hanya file yang dibutuhkan, satu file satu kartu, dengan path tujuan dan perintah (`php artisan migrate`, perintah pembuat Super Admin).*
@@ -731,6 +760,13 @@ Ini juga menjadi sumber checklist di dashboard admin.
 ---
 
 ### TAHAP C: SEO, PERFORMA, KEAMANAN
+
+**Pengaturan `.env` per lingkungan (hasil pemeriksaan `.env` lokal, 2 Nov 2026)**
+- [ ] **Lokal sekarang:** `MAIL_MAILER=log` (di Docker tidak ada Mailpit; email masuk ke `storage/logs/laravel.log`), `MAIL_FROM_ADDRESS="info@decaa.id"`. Setelah ubah `.env`: `php artisan config:clear`
+- [ ] **Staging dan produksi (K31):** `MAIL_MAILER=smtp`, `MAIL_HOST=mail.decaa.id`, `MAIL_PORT=465`, `MAIL_USERNAME=info@decaa.id`, `MAIL_ENCRYPTION=tls` (di Laravel 9, port 465 wajib `tls` supaya dipakai `smtps`; `ssl` bisa gagal), `MAIL_FROM_ADDRESS=\"info@decaa.id\"`. Password hanya di `.env` server, tidak pernah dikirim ke chat atau ditulis di berkas
+- [ ] **Temuan: noindex staging belum tersambung.** `layouts/app` membaca `config('site.noindex')`, tetapi `config/site.php` tidak punya kuncinya. Tambahkan `'noindex' => (bool) env('SITE_NOINDEX', false),` lalu `SITE_NOINDEX=true` di staging dan `false` di produksi
+- [ ] Staging/produksi: `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://new.decaa.id` (lalu `https://decaa.id`), `APP_KEY` dan password database **baru** (jangan pakai nilai lokal; `/style-guide` hanya aktif di `local`)
+- [ ] Uji kirim email dari server staging (form Kontak, B4) dan cek SPF/DKIM/DMARC `decaa.id` agar email tidak masuk spam
 
 - [ ] Title dan meta description unik per halaman, Open Graph, Twitter Card
 - [ ] Heading terstruktur (satu H1), breadcrumb
@@ -855,3 +891,10 @@ Ini juga menjadi sumber checklist di dashboard admin.
 | 2 Nov 2026 | v25: **R2 Beranda**: hero Capitalize Each Word + label DECAA.ID; Tentang DECAA.ID (judul dan deskripsi baru); Pilar Bisnis tampil per brand 5 per baris. File: `app/Support/Content.php`, `resources/views/pages/home.blade.php` |
 | 2 Nov 2026 | v26: **Perencanaan Tahap B (Admin)**. Ditambah Bagian 3B (QA1-QA18, pertanyaan untuk dijawab); Bagian 6 (sitemap) diperbarui (8 pilar, halaman brand, Penghargaan, Chairman Message; Kepemimpinan dan Legalitas dihapus); Tahap B disusun ulang (peta konten ke modul admin, B1-B6 dirinci, daftar DUMMY). Temuan: brand sekarang 20 (bukan 17), `Content::stats()` tidak dipakai lagi. **Tanpa perubahan kode** |
 | 2 Nov 2026 | v27: jawaban QA1-QA18 dicatat (K27-K32), koreksi email (hanya `info@decaa.id`, `mail.decaa.id` = server), Super Admin awal `decaa@decaa.id`; ditambah **Tahap B-awal** (BA1-BA4: login, layout + dashboard dummy, CRUD pengguna, poles desain); lingkup Penghargaan disederhanakan. **Tanpa perubahan kode** |
+| 2 Nov 2026 | v28: **BA1 dikirim** (fondasi login dan pengguna). File baru: migration `2026_11_02_000001_add_admin_columns_to_users_table`, `app/Console/Commands/CreateSuperAdmin.php`, `routes/admin.php`, 5 middleware di `app/Http/Middleware/Admin/`, `LoginController`, `PasswordController`, `DashboardController` (sementara) di `app/Http/Controllers/Admin/`, `lang/id/auth.php`, `lang/id/validation.php`, `layouts/admin`, `pages/admin/auth/login`, `pages/admin/password`, `pages/admin/dashboard` (sementara). File diubah: `app/Models/User.php`, `app/Http/Kernel.php`, `app/Http/Middleware/Authenticate.php`, `app/Providers/RouteServiceProvider.php`. Belum diuji di lingkunganku (PHP tidak tersedia); menunggu verifikasimu |
+| 2 Nov 2026 | v28: **BA1 dikirim**: migration kolom admin pada `users`, model `User` (peran), perintah `admin:create-super`, `routes/admin.php`, 5 middleware admin, `LoginController` (throttle), `PasswordController`, `lang/id/*`. Menunggu dicek di Docker |
+| 2 Nov 2026 | v29: **BA2 dikirim**: layout admin (sidebar per peran, topbar, drawer HP) + `layouts/admin-guest`, 14 komponen `components/admin/*`, halaman Masuk dan Ganti Password didesain ulang, dashboard dummy (4 kartu, aktivitas, pintasan, kesiapan konten). File baru: `app/Support/AdminMenu.php`, `components/admin/*`. File diubah: `DashboardController.php`, `layouts/admin.blade.php`, `pages/admin/dashboard.blade.php`, `pages/admin/auth/login.blade.php`, `pages/admin/password.blade.php`. Tanpa perubahan route, migration, atau JS/CSS |
+| 2 Nov 2026 | v30: **BA4 putaran 1 (revisi tampilan admin)** atas masukan "terlalu tegas, kurang menarik, tulisan sidebar kurang jelas": sidebar jadi **terang** (teks gelap 15px tebal, ikon dalam kotak, judul grup lebih jelas, item aktif bergradasi biru, "Lihat Situs" di bawah), topbar kaca dengan tanggal, latar gradasi lembut, kartu `rounded-2xl` bayangan halus, tombol bergradasi, kolom isian lembut, hero sambutan di dashboard, kartu angka dengan ikon gradasi, panel Masuk bergradasi + 3 poin keunggulan. File diubah: `layouts/admin`, `layouts/admin-guest`, `pages/admin/dashboard`, `login`, `password`, `components/admin/{button,input,select,card,table,empty,badge,modal,toast,page-header,stat-card}`. Tanpa perubahan route, controller, atau JS/CSS |
+| 2 Nov 2026 | v31: **BA3 dikirim** (CRUD pengguna, profil, log aktivitas) + **badge "Admin" di dekat logo sidebar dihapus**. File baru: `database/migrations/2026_11_02_160000_create_activity_logs_table.php`, `app/Models/ActivityLog.php`, `app/Http/Controllers/Admin/{UserController,ProfileController,LogController}.php`, `components/admin/pager.blade.php`, `pages/admin/users/{index,form}.blade.php`, `pages/admin/profile.blade.php`, `pages/admin/logs/index.blade.php`. File diubah: `routes/admin.php`, `app/Support/AdminMenu.php`, `app/Models/User.php`, `LoginController`, `PasswordController`, `DashboardController`, `layouts/admin`, `pages/admin/dashboard`, `components/admin/icon`. Belum diuji di lingkunganku (PHP tidak tersedia); menunggu verifikasimu |
+| 2 Nov 2026 | v32: **BA4 putaran 3**: sidebar gelap + auto-scroll menu aktif, redesain form tambah/ubah pengguna dan Profil Saya, perbaikan kartu pratinjau. Ditambah **Pola Desain Admin** (standar styling modul berikutnya) dan aturan kerja no. 9-11 (info path file di teks balasan, pola admin dikunci, daftar folder zip). File: `layouts/admin`, `components/admin/{form-section,password-field}`, `pages/admin/users/form`, `pages/admin/profile`, `todolist_decaa_web.md` |
+| 2 Nov 2026 | v33: logo sidebar admin diperkecil (`layouts/admin`); hasil pemeriksaan `.env` dicatat di Tahap C (email lokal `log`, SMTP `mail.decaa.id` port 465 `tls` untuk staging, kunci `site.noindex` yang belum ada di `config/site.php`, aturan `.env` staging/produksi). Tanpa perubahan kode selain layout |
