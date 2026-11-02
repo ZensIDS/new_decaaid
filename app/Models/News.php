@@ -39,7 +39,7 @@ class News extends Model
 
     protected $fillable = [
         'slug', 'news_category_id', 'title', 'excerpt', 'body', 'image', 'image_alt',
-        'status', 'published_at', 'translation_status', 'seo_title', 'seo_description',
+        'status', 'published_at', 'translation_status', 'translated_from', 'seo_title', 'seo_description',
         'is_dummy', 'created_by', 'updated_by',
     ];
 

@@ -8,6 +8,8 @@ use App\Models\NewsCategory;
 use App\Models\NewsRevision;
 use App\Support\Html;
 use App\Support\ImageStore;
+use App\Support\NewsAutoTranslate;
+use App\Support\Translator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use RuntimeException;
 
 /**
  * B3d: modul Berita. Super Admin, Admin, dan Editor boleh menulis dan mengubah;
@@ -24,6 +27,10 @@ use Illuminate\View\View;
 class NewsController extends Controller
 {
     protected const PER_PAGE = 10;
+
+    /** Diisi validated(): arah terjemahan otomatis ('id'|'en') dan peringatan bila gagal. */
+    protected ?string $translatedFrom = null;
+    protected ?string $translateWarning = null;
 
     public function index(Request $request): View
     {
@@ -77,7 +84,8 @@ class NewsController extends Controller
         ActivityLog::record('news.created', "menambah berita \"{$news->t('title', 'id')}\" ({$news->statusLabel()})", $news);
 
         return redirect()->route('admin.news.edit', $news)
-            ->with('status', 'Berita dibuat. ' . $this->visibilityNote($news));
+            ->with('status', 'Berita dibuat. ' . $this->translationNote() . $this->visibilityNote($news))
+            ->with('error', $this->translateWarning);
     }
 
     public function edit(News $news): View
@@ -110,7 +118,8 @@ class NewsController extends Controller
         ActivityLog::record('news.updated', "mengubah berita \"{$news->t('title', 'id')}\" ({$news->statusLabel()})", $news);
 
         return redirect()->route('admin.news.edit', $news)
-            ->with('status', 'Perubahan disimpan. ' . $this->visibilityNote($news));
+            ->with('status', 'Perubahan disimpan. ' . $this->translationNote() . $this->visibilityNote($news))
+            ->with('error', $this->translateWarning);
     }
 
     public function destroy(News $news): RedirectResponse
@@ -179,6 +188,8 @@ class NewsController extends Controller
 
     protected function validated(Request $request, ?News $news): array
     {
+        $this->autoTranslate($request, $news);
+
         // Slug: dari isian, atau dibuat dari judul Indonesia dan dijamin unik.
         $given     = trim((string) $request->input('slug'));
         $generated = $given === '';
@@ -244,9 +255,14 @@ class NewsController extends Controller
             $publishedAt = $news?->published_at ?? now();
         }
 
+        // Terjemahan otomatis terjadi pada simpanan ini: tandai sebagai belum ditinjau.
+        $auto = $this->translatedFrom
+            ? ['translation_status' => 'auto', 'translated_from' => $this->translatedFrom]
+            : [];
+
         $clean = fn(array $pair) => ['id' => trim((string) ($pair['id'] ?? '')), 'en' => trim((string) ($pair['en'] ?? ''))];
 
-        return [
+        return $auto + [
             'slug'               => $data['slug'],
             'news_category_id'   => $data['news_category_id'],
             'title'              => $clean($data['title']),
@@ -259,6 +275,45 @@ class NewsController extends Controller
             'seo_title'          => $clean($data['seo_title'] ?? []),
             'seo_description'    => $clean($data['seo_description'] ?? []),
         ];
+    }
+
+    /**
+     * Isi bahasa yang kosong secara otomatis (ID <-> EN) sebelum validasi.
+     * Dilewati bila saklar dimatikan atau penyedia terjemahan belum diatur.
+     */
+    protected function autoTranslate(Request $request, ?News $news): void
+    {
+        $this->translatedFrom   = null;
+        $this->translateWarning = null;
+
+        if (! $request->boolean('auto_translate') || ! Translator::enabled()) {
+            return;
+        }
+
+        $input = [];
+        foreach (News::LOCALIZED as $field) {
+            $input[$field] = ['id' => $request->input("{$field}.id"), 'en' => $request->input("{$field}.en")];
+        }
+
+        try {
+            [$filled, $direction, $warning] = NewsAutoTranslate::fill($input, $news);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['title.id' => $e->getMessage()]);
+        }
+
+        foreach ($filled as $field => $pair) {
+            $request->merge([$field => ['id' => $pair['id'] ?? null, 'en' => $pair['en'] ?? null]]);
+        }
+
+        $this->translatedFrom   = $direction;
+        $this->translateWarning = $warning;
+    }
+
+    protected function translationNote(): string
+    {
+        return $this->translatedFrom
+            ? 'Terjemahan ' . ($this->translatedFrom === 'id' ? 'Inggris' : 'Indonesia') . ' diisi otomatis (status: belum ditinjau). '
+            : '';
     }
 
     /** Simpan kondisi sekarang ke Riwayat Revisi sebelum diubah; simpan paling banyak KEEP terakhir. */

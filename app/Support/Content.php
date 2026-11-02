@@ -105,13 +105,17 @@ class Content
      */
     protected static function rawUnits(): array
     {
+        // B3c: dibaca dari database (tampil saja, sudah berurutan). Bila tabel belum ada atau masih
+        // kosong, memakai data bawaan kode (Pillars::all()) agar situs tidak kosong.
+        $pillars = PillarRepo::available() ? PillarRepo::all() : Pillars::all();
+
         return array_map(function (array $pillar) {
             $pillar['subtitle'] = null;
             $pillar['logo']     = null;
             $pillar['summary']  = implode(', ', array_column($pillar['brands'], 'name'));
 
             return $pillar;
-        }, Pillars::all());
+        }, $pillars);
     }
 
     public static function units(): array

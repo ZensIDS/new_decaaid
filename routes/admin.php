@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\NewsCategoryController;
 use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PasswordController;
+use App\Http\Controllers\Admin\PillarController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,31 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('kategori-berita/{category}/ubah', [NewsCategoryController::class, 'edit'])->name('newscat.edit');
                     Route::put('kategori-berita/{category}', [NewsCategoryController::class, 'update'])->name('newscat.update');
                     Route::delete('kategori-berita/{category}', [NewsCategoryController::class, 'destroy'])->name('newscat.destroy');
+                });
+
+                // Pilar & Brand (B3c, QA8): tambah, ubah, urut, sembunyikan = Super Admin dan Admin
+                Route::middleware('admin.role:super_admin,admin')->prefix('pilar-bisnis')->name('pillars.')->group(function () {
+                    Route::get('/', [PillarController::class, 'index'])->name('index');
+                    Route::get('tambah', [PillarController::class, 'create'])->name('create');
+                    Route::post('/', [PillarController::class, 'store'])->name('store');
+                    Route::post('urutan', [PillarController::class, 'sort'])->middleware('throttle:60,1')->name('sort');
+
+                    Route::get('brand/tambah', [BrandController::class, 'create'])->name('brands.create');
+                    Route::post('brand', [BrandController::class, 'store'])->name('brands.store');
+                    Route::post('brand/urutan', [BrandController::class, 'sort'])->middleware('throttle:60,1')->name('brands.sort');
+                    Route::get('brand/{brand}/ubah', [BrandController::class, 'edit'])->whereNumber('brand')->name('brands.edit');
+                    Route::put('brand/{brand}', [BrandController::class, 'update'])->whereNumber('brand')->name('brands.update');
+                    Route::patch('brand/{brand}/status', [BrandController::class, 'toggle'])->whereNumber('brand')->name('brands.toggle');
+
+                    Route::get('{pillar}/ubah', [PillarController::class, 'edit'])->whereNumber('pillar')->name('edit');
+                    Route::put('{pillar}', [PillarController::class, 'update'])->whereNumber('pillar')->name('update');
+                    Route::patch('{pillar}/status', [PillarController::class, 'toggle'])->whereNumber('pillar')->name('toggle');
+                });
+
+                // Hapus pilar dan brand: hanya Super Admin (QA8)
+                Route::middleware('admin.role:super_admin')->prefix('pilar-bisnis')->name('pillars.')->group(function () {
+                    Route::delete('brand/{brand}', [BrandController::class, 'destroy'])->whereNumber('brand')->name('brands.destroy');
+                    Route::delete('{pillar}', [PillarController::class, 'destroy'])->whereNumber('pillar')->name('destroy');
                 });
 
                 // Khusus Super Admin: pengguna dan log aktivitas

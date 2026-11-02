@@ -9,6 +9,7 @@
 
     $currentStatus = old('status', $editing ? $news->status : \App\Models\News::STATUS_DRAFT);
     $currentTrans = old('translation_status', $editing ? $news->translation_status : 'manual');
+    $autoAvailable = \App\Support\Translator::enabled();
     $publishedAt = old('published_at', $editing && $news->published_at ? $news->published_at->format('Y-m-d\TH:i') : '');
 
     $imageUrl = $editing && $news->image && file_exists(public_path($news->image)) ? asset($news->image) : null;
@@ -32,7 +33,7 @@
 
 @section('content')
     <x-admin.page-header :title="$editing ? 'Ubah Berita' : 'Tambah Berita'"
-                         :description="$editing ? 'Perbarui isi, status, atau gambar berita ini. Versi sebelumnya otomatis tersimpan di Riwayat Revisi.' : 'Isi Bahasa Indonesia wajib. Bahasa Inggris boleh dikosongkan; pengunjung EN akan melihat teks Indonesia.'"
+                         :description="$editing ? 'Perbarui isi, status, atau gambar berita ini. Versi sebelumnya otomatis tersimpan di Riwayat Revisi.' : 'Cukup isi salah satu bahasa (ID atau EN). Bahasa yang kosong diterjemahkan otomatis saat disimpan.'"
                          :breadcrumbs="[['label' => 'Berita', 'url' => route('admin.news.index')], ['label' => $editing ? 'Ubah' : 'Tambah']]" />
 
     <div class="grid items-start gap-6 lg:grid-cols-3">
@@ -60,7 +61,7 @@
             <div class="space-y-6 lg:col-span-2 lg:col-start-1 lg:row-start-1">
 
                 {{-- Isi berita (dwibahasa) --}}
-                <x-admin.form-section icon="newspaper" title="Isi Berita" description="Tulis dalam dua bahasa. Tab EN boleh dikosongkan.">
+                <x-admin.form-section icon="newspaper" title="Isi Berita" description="Isi salah satu bahasa saja; sisanya diterjemahkan otomatis.">
                     <div class="flex items-center gap-1 rounded-xl bg-slate-100 p-1" role="tablist" aria-label="Bahasa isi">
                         <button type="button" role="tab" :aria-selected="(lang === 'id').toString()" @click="lang = 'id'"
                                 :class="lang === 'id' ? 'bg-white text-[#1B3590] shadow-sm' : 'text-slate-500 hover:text-slate-800'"
@@ -73,9 +74,19 @@
                         </button>
                     </div>
 
+                    @if ($autoAvailable)
+                        <x-admin.toggle name="auto_translate" label="Terjemahkan otomatis bahasa yang kosong"
+                                        description="Saat disimpan, kolom ID atau EN yang kosong diisi hasil terjemahan mesin dan ditandai Otomatis (belum ditinjau). Isian yang sudah kamu tulis tidak ditimpa."
+                                        :checked="true" />
+                    @else
+                        <p class="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
+                            Terjemahan otomatis belum aktif (penyedia belum diatur di <code>.env</code>). Tab EN yang kosong akan tampil sebagai teks Indonesia.
+                        </p>
+                    @endif
+
                     <div x-show="lang === 'id'" class="space-y-5" role="tabpanel">
-                        <x-admin.input name="title[id]" label="Judul" required x-model="title" :value="$val('title', 'id')" />
-                        <x-admin.textarea name="excerpt[id]" label="Ringkasan" required rows="3" :value="$val('excerpt', 'id')"
+                        <x-admin.input name="title[id]" label="Judul" x-model="title" :value="$val('title', 'id')" />
+                        <x-admin.textarea name="excerpt[id]" label="Ringkasan" rows="3" :value="$val('excerpt', 'id')"
                                           hint="Tampil di kartu berita dan hasil pencarian. Maksimal 400 karakter." />
                         <x-admin.editor name="body[id]" label="Isi berita" :value="$val('body', 'id')" :upload="route('admin.news.upload')"
                                         hint="Tempelan dari Word atau web otomatis jadi teks polos. Gambar maksimal 5 MB." />
@@ -85,7 +96,7 @@
                         <x-admin.input name="title[en]" label="Title" x-model="titleEn" :value="$val('title', 'en')" />
                         <x-admin.textarea name="excerpt[en]" label="Excerpt" rows="3" :value="$val('excerpt', 'en')" />
                         <x-admin.editor name="body[en]" label="Body" :value="$val('body', 'en')" :upload="route('admin.news.upload')"
-                                        hint="Kosongkan bila belum diterjemahkan: pengunjung EN melihat teks Indonesia." />
+                                        hint="Boleh dikosongkan bila terjemahan otomatis aktif. Bila dimatikan, pengunjung EN melihat teks Indonesia." />
                     </div>
                 </x-admin.form-section>
 

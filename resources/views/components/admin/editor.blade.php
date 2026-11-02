@@ -73,8 +73,8 @@
 
     <input type="hidden" name="{{ $name }}" :value="html">
 
-    <div class="mt-1.5 overflow-hidden rounded-xl bg-slate-50 ring-1 ring-inset {{ $hasError ? 'ring-[#E5352E]' : 'ring-slate-200 focus-within:ring-2 focus-within:ring-[#1B3590]' }}">
-        <div class="flex flex-wrap items-center gap-0.5 border-b border-slate-200 bg-slate-100/70 p-1.5" role="toolbar" aria-label="Format teks">
+    <div class="mt-1.5 overflow-hidden rounded-xl border-2 bg-slate-100 shadow-sm transition {{ $hasError ? 'border-[#E5352E]' : 'border-slate-300 focus-within:border-[#1B3590] focus-within:ring-4 focus-within:ring-[#1B3590]/10' }}">
+        <div class="flex flex-wrap items-center gap-0.5 border-b-2 border-slate-300 bg-slate-100 p-1.5" role="toolbar" aria-label="Format teks">
             <button type="button" class="{{ $btn }}" @click="block('p')" title="Paragraf" aria-label="Paragraf">P</button>
             <button type="button" class="{{ $btn }}" @click="block('h2')" title="Subjudul besar" aria-label="Subjudul besar">H2</button>
             <button type="button" class="{{ $btn }}" @click="block('h3')" title="Subjudul kecil" aria-label="Subjudul kecil">H3</button>
@@ -96,10 +96,13 @@
             @endif
         </div>
 
+        <div class="p-3">
         <div x-ref="area" x-init="$el.innerHTML = html" id="{{ $id }}" contenteditable="true" role="textbox" aria-multiline="true"
+             data-placeholder="Mulai menulis di sini..."
              @if ($label) aria-labelledby="{{ $id }}-label" @endif
              @input="sync()" @blur="sync()" @paste.prevent="paste($event)"
-             class="min-h-[18rem] max-w-none bg-white px-5 py-4 text-[15px] leading-7 text-slate-800 focus:outline-none [&_a]:text-[#1B3590] [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_h2]:mt-5 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:text-lg [&_h3]:font-bold [&_img]:my-3 [&_img]:max-h-72 [&_img]:rounded-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-6"></div>
+             class="min-h-[18rem] max-w-none rounded-lg border border-slate-300 bg-white px-5 py-4 shadow-inner empty:before:pointer-events-none empty:before:text-slate-400 empty:before:content-[attr(data-placeholder)] text-[15px] leading-7 text-slate-800 focus:outline-none [&_a]:text-[#1B3590] [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4 [&_blockquote]:italic [&_h2]:mt-5 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mt-4 [&_h3]:text-lg [&_h3]:font-bold [&_img]:my-3 [&_img]:max-h-72 [&_img]:rounded-xl [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-3 [&_ul]:list-disc [&_ul]:pl-6"></div>
+        </div>
     </div>
 
     @if ($hasError)
