@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Support;
 
 /**
@@ -34,7 +33,7 @@ class Content
             return $value[$locale] ?? $value['id'];
         }
 
-        return array_map(fn ($item) => self::localize($item, $locale), $value);
+        return array_map(fn($item) => self::localize($item, $locale), $value);
     }
 
     /* ---------------------------------------------------------------------
@@ -44,53 +43,53 @@ class Content
     public static function company(): array
     {
         return self::localize([
-            'name' => 'DECAA.ID',
-            'tagline' => [
+            'name'     => 'DECAA.ID',
+            'tagline'  => [
                 'id' => 'Mitra Solusi untuk Segala Akselerasi',
                 'en' => 'Your Solutions Partner for Every Acceleration',
             ],
-            'logo' => [
+            'logo'     => [
                 'on_light' => 'img/logo/decaaid-black.png',
-                'on_dark' => 'img/logo/decaaid-white.png',
+                'on_dark'  => 'img/logo/decaaid-white.png',
             ],
-            'email' => [
+            'email'    => [
                 'general' => 'info@decaa.id',
-                'career' => 'career@decaa.id',
+                'career'  => 'career@decaa.id',
             ],
-            'phone' => '+62 21 0000 0000',          // DUMMY
-            'whatsapp' => [                          // DUMMY
+            'phone'    => '+62 21 0000 0000', // DUMMY
+            'whatsapp' => [                   // DUMMY
                 'label' => '+62 812 0000 0000',
-                'url' => 'https://wa.me/6281200000000',
+                'url'   => 'https://wa.me/6281200000000',
             ],
-            'offices' => [
+            'offices'  => [
                 [
-                    'key' => 'jakarta',
-                    'type' => ['id' => 'Kantor Pusat', 'en' => 'Headquarters'],
-                    'city' => 'Jakarta',
+                    'key'     => 'jakarta',
+                    'type'    => ['id' => 'Kantor Pusat', 'en' => 'Headquarters'],
+                    'city'    => 'Jakarta',
                     'address' => 'Ad Premier Office Park, Jl. TB Simatupang, Ragunan, Pasar Minggu, Jakarta',
                 ],
                 [
-                    'key' => 'pacitan',
-                    'type' => ['id' => 'Kantor Cabang', 'en' => 'Branch Office'],
-                    'city' => 'Pacitan',
+                    'key'     => 'pacitan',
+                    'type'    => ['id' => 'Kantor Cabang', 'en' => 'Branch Office'],
+                    'city'    => 'Pacitan',
                     'address' => ['id' => 'Jl. Letjend R. Suprapto, Sidoarjo, Pacitan, Jawa Timur',
-                                  'en' => 'Jl. Letjend R. Suprapto, Sidoarjo, Pacitan, East Java'],
+                        'en'               => 'Jl. Letjend R. Suprapto, Sidoarjo, Pacitan, East Java'],
                 ],
                 [
-                    'key' => 'ponorogo',
-                    'type' => ['id' => 'Kantor Cabang', 'en' => 'Branch Office'],
-                    'city' => 'Ponorogo',
+                    'key'     => 'ponorogo',
+                    'type'    => ['id' => 'Kantor Cabang', 'en' => 'Branch Office'],
+                    'city'    => 'Ponorogo',
                     'address' => ['id' => 'Jl. Sultan Agung, Ponorogo, Jawa Timur',
-                                  'en' => 'Jl. Sultan Agung, Ponorogo, East Java'],
+                        'en'               => 'Jl. Sultan Agung, Ponorogo, East Java'],
                 ],
             ],
-            'social' => [                            // DUMMY: isi URL asli
-                'whatsapp' => 'https://wa.me/6281200000000',
+            'social'   => [ // DUMMY: isi URL asli
+                'whatsapp'  => 'https://wa.me/6281200000000',
                 'instagram' => '#',
-                'facebook' => '#',
-                'youtube' => '#',
-                'tiktok' => '#',
-                'linkedin' => '#',
+                'facebook'  => '#',
+                'youtube'   => '#',
+                'tiktok'    => '#',
+                'linkedin'  => '#',
             ],
         ]);
     }
@@ -108,8 +107,8 @@ class Content
     {
         return array_map(function (array $pillar) {
             $pillar['subtitle'] = null;
-            $pillar['logo'] = null;
-            $pillar['summary'] = implode(', ', array_column($pillar['brands'], 'name'));
+            $pillar['logo']     = null;
+            $pillar['summary']  = implode(', ', array_column($pillar['brands'], 'name'));
 
             return $pillar;
         }, Pillars::all());
@@ -152,9 +151,9 @@ class Content
     public static function community(): array
     {
         return self::localize([
-            'slug' => 'komunitas-peduli-digital',
-            'name' => 'Komunitas Peduli Digital',
-            'logo' => 'img/logo/kompeddig.png',
+            'slug'    => 'komunitas-peduli-digital',
+            'name'    => 'Komunitas Peduli Digital',
+            'logo'    => 'img/logo/kompeddig.png',
             'summary' => [
                 'id' => 'Komunitas CSR DECAA.ID yang berfokus pada literasi digital dan pemerataan akses teknologi bagi masyarakat.',
                 'en' => 'The CSR community of DECAA.ID, focused on digital literacy and equal access to technology for society.',
@@ -172,22 +171,22 @@ class Content
     {
         // Menu bertingkat: Pilar Bisnis > Pilar > Brand/perusahaan. 'logo' => true menandai anak unit
         // agar tidak ikut dihitung sebagai "halaman" di pencarian (hasilnya ada di grup Pilar Bisnis).
-        $unitChildren = array_map(fn ($unit) => [
-            'label' => $unit['name'],
-            'route' => 'units.show',
-            'params' => ['slug' => $unit['slug']],
-            'logo' => true,
-            'children' => array_map(fn ($brand) => [
-                'label' => $brand['name'],
-                'route' => 'units.brand',
+        $unitChildren = array_map(fn($unit) => [
+            'label'    => $unit['name'],
+            'route'    => 'units.show',
+            'params'   => ['slug' => $unit['slug']],
+            'logo'     => true,
+            'children' => array_map(fn($brand) => [
+                'label'  => $brand['name'],
+                'route'  => 'units.brand',
                 'params' => ['slug' => $unit['slug'], 'brand' => $brand['slug']],
             ], $unit['brands']),
         ], self::units());
 
         return self::localize([
             [
-                'label' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
-                'route' => 'about.profile',
+                'label'    => ['id' => 'Tentang Kami', 'en' => 'About Us'],
+                'route'    => 'about.profile',
                 'children' => [
                     ['label' => ['id' => 'Profil Perusahaan', 'en' => 'Company Profile'], 'route' => 'about.profile'],
                     ['label' => ['id' => 'Visi & Misi', 'en' => 'Vision & Mission'], 'route' => 'about.vision'],
@@ -195,13 +194,13 @@ class Content
                 ],
             ],
             [
-                'label' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
-                'route' => 'units.index',
+                'label'    => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
+                'route'    => 'units.index',
                 'children' => $unitChildren,
             ],
             [
-                'label' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
-                'route' => 'portfolio.index',
+                'label'    => ['id' => 'Portofolio', 'en' => 'Portfolio'],
+                'route'    => 'portfolio.index',
                 'children' => [
                     ['label' => ['id' => 'Proyek', 'en' => 'Projects'], 'route' => 'portfolio.index'],
                     ['label' => ['id' => 'Klien & Mitra', 'en' => 'Clients & Partners'], 'route' => 'clients'],
@@ -234,85 +233,85 @@ class Content
     public static function home(): array
     {
         return self::localize([
-            'hero' => [
+            'hero'      => [
                 // Slogan baru (Revisi_Website_decaaid.pdf butir 1). Label kecil di atas judul = DECAA.ID.
                 'eyebrow' => ['id' => 'DECAA.ID', 'en' => 'DECAA.ID'],
-                'title' => ['id' => 'Mitra Solusi untuk Segala Akselerasi', 'en' => 'Your Solutions Partner for Every Acceleration'],
-                'text' => [
+                'title'   => ['id' => 'Mitra Solusi untuk Segala Akselerasi', 'en' => 'Your Solutions Partner for Every Acceleration'],
+                'text'    => [
                     'id' => 'Ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.',
                     'en' => 'A digital ecosystem with inclusive, secure, and sustainable innovation for every line of industry.',
                 ],
             ],
-            'about' => [
+            'about'     => [
                 'eyebrow' => ['id' => 'Tentang DECAA.ID', 'en' => 'About DECAA.ID'],
-                'title' => ['id' => 'Everything Is Nothing Without Technology', 'en' => 'Everything Is Nothing Without Technology'],
-                'text' => [
+                'title'   => ['id' => 'Everything Is Nothing Without Technology', 'en' => 'Everything Is Nothing Without Technology'],
+                'text'    => [
                     'id' => 'Decaa.id merupakan group usaha yang terdiri dari 5 pilar utama bisnis didunia teknologi digital ditambah dengan beberapa bisnis pendukung di sektor office supply, lifestyle hingga food & beverages. Kami memulai langkah dari kebutuhan institusi yang membutuhkan mitra terpercaya untuk ekosistem digital di bidang teknologi, dari perangkat hingga aplikasi. Seiring dengan berjalannya waktu, kebutuhan kebutuhan yang semakin kompleks dan kami menjawabnya dengan menghadirkan pilar-pilar bisnis yang saling melengkapi.',
                     // EN: terjemahan draf
                     'en' => 'Decaa.id is a business group made up of 5 main business pillars in the digital technology world, complemented by supporting businesses in office supply, lifestyle, and food & beverages. We began from the needs of institutions looking for a trusted partner for their digital ecosystem in technology, from devices to applications. Over time, as needs grew more complex, we answered by introducing business pillars that complement one another.',
                 ],
             ],
-            'units' => [
+            'units'     => [
                 'eyebrow' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
-                'title' => ['id' => 'Satu ekosistem, beragam bidang usaha', 'en' => 'One ecosystem, many lines of business'],
-                'text' => [
+                'title'   => ['id' => 'Satu ekosistem, beragam bidang usaha', 'en' => 'One ecosystem, many lines of business'],
+                'text'    => [
                     'id' => 'Setiap bidang usaha fokus pada keahliannya, dan saling melengkapi untuk kebutuhan Anda.',
                     'en' => 'Each line of business focuses on its own expertise, and they complement each other to meet your needs.',
                 ],
             ],
-            'projects' => [
+            'projects'  => [
                 'eyebrow' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
-                'title' => ['id' => 'Proyek unggulan kami', 'en' => 'Our featured projects'],
-                'text' => [
+                'title'   => ['id' => 'Proyek unggulan kami', 'en' => 'Our featured projects'],
+                'text'    => [
                     'id' => 'Sebagian proyek yang kami kerjakan bersama institusi dan mitra.',
                     'en' => 'A selection of projects we have delivered with institutions and partners.',
                 ],
             ],
-            'clients' => [
+            'clients'   => [
                 'eyebrow' => ['id' => 'Klien & Mitra', 'en' => 'Clients & Partners'],
-                'title' => ['id' => 'Dipercaya oleh berbagai institusi dan perusahaan', 'en' => 'Trusted by institutions and companies'],
+                'title'   => ['id' => 'Dipercaya oleh berbagai institusi dan perusahaan', 'en' => 'Trusted by institutions and companies'],
             ],
-            'values' => [
+            'values'    => [
                 'eyebrow' => ['id' => 'Mengapa DECAA.ID', 'en' => 'Why DECAA.ID'],
-                'title' => ['id' => 'Komitmen kami dalam setiap layanan', 'en' => 'Our commitment in every service'],
-                'items' => [
+                'title'   => ['id' => 'Komitmen kami dalam setiap layanan', 'en' => 'Our commitment in every service'],
+                'items'   => [
                     [
                         'title' => ['id' => 'Solusi terintegrasi', 'en' => 'Integrated solutions'],
-                        'text' => ['id' => 'Dari perangkat, jaringan, hingga aplikasi, ditangani dalam satu ekosistem.', 'en' => 'From devices and networks to applications, handled within one ecosystem.'],
+                        'text'  => ['id' => 'Dari perangkat, jaringan, hingga aplikasi, ditangani dalam satu ekosistem.', 'en' => 'From devices and networks to applications, handled within one ecosystem.'],
                     ],
                     [
                         'title' => ['id' => 'Tim profesional', 'en' => 'Professional team'],
-                        'text' => ['id' => 'Dikerjakan tenaga yang berpengalaman di bidangnya masing-masing.', 'en' => 'Delivered by people experienced in their respective fields.'],
+                        'text'  => ['id' => 'Dikerjakan tenaga yang berpengalaman di bidangnya masing-masing.', 'en' => 'Delivered by people experienced in their respective fields.'],
                     ],
                     [
                         'title' => ['id' => 'Layanan purna jual', 'en' => 'After-sales support'],
-                        'text' => ['id' => 'Pendampingan dan pemeliharaan berlanjut setelah proyek selesai.', 'en' => 'Support and maintenance continue after a project is completed.'],
+                        'text'  => ['id' => 'Pendampingan dan pemeliharaan berlanjut setelah proyek selesai.', 'en' => 'Support and maintenance continue after a project is completed.'],
                     ],
                     [
                         'title' => ['id' => 'Komitmen pada kualitas', 'en' => 'Commitment to quality'],
-                        'text' => ['id' => 'Proses kerja terukur, transparan, dan mudah ditelusuri.', 'en' => 'Measurable, transparent, and traceable work processes.'],
+                        'text'  => ['id' => 'Proses kerja terukur, transparan, dan mudah ditelusuri.', 'en' => 'Measurable, transparent, and traceable work processes.'],
                     ],
                 ],
             ],
             'community' => [
                 'eyebrow' => ['id' => 'Keberlanjutan', 'en' => 'Sustainability'],
-                'points' => [
+                'points'  => [
                     ['id' => 'Literasi digital untuk masyarakat', 'en' => 'Digital literacy for the community'],
                     ['id' => 'Pemerataan akses teknologi', 'en' => 'Equal access to technology'],
                     ['id' => 'Kolaborasi dengan sekolah dan komunitas lokal', 'en' => 'Collaboration with schools and local communities'],
                 ],
             ],
-            'news' => [
+            'news'      => [
                 'eyebrow' => ['id' => 'Berita', 'en' => 'News'],
-                'title' => ['id' => 'Kabar terbaru dari DECAA.ID', 'en' => 'Latest from DECAA.ID'],
-                'text' => [
+                'title'   => ['id' => 'Kabar terbaru dari DECAA.ID', 'en' => 'Latest from DECAA.ID'],
+                'text'    => [
                     'id' => 'Informasi kegiatan, proyek, dan perkembangan terbaru kami.',
                     'en' => 'Updates on our activities, projects, and latest developments.',
                 ],
             ],
-            'cta' => [
+            'cta'       => [
                 'title' => ['id' => 'Siap berdiskusi tentang kebutuhan Anda?', 'en' => 'Ready to discuss your needs?'],
-                'text' => [
+                'text'  => [
                     'id' => 'Tim kami siap membantu menemukan solusi yang tepat. Hubungi kami untuk konsultasi awal.',
                     'en' => 'Our team is ready to help you find the right solution. Contact us for an initial consultation.',
                 ],
@@ -343,103 +342,103 @@ class Content
     {
         $projects = self::localize([
             [
-                'slug' => 'sistem-informasi-akademik',
-                'unit' => 'software-robotics',
-                'title' => ['id' => 'Sistem Informasi Akademik Terpadu', 'en' => 'Integrated Academic Information System'],
-                'client' => 'Universitas Contoh',
-                'year' => 2025,
-                'image' => 'img/dummy/project-1.jpg',
-                'summary' => ['id' => 'Platform akademik berbasis web untuk pengelolaan data mahasiswa dan perkuliahan.', 'en' => 'A web-based academic platform for managing student and course data.'],
+                'slug'        => 'sistem-informasi-akademik',
+                'unit'        => 'software-robotics',
+                'title'       => ['id' => 'Sistem Informasi Akademik Terpadu', 'en' => 'Integrated Academic Information System'],
+                'client'      => 'Universitas Contoh',
+                'year'        => 2025,
+                'image'       => 'img/dummy/project-1.jpg',
+                'summary'     => ['id' => 'Platform akademik berbasis web untuk pengelolaan data mahasiswa dan perkuliahan.', 'en' => 'A web-based academic platform for managing student and course data.'],
                 'description' => ['id' => 'Sistem terpadu yang menggabungkan pendaftaran, jadwal kuliah, nilai, dan laporan akademik dalam satu platform yang mudah diakses civitas akademika.', 'en' => 'An integrated system combining registration, class schedules, grades, and academic reports in one platform that is easy for the academic community to access.'],
-                'scope' => [['id' => 'Analisis kebutuhan dan perancangan sistem', 'en' => 'Requirements analysis and system design'], ['id' => 'Pengembangan aplikasi web', 'en' => 'Web application development'], ['id' => 'Pelatihan pengguna dan dukungan', 'en' => 'User training and support']],
+                'scope'       => [['id' => 'Analisis kebutuhan dan perancangan sistem', 'en' => 'Requirements analysis and system design'], ['id' => 'Pengembangan aplikasi web', 'en' => 'Web application development'], ['id' => 'Pelatihan pengguna dan dukungan', 'en' => 'User training and support']],
             ],
             [
-                'slug' => 'laboratorium-robotika-sekolah',
-                'unit' => 'software-robotics',
-                'title' => ['id' => 'Laboratorium Robotika Sekolah', 'en' => 'School Robotics Laboratory'],
-                'client' => 'SMA Negeri Contoh',
-                'year' => 2025,
-                'image' => 'img/dummy/project-2.jpg',
-                'summary' => ['id' => 'Pengadaan peralatan dan pelatihan guru untuk laboratorium robotika.', 'en' => 'Equipment procurement and teacher training for a robotics laboratory.'],
+                'slug'        => 'laboratorium-robotika-sekolah',
+                'unit'        => 'software-robotics',
+                'title'       => ['id' => 'Laboratorium Robotika Sekolah', 'en' => 'School Robotics Laboratory'],
+                'client'      => 'SMA Negeri Contoh',
+                'year'        => 2025,
+                'image'       => 'img/dummy/project-2.jpg',
+                'summary'     => ['id' => 'Pengadaan peralatan dan pelatihan guru untuk laboratorium robotika.', 'en' => 'Equipment procurement and teacher training for a robotics laboratory.'],
                 'description' => ['id' => 'Penyiapan laboratorium robotika lengkap dengan perangkat, modul belajar, dan pelatihan bagi guru pengampu.', 'en' => 'Setting up a complete robotics laboratory with equipment, learning modules, and training for teaching staff.'],
-                'scope' => [['id' => 'Pengadaan perangkat robotika', 'en' => 'Robotics equipment procurement'], ['id' => 'Penyusunan modul belajar', 'en' => 'Learning module development'], ['id' => 'Pelatihan guru', 'en' => 'Teacher training']],
+                'scope'       => [['id' => 'Pengadaan perangkat robotika', 'en' => 'Robotics equipment procurement'], ['id' => 'Penyusunan modul belajar', 'en' => 'Learning module development'], ['id' => 'Pelatihan guru', 'en' => 'Teacher training']],
             ],
             [
-                'slug' => 'jaringan-dan-cctv-kantor-pemerintah',
-                'unit' => 'networking-services',
-                'title' => ['id' => 'Jaringan dan CCTV Kantor Pemerintah', 'en' => 'Government Office Network and CCTV'],
-                'client' => 'Pemkab Contoh',
-                'year' => 2024,
-                'image' => 'img/dummy/project-3.jpg',
-                'summary' => ['id' => 'Perancangan dan instalasi jaringan serta pengawasan CCTV terintegrasi.', 'en' => 'Design and installation of the network and integrated CCTV monitoring.'],
+                'slug'        => 'jaringan-dan-cctv-kantor-pemerintah',
+                'unit'        => 'networking-services',
+                'title'       => ['id' => 'Jaringan dan CCTV Kantor Pemerintah', 'en' => 'Government Office Network and CCTV'],
+                'client'      => 'Pemkab Contoh',
+                'year'        => 2024,
+                'image'       => 'img/dummy/project-3.jpg',
+                'summary'     => ['id' => 'Perancangan dan instalasi jaringan serta pengawasan CCTV terintegrasi.', 'en' => 'Design and installation of the network and integrated CCTV monitoring.'],
                 'description' => ['id' => 'Pembangunan jaringan kantor dan sistem pengawasan CCTV terpusat untuk mendukung operasional dan keamanan gedung.', 'en' => 'Building the office network and a centralized CCTV system to support operations and building security.'],
-                'scope' => [['id' => 'Survei dan perancangan jaringan', 'en' => 'Survey and network design'], ['id' => 'Instalasi jaringan dan CCTV', 'en' => 'Network and CCTV installation'], ['id' => 'Pemeliharaan berkala', 'en' => 'Routine maintenance']],
+                'scope'       => [['id' => 'Survei dan perancangan jaringan', 'en' => 'Survey and network design'], ['id' => 'Instalasi jaringan dan CCTV', 'en' => 'Network and CCTV installation'], ['id' => 'Pemeliharaan berkala', 'en' => 'Routine maintenance']],
             ],
             [
-                'slug' => 'pengadaan-laptop-dinas-pendidikan',
-                'unit' => 'hardware-peripheral',
-                'title' => ['id' => 'Pengadaan Laptop Dinas Pendidikan', 'en' => 'Education Office Laptop Procurement'],
-                'client' => 'Dinas Pendidikan Contoh',
-                'year' => 2025,
-                'image' => 'img/dummy/project-4.jpg',
-                'summary' => ['id' => 'Pengadaan perangkat kerja untuk puluhan unit kerja dinas.', 'en' => 'Procurement of work devices for dozens of office units.'],
+                'slug'        => 'pengadaan-laptop-dinas-pendidikan',
+                'unit'        => 'hardware-peripheral',
+                'title'       => ['id' => 'Pengadaan Laptop Dinas Pendidikan', 'en' => 'Education Office Laptop Procurement'],
+                'client'      => 'Dinas Pendidikan Contoh',
+                'year'        => 2025,
+                'image'       => 'img/dummy/project-4.jpg',
+                'summary'     => ['id' => 'Pengadaan perangkat kerja untuk puluhan unit kerja dinas.', 'en' => 'Procurement of work devices for dozens of office units.'],
                 'description' => ['id' => 'Penyediaan laptop dan perangkat penunjang sesuai spesifikasi, dengan pengiriman bertahap dan garansi resmi.', 'en' => 'Supply of laptops and accessories to specification, with staged delivery and official warranty.'],
-                'scope' => [['id' => 'Pengadaan perangkat', 'en' => 'Device procurement'], ['id' => 'Pengiriman dan konfigurasi awal', 'en' => 'Delivery and initial setup'], ['id' => 'Garansi dan servis', 'en' => 'Warranty and servicing']],
+                'scope'       => [['id' => 'Pengadaan perangkat', 'en' => 'Device procurement'], ['id' => 'Pengiriman dan konfigurasi awal', 'en' => 'Delivery and initial setup'], ['id' => 'Garansi dan servis', 'en' => 'Warranty and servicing']],
             ],
             [
-                'slug' => 'pelatihan-transformasi-digital-asn',
-                'unit' => 'training-research-centre',
-                'title' => ['id' => 'Pelatihan Transformasi Digital ASN', 'en' => 'Digital Transformation Training for Civil Servants'],
-                'client' => 'Pemkab Contoh',
-                'year' => 2024,
-                'image' => 'img/dummy/project-5.jpg',
-                'summary' => ['id' => 'Program pelatihan keterampilan digital bagi aparatur.', 'en' => 'A digital skills training program for civil servants.'],
+                'slug'        => 'pelatihan-transformasi-digital-asn',
+                'unit'        => 'training-research-centre',
+                'title'       => ['id' => 'Pelatihan Transformasi Digital ASN', 'en' => 'Digital Transformation Training for Civil Servants'],
+                'client'      => 'Pemkab Contoh',
+                'year'        => 2024,
+                'image'       => 'img/dummy/project-5.jpg',
+                'summary'     => ['id' => 'Program pelatihan keterampilan digital bagi aparatur.', 'en' => 'A digital skills training program for civil servants.'],
                 'description' => ['id' => 'Rangkaian pelatihan tatap muka dan daring untuk meningkatkan kemampuan aparatur dalam memanfaatkan layanan digital.', 'en' => 'A series of in-person and online sessions to improve civil servants’ ability to use digital services.'],
-                'scope' => [['id' => 'Penyusunan kurikulum pelatihan', 'en' => 'Training curriculum design'], ['id' => 'Penyelenggaraan kelas dan workshop', 'en' => 'Classes and workshops'], ['id' => 'Evaluasi dan laporan hasil', 'en' => 'Evaluation and results report']],
+                'scope'       => [['id' => 'Penyusunan kurikulum pelatihan', 'en' => 'Training curriculum design'], ['id' => 'Penyelenggaraan kelas dan workshop', 'en' => 'Classes and workshops'], ['id' => 'Evaluasi dan laporan hasil', 'en' => 'Evaluation and results report']],
             ],
             [
-                'slug' => 'aplikasi-layanan-publik-desa',
-                'unit' => 'software-robotics',
-                'title' => ['id' => 'Aplikasi Layanan Publik Desa', 'en' => 'Village Public Service Application'],
-                'client' => 'Pemerintah Desa Contoh',
-                'year' => 2024,
-                'image' => 'img/dummy/project-6.jpg',
-                'summary' => ['id' => 'Aplikasi pengajuan layanan administrasi warga secara daring.', 'en' => 'An application for residents to request administrative services online.'],
+                'slug'        => 'aplikasi-layanan-publik-desa',
+                'unit'        => 'software-robotics',
+                'title'       => ['id' => 'Aplikasi Layanan Publik Desa', 'en' => 'Village Public Service Application'],
+                'client'      => 'Pemerintah Desa Contoh',
+                'year'        => 2024,
+                'image'       => 'img/dummy/project-6.jpg',
+                'summary'     => ['id' => 'Aplikasi pengajuan layanan administrasi warga secara daring.', 'en' => 'An application for residents to request administrative services online.'],
                 'description' => ['id' => 'Aplikasi yang memudahkan warga mengajukan surat dan layanan administrasi, serta membantu perangkat desa mengelola permohonan.', 'en' => 'An application that helps residents request letters and administrative services and helps village officials manage requests.'],
-                'scope' => [['id' => 'Perancangan alur layanan', 'en' => 'Service flow design'], ['id' => 'Pengembangan aplikasi', 'en' => 'Application development'], ['id' => 'Pendampingan operasional', 'en' => 'Operational mentoring']],
+                'scope'       => [['id' => 'Perancangan alur layanan', 'en' => 'Service flow design'], ['id' => 'Pengembangan aplikasi', 'en' => 'Application development'], ['id' => 'Pendampingan operasional', 'en' => 'Operational mentoring']],
             ],
             [
-                'slug' => 'kompetisi-robotika-pelajar',
-                'unit' => 'software-robotics',
-                'title' => ['id' => 'Program Kompetisi Robotika Pelajar', 'en' => 'Student Robotics Competition Program'],
-                'client' => 'Dinas Pendidikan Contoh',
-                'year' => 2023,
-                'image' => 'img/dummy/project-7.jpg',
-                'summary' => ['id' => 'Pendampingan tim pelajar menuju kompetisi robotika.', 'en' => 'Coaching student teams toward robotics competitions.'],
+                'slug'        => 'kompetisi-robotika-pelajar',
+                'unit'        => 'software-robotics',
+                'title'       => ['id' => 'Program Kompetisi Robotika Pelajar', 'en' => 'Student Robotics Competition Program'],
+                'client'      => 'Dinas Pendidikan Contoh',
+                'year'        => 2023,
+                'image'       => 'img/dummy/project-7.jpg',
+                'summary'     => ['id' => 'Pendampingan tim pelajar menuju kompetisi robotika.', 'en' => 'Coaching student teams toward robotics competitions.'],
                 'description' => ['id' => 'Program pembinaan beberapa bulan yang membekali pelajar dengan dasar robotika, pemrograman, dan kerja tim.', 'en' => 'A multi-month coaching program equipping students with robotics fundamentals, programming, and teamwork.'],
-                'scope' => [['id' => 'Pembinaan rutin', 'en' => 'Regular coaching'], ['id' => 'Penyediaan perangkat latihan', 'en' => 'Practice equipment supply'], ['id' => 'Pendampingan lomba', 'en' => 'Competition support']],
+                'scope'       => [['id' => 'Pembinaan rutin', 'en' => 'Regular coaching'], ['id' => 'Penyediaan perangkat latihan', 'en' => 'Practice equipment supply'], ['id' => 'Pendampingan lomba', 'en' => 'Competition support']],
             ],
             [
-                'slug' => 'pengadaan-atk-instansi',
-                'unit' => 'stationery-office-supply',
-                'title' => ['id' => 'Pengadaan ATK Tahunan Instansi', 'en' => 'Annual Office Supplies for an Agency'],
-                'client' => 'Kantor Contoh',
-                'year' => 2025,
-                'image' => 'img/dummy/project-8.jpg',
-                'summary' => ['id' => 'Pasokan alat tulis kantor terjadwal sepanjang tahun.', 'en' => 'Scheduled supply of office stationery throughout the year.'],
+                'slug'        => 'pengadaan-atk-instansi',
+                'unit'        => 'stationery-office-supply',
+                'title'       => ['id' => 'Pengadaan ATK Tahunan Instansi', 'en' => 'Annual Office Supplies for an Agency'],
+                'client'      => 'Kantor Contoh',
+                'year'        => 2025,
+                'image'       => 'img/dummy/project-8.jpg',
+                'summary'     => ['id' => 'Pasokan alat tulis kantor terjadwal sepanjang tahun.', 'en' => 'Scheduled supply of office stationery throughout the year.'],
                 'description' => ['id' => 'Pemenuhan kebutuhan alat tulis dan perlengkapan kantor dengan jadwal pengiriman rutin dan pelaporan stok.', 'en' => 'Fulfilling stationery and office supply needs with a regular delivery schedule and stock reporting.'],
-                'scope' => [['id' => 'Penyusunan daftar kebutuhan', 'en' => 'Needs list preparation'], ['id' => 'Pengiriman berkala', 'en' => 'Scheduled delivery'], ['id' => 'Pelaporan stok', 'en' => 'Stock reporting']],
+                'scope'       => [['id' => 'Penyusunan daftar kebutuhan', 'en' => 'Needs list preparation'], ['id' => 'Pengiriman berkala', 'en' => 'Scheduled delivery'], ['id' => 'Pelaporan stok', 'en' => 'Stock reporting']],
             ],
             [
-                'slug' => 'katering-konferensi-daerah',
-                'unit' => 'food-beverage',
-                'title' => ['id' => 'Katering Konferensi Daerah', 'en' => 'Regional Conference Catering'],
-                'client' => 'Panitia Contoh',
-                'year' => 2025,
-                'image' => 'img/dummy/project-9.jpg',
-                'summary' => ['id' => 'Penyediaan konsumsi untuk acara tiga hari dengan ratusan peserta.', 'en' => 'Catering for a three-day event with hundreds of participants.'],
+                'slug'        => 'katering-konferensi-daerah',
+                'unit'        => 'food-beverage',
+                'title'       => ['id' => 'Katering Konferensi Daerah', 'en' => 'Regional Conference Catering'],
+                'client'      => 'Panitia Contoh',
+                'year'        => 2025,
+                'image'       => 'img/dummy/project-9.jpg',
+                'summary'     => ['id' => 'Penyediaan konsumsi untuk acara tiga hari dengan ratusan peserta.', 'en' => 'Catering for a three-day event with hundreds of participants.'],
                 'description' => ['id' => 'Penyajian makanan dan minuman untuk seluruh sesi acara dengan pengaturan menu, jadwal saji, dan kebersihan yang terjaga.', 'en' => 'Serving food and beverages for all event sessions with managed menus, serving schedules, and maintained hygiene.'],
-                'scope' => [['id' => 'Perencanaan menu', 'en' => 'Menu planning'], ['id' => 'Penyajian harian', 'en' => 'Daily service'], ['id' => 'Pengelolaan kebersihan', 'en' => 'Hygiene management']],
+                'scope'       => [['id' => 'Perencanaan menu', 'en' => 'Menu planning'], ['id' => 'Penyajian harian', 'en' => 'Daily service'], ['id' => 'Pengelolaan kebersihan', 'en' => 'Hygiene management']],
             ],
         ]);
 
@@ -466,12 +465,12 @@ class Content
     /** kategori (= nama folder) => jumlah logo. Urutan di sini = urutan tampil. */
     protected const CLIENT_FOLDERS = [
         'kementerian' => 4,
-        'pemerintah' => 18,
-        'lembaga' => 13,
+        'pemerintah'  => 18,
+        'lembaga'     => 13,
         'universitas' => 25,
-        'organisasi' => 4,
-        'perusahaan' => 6,
-        'swasta' => 20,
+        'organisasi'  => 4,
+        'perusahaan'  => 6,
+        'swasta'      => 20,
     ];
 
     /** Path logo; mendukung png/jpg/jpeg/webp/svg dan folder "pemerintahan" sebagai cadangan "pemerintah". */
@@ -504,8 +503,8 @@ class Content
     public static function clients(?int $limit = null): array
     {
         $labels = self::clientCategories();
-        $max = max(self::CLIENT_FOLDERS);
-        $items = [];
+        $max    = max(self::CLIENT_FOLDERS);
+        $items  = [];
 
         for ($n = 1; $n <= $max; $n++) {
             foreach (self::CLIENT_FOLDERS as $category => $count) {
@@ -514,9 +513,9 @@ class Content
                 }
 
                 $items[] = [
-                    'name' => $labels[$category].' '.$n,
+                    'name'     => $labels[$category] . ' ' . $n,
                     'category' => $category,
-                    'logo' => self::clientLogo($category, $n),
+                    'logo'     => self::clientLogo($category, $n),
                 ];
             }
         }
@@ -531,143 +530,168 @@ class Content
     /** Kategori berita (slug netral bahasa agar tombol ID | EN tetap benar). */
     protected const NEWS_CATEGORIES = [
         'activities' => ['id' => 'Kegiatan', 'en' => 'Activities'],
-        'community' => ['id' => 'Komunitas', 'en' => 'Community'],
-        'business' => ['id' => 'Bisnis', 'en' => 'Business'],
+        'community'  => ['id' => 'Komunitas', 'en' => 'Community'],
+        'business'   => ['id' => 'Bisnis', 'en' => 'Business'],
         'technology' => ['id' => 'Teknologi', 'en' => 'Technology'],
-        'education' => ['id' => 'Edukasi', 'en' => 'Education'],
+        'education'  => ['id' => 'Edukasi', 'en' => 'Education'],
     ];
 
-    /** Semua berita (DUMMY), terbaru lebih dulu. */
-    public static function news(): array
+    /**
+     * Data awal berita (DUMMY, dua bahasa, belum dilokalkan). Dipakai perintah
+     * `php artisan content:import-news` untuk mengisi database, dan sebagai cadangan
+     * bila tabel berita belum ada (migrasi belum dijalankan).
+     */
+    public static function newsSeed(): array
     {
-        return self::localize([
+        return [
             [
-                'slug' => 'peresmian-laboratorium-robotika',
+                'slug'          => 'peresmian-laboratorium-robotika',
                 'category_slug' => 'activities',
-                'category' => self::NEWS_CATEGORIES['activities'],
-                'date' => '2026-10-12',
-                'image' => 'img/dummy/news-1.jpg',
-                'title' => ['id' => 'Peresmian Laboratorium Robotika di Sekolah Mitra', 'en' => 'Robotics Laboratory Inauguration at a Partner School'],
-                'excerpt' => ['id' => 'Laboratorium baru diharapkan membuka akses belajar robotika bagi lebih banyak siswa.', 'en' => 'The new laboratory is expected to open robotics learning to more students.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['activities'],
+                'date'          => '2026-10-12',
+                'image'         => 'img/dummy/news-1.jpg',
+                'title'         => ['id' => 'Peresmian Laboratorium Robotika di Sekolah Mitra', 'en' => 'Robotics Laboratory Inauguration at a Partner School'],
+                'excerpt'       => ['id' => 'Laboratorium baru diharapkan membuka akses belajar robotika bagi lebih banyak siswa.', 'en' => 'The new laboratory is expected to open robotics learning to more students.'],
+                'body'          => [
                     ['id' => 'Laboratorium robotika baru diresmikan di sekolah mitra DECAA.ID dengan dihadiri guru, siswa, dan perwakilan dinas terkait.', 'en' => 'A new robotics laboratory was inaugurated at a DECAA.ID partner school, attended by teachers, students, and representatives of the education office.'],
                     ['h' => ['id' => 'Fasilitas yang disiapkan', 'en' => 'Facilities provided']],
                     ['id' => 'Laboratorium dilengkapi perangkat robotika, modul belajar bertahap, dan pelatihan bagi guru pengampu agar pemanfaatannya berkelanjutan.', 'en' => 'The laboratory comes with robotics kits, staged learning modules, and training for teachers so its use can be sustained.'],
                 ],
             ],
             [
-                'slug' => 'pelatihan-literasi-digital',
+                'slug'          => 'pelatihan-literasi-digital',
                 'category_slug' => 'community',
-                'category' => self::NEWS_CATEGORIES['community'],
-                'date' => '2026-09-28',
-                'image' => 'img/dummy/news-2.jpg',
-                'title' => ['id' => 'Pelatihan Literasi Digital untuk Masyarakat', 'en' => 'Digital Literacy Training for the Community'],
-                'excerpt' => ['id' => 'Komunitas Peduli Digital menggelar pelatihan dasar penggunaan teknologi bagi warga.', 'en' => 'Komunitas Peduli Digital held basic technology training for residents.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['community'],
+                'date'          => '2026-09-28',
+                'image'         => 'img/dummy/news-2.jpg',
+                'title'         => ['id' => 'Pelatihan Literasi Digital untuk Masyarakat', 'en' => 'Digital Literacy Training for the Community'],
+                'excerpt'       => ['id' => 'Komunitas Peduli Digital menggelar pelatihan dasar penggunaan teknologi bagi warga.', 'en' => 'Komunitas Peduli Digital held basic technology training for residents.'],
+                'body'          => [
                     ['id' => 'Komunitas Peduli Digital mengadakan pelatihan dasar penggunaan ponsel, internet, dan layanan digital bagi warga sekitar.', 'en' => 'Komunitas Peduli Digital held basic training on using phones, the internet, and digital services for local residents.'],
                     ['h' => ['id' => 'Materi pelatihan', 'en' => 'Training topics']],
                     ['id' => 'Peserta belajar mengenali informasi yang benar, menjaga keamanan akun, dan memanfaatkan layanan digital untuk kebutuhan sehari-hari.', 'en' => 'Participants learned to recognize reliable information, protect their accounts, and use digital services for everyday needs.'],
                 ],
             ],
             [
-                'slug' => 'kerja-sama-penyediaan-perangkat',
+                'slug'          => 'kerja-sama-penyediaan-perangkat',
                 'category_slug' => 'business',
-                'category' => self::NEWS_CATEGORIES['business'],
-                'date' => '2026-09-05',
-                'image' => 'img/dummy/news-3.jpg',
-                'title' => ['id' => 'Kerja Sama Penyediaan Perangkat TI untuk Instansi', 'en' => 'IT Equipment Supply Partnership for Agencies'],
-                'excerpt' => ['id' => 'Kerja sama ini mencakup pengadaan perangkat dan layanan purna jual.', 'en' => 'The partnership covers equipment procurement and after-sales service.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['business'],
+                'date'          => '2026-09-05',
+                'image'         => 'img/dummy/news-3.jpg',
+                'title'         => ['id' => 'Kerja Sama Penyediaan Perangkat TI untuk Instansi', 'en' => 'IT Equipment Supply Partnership for Agencies'],
+                'excerpt'       => ['id' => 'Kerja sama ini mencakup pengadaan perangkat dan layanan purna jual.', 'en' => 'The partnership covers equipment procurement and after-sales service.'],
+                'body'          => [
                     ['id' => 'DECAA.ID menandatangani kerja sama penyediaan perangkat teknologi informasi untuk kebutuhan operasional instansi mitra.', 'en' => 'DECAA.ID signed a partnership to supply information technology equipment for a partner agency’s operations.'],
                     ['h' => ['id' => 'Cakupan kerja sama', 'en' => 'Scope of cooperation']],
                     ['id' => 'Selain pengadaan, kerja sama mencakup konfigurasi awal, garansi, dan layanan servis berkala selama masa kontrak.', 'en' => 'Beyond procurement, the partnership covers initial setup, warranty, and routine servicing throughout the contract period.'],
                 ],
             ],
             [
-                'slug' => 'tips-keamanan-jaringan-kantor',
+                'slug'          => 'tips-keamanan-jaringan-kantor',
                 'category_slug' => 'technology',
-                'category' => self::NEWS_CATEGORIES['technology'],
-                'date' => '2026-08-20',
-                'image' => 'img/dummy/news-4.jpg',
-                'title' => ['id' => 'Lima Langkah Menjaga Keamanan Jaringan Kantor', 'en' => 'Five Steps to Keep Your Office Network Secure'],
-                'excerpt' => ['id' => 'Langkah sederhana yang dapat diterapkan kantor untuk mengurangi risiko gangguan jaringan.', 'en' => 'Simple steps any office can take to reduce network risks.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['technology'],
+                'date'          => '2026-08-20',
+                'image'         => 'img/dummy/news-4.jpg',
+                'title'         => ['id' => 'Lima Langkah Menjaga Keamanan Jaringan Kantor', 'en' => 'Five Steps to Keep Your Office Network Secure'],
+                'excerpt'       => ['id' => 'Langkah sederhana yang dapat diterapkan kantor untuk mengurangi risiko gangguan jaringan.', 'en' => 'Simple steps any office can take to reduce network risks.'],
+                'body'          => [
                     ['id' => 'Keamanan jaringan tidak harus rumit. Kebiasaan dasar yang konsisten sudah mengurangi sebagian besar risiko.', 'en' => 'Network security does not have to be complicated. Consistent basic habits already remove most of the risk.'],
                     ['h' => ['id' => 'Mulai dari yang mendasar', 'en' => 'Start with the basics']],
                     ['id' => 'Perbarui perangkat secara berkala, batasi hak akses, pisahkan jaringan tamu, dan lakukan pencadangan rutin.', 'en' => 'Update devices regularly, limit access rights, separate the guest network, and back up routinely.'],
                 ],
             ],
             [
-                'slug' => 'workshop-guru-pemrograman',
+                'slug'          => 'workshop-guru-pemrograman',
                 'category_slug' => 'education',
-                'category' => self::NEWS_CATEGORIES['education'],
-                'date' => '2026-08-02',
-                'image' => 'img/dummy/news-5.jpg',
-                'title' => ['id' => 'Workshop Pemrograman Dasar untuk Guru', 'en' => 'Basic Programming Workshop for Teachers'],
-                'excerpt' => ['id' => 'Guru dari beberapa sekolah belajar dasar pemrograman untuk diterapkan di kelas.', 'en' => 'Teachers from several schools learned programming basics for classroom use.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['education'],
+                'date'          => '2026-08-02',
+                'image'         => 'img/dummy/news-5.jpg',
+                'title'         => ['id' => 'Workshop Pemrograman Dasar untuk Guru', 'en' => 'Basic Programming Workshop for Teachers'],
+                'excerpt'       => ['id' => 'Guru dari beberapa sekolah belajar dasar pemrograman untuk diterapkan di kelas.', 'en' => 'Teachers from several schools learned programming basics for classroom use.'],
+                'body'          => [
                     ['id' => 'Training & Research Centre menyelenggarakan workshop sehari untuk membekali guru dengan dasar pemrograman.', 'en' => 'The Training & Research Centre ran a one-day workshop to equip teachers with programming basics.'],
                     ['h' => ['id' => 'Hasil yang diharapkan', 'en' => 'Expected outcomes']],
                     ['id' => 'Peserta pulang dengan contoh kegiatan kelas yang dapat langsung dipraktikkan bersama siswa.', 'en' => 'Participants left with classroom activities they can use with students right away.'],
                 ],
             ],
             [
-                'slug' => 'pembaruan-layanan-purna-jual',
+                'slug'          => 'pembaruan-layanan-purna-jual',
                 'category_slug' => 'business',
-                'category' => self::NEWS_CATEGORIES['business'],
-                'date' => '2026-07-15',
-                'image' => 'img/dummy/news-6.jpg',
-                'title' => ['id' => 'Pembaruan Layanan Purna Jual DECAA.ID', 'en' => 'Update to DECAA.ID After-Sales Service'],
-                'excerpt' => ['id' => 'Alur pengaduan dan servis kini lebih jelas dengan satu pintu layanan.', 'en' => 'Complaint and service flows are now clearer with a single service desk.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['business'],
+                'date'          => '2026-07-15',
+                'image'         => 'img/dummy/news-6.jpg',
+                'title'         => ['id' => 'Pembaruan Layanan Purna Jual DECAA.ID', 'en' => 'Update to DECAA.ID After-Sales Service'],
+                'excerpt'       => ['id' => 'Alur pengaduan dan servis kini lebih jelas dengan satu pintu layanan.', 'en' => 'Complaint and service flows are now clearer with a single service desk.'],
+                'body'          => [
                     ['id' => 'Mulai bulan ini, seluruh permintaan servis dan bantuan teknis dilayani melalui satu pintu agar penanganan lebih cepat.', 'en' => 'Starting this month, all service and technical support requests go through a single desk for faster handling.'],
                     ['h' => ['id' => 'Apa yang berubah', 'en' => 'What changes']],
                     ['id' => 'Klien mendapat nomor tiket untuk setiap permintaan sehingga perkembangan penanganan dapat dipantau.', 'en' => 'Clients receive a ticket number for each request so progress can be tracked.'],
                 ],
             ],
             [
-                'slug' => 'relawan-komunitas-peduli-digital',
+                'slug'          => 'relawan-komunitas-peduli-digital',
                 'category_slug' => 'community',
-                'category' => self::NEWS_CATEGORIES['community'],
-                'date' => '2026-07-01',
-                'image' => 'img/dummy/news-7.jpg',
-                'title' => ['id' => 'Relawan Baru Bergabung di Komunitas Peduli Digital', 'en' => 'New Volunteers Join Komunitas Peduli Digital'],
-                'excerpt' => ['id' => 'Puluhan relawan siap mendampingi kegiatan literasi digital di berbagai wilayah.', 'en' => 'Dozens of volunteers are ready to support digital literacy activities across regions.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['community'],
+                'date'          => '2026-07-01',
+                'image'         => 'img/dummy/news-7.jpg',
+                'title'         => ['id' => 'Relawan Baru Bergabung di Komunitas Peduli Digital', 'en' => 'New Volunteers Join Komunitas Peduli Digital'],
+                'excerpt'       => ['id' => 'Puluhan relawan siap mendampingi kegiatan literasi digital di berbagai wilayah.', 'en' => 'Dozens of volunteers are ready to support digital literacy activities across regions.'],
+                'body'          => [
                     ['id' => 'Komunitas Peduli Digital menyambut relawan baru yang akan mendampingi kegiatan literasi digital di sekolah dan desa.', 'en' => 'Komunitas Peduli Digital welcomed new volunteers who will support digital literacy activities in schools and villages.'],
                     ['h' => ['id' => 'Cara bergabung', 'en' => 'How to join']],
                     ['id' => 'Siapa pun yang ingin berbagi pengetahuan teknologi dapat mendaftar sebagai relawan melalui halaman Komunitas.', 'en' => 'Anyone who wants to share technology knowledge can sign up as a volunteer through the Community page.'],
                 ],
             ],
             [
-                'slug' => 'tren-otomasi-sekolah',
+                'slug'          => 'tren-otomasi-sekolah',
                 'category_slug' => 'technology',
-                'category' => self::NEWS_CATEGORIES['technology'],
-                'date' => '2026-06-18',
-                'image' => 'img/dummy/news-8.jpg',
-                'title' => ['id' => 'Otomasi Sederhana yang Mulai Masuk ke Sekolah', 'en' => 'Simple Automation Entering Schools'],
-                'excerpt' => ['id' => 'Sekolah mulai memanfaatkan otomasi untuk pembelajaran dan pengelolaan fasilitas.', 'en' => 'Schools are starting to use automation for learning and facility management.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['technology'],
+                'date'          => '2026-06-18',
+                'image'         => 'img/dummy/news-8.jpg',
+                'title'         => ['id' => 'Otomasi Sederhana yang Mulai Masuk ke Sekolah', 'en' => 'Simple Automation Entering Schools'],
+                'excerpt'       => ['id' => 'Sekolah mulai memanfaatkan otomasi untuk pembelajaran dan pengelolaan fasilitas.', 'en' => 'Schools are starting to use automation for learning and facility management.'],
+                'body'          => [
                     ['id' => 'Otomasi sederhana, seperti sensor dan pengendali, kini dipakai untuk pembelajaran sains dan pengelolaan fasilitas sekolah.', 'en' => 'Simple automation, such as sensors and controllers, is now used for science lessons and school facility management.'],
                     ['h' => ['id' => 'Peluang bagi sekolah', 'en' => 'Opportunities for schools']],
                     ['id' => 'Pendekatan ini melatih siswa berpikir sistematis sambil membantu sekolah bekerja lebih efisien.', 'en' => 'This approach trains students to think systematically while helping schools work more efficiently.'],
                 ],
             ],
             [
-                'slug' => 'kunjungan-sekolah-mitra',
+                'slug'          => 'kunjungan-sekolah-mitra',
                 'category_slug' => 'activities',
-                'category' => self::NEWS_CATEGORIES['activities'],
-                'date' => '2026-06-04',
-                'image' => 'img/dummy/news-9.jpg',
-                'title' => ['id' => 'Kunjungan ke Sekolah Mitra Wilayah Pacitan', 'en' => 'Visit to Partner Schools in the Pacitan Area'],
-                'excerpt' => ['id' => 'Tim DECAA.ID meninjau penggunaan perangkat dan berdiskusi dengan guru.', 'en' => 'The DECAA.ID team reviewed equipment use and talked with teachers.'],
-                'body' => [
+                'category'      => self::NEWS_CATEGORIES['activities'],
+                'date'          => '2026-06-04',
+                'image'         => 'img/dummy/news-9.jpg',
+                'title'         => ['id' => 'Kunjungan ke Sekolah Mitra Wilayah Pacitan', 'en' => 'Visit to Partner Schools in the Pacitan Area'],
+                'excerpt'       => ['id' => 'Tim DECAA.ID meninjau penggunaan perangkat dan berdiskusi dengan guru.', 'en' => 'The DECAA.ID team reviewed equipment use and talked with teachers.'],
+                'body'          => [
                     ['id' => 'Tim DECAA.ID mengunjungi sekolah mitra di wilayah Pacitan untuk melihat langsung pemanfaatan perangkat yang telah terpasang.', 'en' => 'The DECAA.ID team visited partner schools in the Pacitan area to see how installed equipment is being used.'],
                     ['h' => ['id' => 'Masukan dari lapangan', 'en' => 'Feedback from the field']],
                     ['id' => 'Masukan dari guru dan siswa dicatat untuk perbaikan layanan dan bahan pelatihan berikutnya.', 'en' => 'Feedback from teachers and students was recorded to improve services and future training materials.'],
                 ],
             ],
-        ]);
+        ];
+    }
+
+    /** Berita dummy bawaan kode, sudah dilokalkan (cadangan sebelum migrasi dijalankan). */
+    protected static function fallbackNews(): array
+    {
+        return array_map(function (array $n) {
+            $n    = self::localize($n);
+            $html = '';
+            foreach ($n['body'] as $block) {
+                $html .= is_array($block) ? '<h2>' . e($block['h']) . '</h2>' : '<p>' . e($block) . '</p>';
+            }
+            unset($n['body']);
+
+            return $n + ['body_html' => $html, 'image_alt' => $n['title'], 'seo_title' => '', 'seo_description' => ''];
+        }, self::newsSeed());
+    }
+
+    /** Semua berita yang tampil, terbaru lebih dulu (dari database). */
+    public static function news(): array
+    {
+        return NewsRepo::available() ? NewsRepo::all() : self::fallbackNews();
     }
 
     /** 3 berita terbaru untuk beranda. */
@@ -676,8 +700,13 @@ class Content
         return array_slice(self::news(), 0, 3);
     }
 
+    /** Kategori yang punya berita (untuk chip di halaman Berita). */
     public static function newsCategories(): array
     {
+        if (NewsRepo::available()) {
+            return NewsRepo::categories();
+        }
+
         $out = [];
         foreach (self::NEWS_CATEGORIES as $slug => $name) {
             $out[$slug] = self::localize($name);
@@ -689,21 +718,21 @@ class Content
     public static function newsPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Berita', 'en' => 'News'],
-            'title' => ['id' => 'Kabar terbaru dari DECAA.ID', 'en' => 'Latest from DECAA.ID'],
-            'lead' => [
+            'eyebrow'       => ['id' => 'Berita', 'en' => 'News'],
+            'title'         => ['id' => 'Kabar terbaru dari DECAA.ID', 'en' => 'Latest from DECAA.ID'],
+            'lead'          => [
                 'id' => 'Informasi kegiatan, proyek, dan perkembangan terbaru kami.',
                 'en' => 'Updates on our activities, projects, and latest developments.',
             ],
-            'all' => ['id' => 'Semua', 'en' => 'All'],
+            'all'           => ['id' => 'Semua', 'en' => 'All'],
             'category_lead' => ['id' => 'Berita dalam kategori ini.', 'en' => 'News in this category.'],
-            'empty' => ['id' => 'Belum ada berita di kategori ini.', 'en' => 'No news in this category yet.'],
-            'related' => ['id' => 'Berita terkait', 'en' => 'Related news'],
-            'share' => ['id' => 'Bagikan', 'en' => 'Share'],
-            'copy_link' => ['id' => 'Salin tautan', 'en' => 'Copy link'],
-            'copied' => ['id' => 'Tautan disalin', 'en' => 'Link copied'],
-            'back' => ['id' => 'Semua berita', 'en' => 'All news'],
-            'read_more' => ['id' => 'Baca selengkapnya', 'en' => 'Read more'],
+            'empty'         => ['id' => 'Belum ada berita di kategori ini.', 'en' => 'No news in this category yet.'],
+            'related'       => ['id' => 'Berita terkait', 'en' => 'Related news'],
+            'share'         => ['id' => 'Bagikan', 'en' => 'Share'],
+            'copy_link'     => ['id' => 'Salin tautan', 'en' => 'Copy link'],
+            'copied'        => ['id' => 'Tautan disalin', 'en' => 'Link copied'],
+            'back'          => ['id' => 'Semua berita', 'en' => 'All news'],
+            'read_more'     => ['id' => 'Baca selengkapnya', 'en' => 'Read more'],
         ]);
     }
 
@@ -724,7 +753,11 @@ class Content
 
     public static function post(string $slug): ?array
     {
-        foreach (self::news() as $post) {
+        if (NewsRepo::available()) {
+            return NewsRepo::find($slug);
+        }
+
+        foreach (self::fallbackNews() as $post) {
             if ($post['slug'] === $slug) {
                 return $post;
             }
@@ -735,6 +768,10 @@ class Content
 
     public static function category(string $slug): ?array
     {
+        if (NewsRepo::available()) {
+            return NewsRepo::category($slug);
+        }
+
         $name = self::newsCategories()[$slug] ?? null;
 
         return $name ? ['slug' => $slug, 'name' => $name] : null;
@@ -747,17 +784,17 @@ class Content
     public static function ui(): array
     {
         return self::localize([
-            'home' => ['id' => 'Beranda', 'en' => 'Home'],
-            'learn_more' => ['id' => 'Selengkapnya', 'en' => 'Learn more'],
-            'request_docs' => ['id' => 'Minta salinan dokumen', 'en' => 'Request document copies'],
+            'home'                 => ['id' => 'Beranda', 'en' => 'Home'],
+            'learn_more'           => ['id' => 'Selengkapnya', 'en' => 'Learn more'],
+            'request_docs'         => ['id' => 'Minta salinan dokumen', 'en' => 'Request document copies'],
             'available_on_request' => ['id' => 'Tersedia atas permintaan', 'en' => 'Available on request'],
-            'our_offices' => ['id' => 'Kantor kami', 'en' => 'Our offices'],
-            'business_units' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
-            'offices' => ['id' => 'Kantor', 'en' => 'Offices'],
-            'sectors' => ['id' => 'Sektor Layanan', 'en' => 'Sectors Served'],
-            'view_all_units' => ['id' => 'Lihat Semua Pilar Bisnis', 'en' => 'View All Business Pillars'],
-            'view_vision' => ['id' => 'Lihat Visi & Misi', 'en' => 'View Vision & Mission'],
-            'jump_to_year' => ['id' => 'Loncat ke tahun', 'en' => 'Jump to year'],
+            'our_offices'          => ['id' => 'Kantor kami', 'en' => 'Our offices'],
+            'business_units'       => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
+            'offices'              => ['id' => 'Kantor', 'en' => 'Offices'],
+            'sectors'              => ['id' => 'Sektor Layanan', 'en' => 'Sectors Served'],
+            'view_all_units'       => ['id' => 'Lihat Semua Pilar Bisnis', 'en' => 'View All Business Pillars'],
+            'view_vision'          => ['id' => 'Lihat Visi & Misi', 'en' => 'View Vision & Mission'],
+            'jump_to_year'         => ['id' => 'Loncat ke tahun', 'en' => 'Jump to year'],
         ]);
     }
 
@@ -769,14 +806,14 @@ class Content
     {
         return self::localize([
             'profile' => [
-                'eyebrow' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
-                'title' => ['id' => 'Profil Perusahaan', 'en' => 'Company Profile'],
-                'lead' => [
+                'eyebrow'     => ['id' => 'Tentang Kami', 'en' => 'About Us'],
+                'title'       => ['id' => 'Profil Perusahaan', 'en' => 'Company Profile'],
+                'lead'        => [
                     'id' => 'Decaa.id merupakan group usaha yang terdiri dari 5 pilar utama bisnis didunia teknologi digital ditambah dengan beberapa bisnis pendukung di sektor office supply, lifestyle hingga food & beverages.',
                     'en' => 'Decaa.id is a business group made up of 5 main business pillars in the digital technology world, complemented by supporting businesses in office supply, lifestyle, and food & beverages.',
                 ],
                 'story_title' => ['id' => 'Siapa kami', 'en' => 'Who we are'],
-                'story' => [
+                'story'       => [
                     [
                         'id' => 'Decaa.id merupakan group usaha yang terdiri dari 5 pilar utama bisnis didunia teknologi digital ditambah dengan beberapa bisnis pendukung di sektor office supply, lifestyle hingga food & beverages.',
                         'en' => 'Decaa.id is a business group made up of 5 main business pillars in the digital technology world, complemented by supporting businesses in office supply, lifestyle, and food & beverages.',
@@ -787,16 +824,16 @@ class Content
                     ],
                 ],
                 // CHAIRMAN MESSAGE. DUMMY: ganti nama, pesan, dan foto (public/img/chairman.jpg, potret vertikal 4:5)
-                'chairman' => [
-                    'title' => ['id' => 'Chairman Message', 'en' => 'Chairman’s Message'],
-                    'name' => 'Nama Chairman',
-                    'role' => ['id' => 'Chairman', 'en' => 'Chairman'],
-                    'photo' => 'img/chairman.jpg',
+                'chairman'    => [
+                    'title'    => ['id' => 'Chairman Message', 'en' => 'Chairman’s Message'],
+                    'name'     => 'Nama Chairman',
+                    'role'     => ['id' => 'Chairman', 'en' => 'Chairman'],
+                    'photo'    => 'img/chairman.jpg',
                     'headline' => [
                         'id' => 'Teknologi yang baik selalu dimulai dari kepercayaan.',
                         'en' => 'Good technology always starts with trust.',
                     ],
-                    'message' => [
+                    'message'  => [
                         [
                             'id' => 'Sejak pertama berdiri, kami percaya bahwa teknologi hanya bermakna bila benar-benar membantu orang bekerja lebih baik. Itulah yang menjadi pegangan kami dalam melayani institusi pemerintah, pendidikan, maupun swasta.',
                             'en' => 'Since the day we started, we have believed that technology only matters when it truly helps people work better. That is what guides us in serving government, education, and private institutions alike.',
@@ -813,29 +850,29 @@ class Content
                 ],
             ],
 
-            'vision' => [
-                'eyebrow' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
-                'title' => ['id' => 'Visi & Misi', 'en' => 'Vision & Mission'],
-                'lead' => [
+            'vision'  => [
+                'eyebrow'       => ['id' => 'Tentang Kami', 'en' => 'About Us'],
+                'title'         => ['id' => 'Visi & Misi', 'en' => 'Vision & Mission'],
+                'lead'          => [
                     'id' => 'Arah yang kami tuju dan cara kami mencapainya.',
                     'en' => 'The direction we are heading and how we get there.',
                 ],
-                'vision_label' => ['id' => 'Visi', 'en' => 'Vision'],
-                'vision' => [
+                'vision_label'  => ['id' => 'Visi', 'en' => 'Vision'],
+                'vision'        => [
                     'id' => 'Menjadi mitra ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.',
                     'en' => 'To be a digital ecosystem partner with inclusive, secure, and sustainable innovation for every line of industry.',
                 ],
                 'mission_label' => ['id' => 'Misi', 'en' => 'Mission'],
                 // Misi disusun agar sejalan dengan visi (mitra ekosistem digital; inklusif, aman, berkelanjutan; semua lini industri).
-                'missions' => [
+                'missions'      => [
                     ['id' => 'Menghadirkan ekosistem digital yang terpadu, dari perangkat hingga aplikasi, untuk kebutuhan semua lini industri.', 'en' => 'Deliver an integrated digital ecosystem, from devices to applications, for the needs of every line of industry.'],
                     ['id' => 'Mengembangkan inovasi teknologi yang inklusif, mudah diakses, dan bermanfaat bagi institusi, pelaku usaha, hingga masyarakat.', 'en' => 'Develop inclusive, accessible technology innovation that benefits institutions, businesses, and communities.'],
                     ['id' => 'Menjaga keamanan sistem, data, dan layanan agar klien dapat tumbuh dengan tenang dan tepercaya.', 'en' => 'Safeguard systems, data, and services so clients can grow with confidence and trust.'],
                     ['id' => 'Membangun pilar-pilar bisnis yang saling melengkapi dan berkelanjutan, dari teknologi hingga bisnis pendukung.', 'en' => 'Build complementary, sustainable business pillars, from technology to supporting businesses.'],
                     ['id' => 'Meningkatkan kompetensi sumber daya manusia melalui pelatihan, riset, dan pendampingan purna jual.', 'en' => 'Improve human resource competence through training, research, and after-sales support.'],
                 ],
-                'values_title' => ['id' => 'Nilai-nilai kami', 'en' => 'Our values'],
-                'values' => [
+                'values_title'  => ['id' => 'Nilai-nilai kami', 'en' => 'Our values'],
+                'values'        => [
                     ['title' => ['id' => 'Integritas', 'en' => 'Integrity'], 'text' => ['id' => 'Jujur dalam ucapan, tepat janji dalam pekerjaan.', 'en' => 'Honest in word, dependable in delivery.']],
                     ['title' => ['id' => 'Profesional', 'en' => 'Professionalism'], 'text' => ['id' => 'Bekerja dengan standar dan disiplin yang jelas.', 'en' => 'Working to clear standards and discipline.']],
                     ['title' => ['id' => 'Inovasi', 'en' => 'Innovation'], 'text' => ['id' => 'Terus belajar dan mencari cara yang lebih baik.', 'en' => 'Always learning and finding better ways.']],
@@ -857,9 +894,9 @@ class Content
             // Isi milestone = dari dokumen revisi (2019-2026). Foto belum ada: placeholder.
             // ---------------------------------------------------------------
             'journey' => [
-                'eyebrow' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
-                'title' => ['id' => 'Perjalanan Kami', 'en' => 'Our Journey'],
-                'lead' => [
+                'eyebrow'     => ['id' => 'Tentang Kami', 'en' => 'About Us'],
+                'title'       => ['id' => 'Perjalanan Kami', 'en' => 'Our Journey'],
+                'lead'        => [
                     'id' => 'Dari langkah pertama yang sederhana hingga ekosistem yang saling melengkapi.',
                     'en' => 'From a simple first step to an ecosystem where every part supports the others.',
                 ],
@@ -867,70 +904,70 @@ class Content
                     'id' => 'Setiap tahun membawa kami satu langkah lebih dekat pada klien.',
                     'en' => 'Every year has brought us one step closer to our clients.',
                 ],
-                'intro_text' => [
+                'intro_text'  => [
                     'id' => 'Berikut peristiwa penting yang membentuk DECAA.ID, dari awal berdiri hingga hari ini.',
                     'en' => 'These are the moments that shaped DECAA.ID, from the day we started until today.',
                 ],
-                'milestones' => [
+                'milestones'  => [
                     [
-                        'year' => '2019',
-                        'tag' => ['id' => "Awal", 'en' => "Beginning"],
+                        'year'  => '2019',
+                        'tag'   => ['id' => "Awal", 'en' => "Beginning"],
                         'title' => ['id' => "Berdiri di Pacitan", 'en' => "Founded in Pacitan"],
-                        'text' => ['id' => "Perusahaan kami berdiri di kota kecil Pacitan, Jawa Timur, dengan kata “bismillah” dan niat kuat untuk fokus yang bukan sekadar mengikuti tren, melainkan menciptakan standar baru melalui teknologi yang mendorong efisiensi dan pertumbuhan tanpa batas. Kami memulai decaa dari garasi rumah di daerah Veteran, Kabupaten Pacitan, Jawa Timur.", 'en' => "Our company was founded in the small city of Pacitan, East Java, with the word “bismillah” and a strong intention to focus not merely on following trends, but on creating new standards through technology that drives efficiency and limitless growth. We started decaa from a home garage in the Veteran area, Pacitan Regency, East Java."],
+                        'text'  => ['id' => "Perusahaan kami berdiri di kota kecil Pacitan, Jawa Timur, dengan kata “bismillah” dan niat kuat untuk fokus yang bukan sekadar mengikuti tren, melainkan menciptakan standar baru melalui teknologi yang mendorong efisiensi dan pertumbuhan tanpa batas. Kami memulai decaa dari garasi rumah di daerah Veteran, Kabupaten Pacitan, Jawa Timur.", 'en' => "Our company was founded in the small city of Pacitan, East Java, with the word “bismillah” and a strong intention to focus not merely on following trends, but on creating new standards through technology that drives efficiency and limitless growth. We started decaa from a home garage in the Veteran area, Pacitan Regency, East Java."],
                         'image' => 'img/journey/2019.jpg',
                     ],
                     [
-                        'year' => '2020',
-                        'tag' => ['id' => "Software", 'en' => "Software"],
+                        'year'  => '2020',
+                        'tag'   => ['id' => "Software", 'en' => "Software"],
                         'title' => ['id' => "Fokus pada Software", 'en' => "Focusing on Software"],
-                        'text' => ['id' => "Kami fokus menjadikan “software” atau aplikasi sebagai bidang usaha kami. Di saat pandemi COVID yang semakin meningkat, kami sukses mengembangkan aplikasi DESA DIGITAL untuk administrasi dan pelayanan data kependudukan digital, serta aplikasi PASAR ONLINE untuk membantu pasar tradisional kembali bisa mendapatkan hasil di saat pandemi sedang melanda.", 'en' => "We focused on making “software” our line of business. As the COVID pandemic intensified, we successfully developed the DESA DIGITAL application for digital population data administration and services, and the PASAR ONLINE application to help traditional markets earn income again during the pandemic."],
+                        'text'  => ['id' => "Kami fokus menjadikan “software” atau aplikasi sebagai bidang usaha kami. Di saat pandemi COVID yang semakin meningkat, kami sukses mengembangkan aplikasi DESA DIGITAL untuk administrasi dan pelayanan data kependudukan digital, serta aplikasi PASAR ONLINE untuk membantu pasar tradisional kembali bisa mendapatkan hasil di saat pandemi sedang melanda.", 'en' => "We focused on making “software” our line of business. As the COVID pandemic intensified, we successfully developed the DESA DIGITAL application for digital population data administration and services, and the PASAR ONLINE application to help traditional markets earn income again during the pandemic."],
                         'image' => 'img/journey/2020.jpg',
                     ],
                     [
-                        'year' => '2021',
-                        'tag' => ['id' => "Tumbuh", 'en' => "Growth"],
+                        'year'  => '2021',
+                        'tag'   => ['id' => "Tumbuh", 'en' => "Growth"],
                         'title' => ['id' => "Masuk Hardware & Networking", 'en' => "Entering Hardware & Networking"],
-                        'text' => ['id' => "Kami masuk ke pasar “hardware” dan “networking” untuk semakin bisa membangun sebuah ekosistem digital yang berkelanjutan bagi industri.", 'en' => "We entered the “hardware” and “networking” markets to build a sustainable digital ecosystem for industry."],
+                        'text'  => ['id' => "Kami masuk ke pasar “hardware” dan “networking” untuk semakin bisa membangun sebuah ekosistem digital yang berkelanjutan bagi industri.", 'en' => "We entered the “hardware” and “networking” markets to build a sustainable digital ecosystem for industry."],
                         'image' => 'img/journey/2021.jpg',
                     ],
                     [
-                        'year' => '2022',
-                        'tag' => ['id' => "Tiga Pilar", 'en' => "Three Pillars"],
+                        'year'  => '2022',
+                        'tag'   => ['id' => "Tiga Pilar", 'en' => "Three Pillars"],
                         'title' => ['id' => "Tiga Pilar Utama Teknologi", 'en' => "Three Main Technology Pillars"],
-                        'text' => ['id' => "Terus bertumbuh dan berkembang dengan tiga pilar utama teknologi, yaitu software, hardware, dan networking service.", 'en' => "We kept growing with three main technology pillars: software, hardware, and networking services."],
+                        'text'  => ['id' => "Terus bertumbuh dan berkembang dengan tiga pilar utama teknologi, yaitu software, hardware, dan networking service.", 'en' => "We kept growing with three main technology pillars: software, hardware, and networking services."],
                         'image' => 'img/journey/2022.jpg',
                     ],
                     [
-                        'year' => '2023',
-                        'tag' => ['id' => "Kompetensi", 'en' => "Capability"],
+                        'year'  => '2023',
+                        'tag'   => ['id' => "Kompetensi", 'en' => "Capability"],
                         'title' => ['id' => "Training & Research Centre", 'en' => "Training & Research Centre"],
-                        'text' => ['id' => "Kami bergerak ke sektor “training & research centre” sebagai pendukung beberapa sektor yang sudah kami bangun sebelumnya. Di tahun ini bangunan kantor decaa.id mulai berdiri.", 'en' => "We moved into the “training & research centre” sector to support the sectors we had built before. This year, the decaa.id office building began to rise."],
+                        'text'  => ['id' => "Kami bergerak ke sektor “training & research centre” sebagai pendukung beberapa sektor yang sudah kami bangun sebelumnya. Di tahun ini bangunan kantor decaa.id mulai berdiri.", 'en' => "We moved into the “training & research centre” sector to support the sectors we had built before. This year, the decaa.id office building began to rise."],
                         'image' => 'img/journey/2023.jpg',
                     ],
                     [
-                        'year' => '2024',
-                        'tag' => ['id' => "Lima Pilar", 'en' => "Five Pillars"],
+                        'year'  => '2024',
+                        'tag'   => ['id' => "Lima Pilar", 'en' => "Five Pillars"],
                         'title' => ['id' => "Lima Pilar Utama Teknologi", 'en' => "Five Main Technology Pillars"],
-                        'text' => ['id' => "Dengan kepercayaan client yang semakin meningkat, kami melanjutkan pergerakan ke sektor robotika. Di tahun ini akhirnya lima pilar utama teknologi kami berhasil berdiri, mulai dari software, kemudian hardware, training & research centre, networking service, dan robotic.", 'en' => "With growing client trust, we continued into the robotics sector. This year our five main technology pillars were finally established: software, followed by hardware, training & research centre, networking service, and robotics."],
+                        'text'  => ['id' => "Dengan kepercayaan client yang semakin meningkat, kami melanjutkan pergerakan ke sektor robotika. Di tahun ini akhirnya lima pilar utama teknologi kami berhasil berdiri, mulai dari software, kemudian hardware, training & research centre, networking service, dan robotic.", 'en' => "With growing client trust, we continued into the robotics sector. This year our five main technology pillars were finally established: software, followed by hardware, training & research centre, networking service, and robotics."],
                         'image' => 'img/journey/2024.jpg',
                     ],
                     [
-                        'year' => '2025',
-                        'tag' => ['id' => "Ekspansi", 'en' => "Expansion"],
+                        'year'  => '2025',
+                        'tag'   => ['id' => "Ekspansi", 'en' => "Expansion"],
                         'title' => ['id' => "Pindah ke Jakarta", 'en' => "Moving to Jakarta"],
-                        'text' => ['id' => "Decaa.id resmi pindah kantor ke Jakarta sebagai jantung dan kota ibukota di Indonesia, dan membuka cabang di Pacitan dan Ponorogo, Jawa Timur. Di tahun ini kami banyak terjun ke sektor di luar teknologi, mulai dari sektor office supply, lifestyle, hingga food & beverages.", 'en' => "Decaa.id officially moved its office to Jakarta, the heart and capital city of Indonesia, and opened branches in Pacitan and Ponorogo, East Java. This year we also entered many sectors beyond technology, from office supply and lifestyle to food & beverages."],
+                        'text'  => ['id' => "Decaa.id resmi pindah kantor ke Jakarta sebagai jantung dan kota ibukota di Indonesia, dan membuka cabang di Pacitan dan Ponorogo, Jawa Timur. Di tahun ini kami banyak terjun ke sektor di luar teknologi, mulai dari sektor office supply, lifestyle, hingga food & beverages.", 'en' => "Decaa.id officially moved its office to Jakarta, the heart and capital city of Indonesia, and opened branches in Pacitan and Ponorogo, East Java. This year we also entered many sectors beyond technology, from office supply and lifestyle to food & beverages."],
                         'image' => 'img/journey/2025.jpg',
                     ],
                     [
-                        'year' => '2026',
-                        'tag' => ['id' => "Hari ini", 'en' => "Today"],
+                        'year'  => '2026',
+                        'tag'   => ['id' => "Hari ini", 'en' => "Today"],
                         'title' => ['id' => "7 Years of decaa.id", 'en' => "7 Years of decaa.id"],
-                        'text' => ['id' => "7 Years of decaa.id: kami semakin melangkah maju, dengan dukungan dari ribuan client yang sudah menggunakan produk kami. Kini kami semakin konsisten melangkah ke arah misi untuk menjadi mitra ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.", 'en' => "7 Years of decaa.id: we keep moving forward, supported by thousands of clients who already use our products. We are increasingly consistent in moving toward our mission of being a digital ecosystem partner with inclusive, secure, and sustainable innovation for every line of industry."],
+                        'text'  => ['id' => "7 Years of decaa.id: kami semakin melangkah maju, dengan dukungan dari ribuan client yang sudah menggunakan produk kami. Kini kami semakin konsisten melangkah ke arah misi untuk menjadi mitra ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.", 'en' => "7 Years of decaa.id: we keep moving forward, supported by thousands of clients who already use our products. We are increasingly consistent in moving toward our mission of being a digital ecosystem partner with inclusive, secure, and sustainable innovation for every line of industry."],
                         'image' => 'img/journey/2026.jpg',
                     ],
                 ],
                 'ahead_title' => ['id' => 'Perjalanan ini belum selesai', 'en' => 'This journey is not over'],
-                'ahead_text' => [
+                'ahead_text'  => [
                     'id' => 'Kami terus belajar, membangun, dan bertumbuh bersama klien serta mitra. Ceritakan kebutuhan Anda, dan mari tulis bab berikutnya bersama.',
                     'en' => 'We keep learning, building, and growing with our clients and partners. Tell us what you need, and let us write the next chapter together.',
                 ],
@@ -948,68 +985,68 @@ class Content
     public static function awardsPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
-            'title' => ['id' => 'Penghargaan', 'en' => 'Awards'],
-            'lead' => [
+            'eyebrow'        => ['id' => 'Portofolio', 'en' => 'Portfolio'],
+            'title'          => ['id' => 'Penghargaan', 'en' => 'Awards'],
+            'lead'           => [
                 'id' => 'Pengakuan atas kerja keras tim dan kepercayaan para klien serta mitra kami.',
                 'en' => 'Recognition of our team’s hard work and the trust of our clients and partners.',
             ],
             'featured_label' => ['id' => 'Penghargaan Terbaru', 'en' => 'Latest Award'],
-            'all_title' => ['id' => 'Semua Penghargaan', 'en' => 'All Awards'],
-            'all_text' => ['id' => 'Jejak pengakuan yang kami terima dari tahun ke tahun.', 'en' => 'The recognition we have received over the years.'],
-            'filter_all' => ['id' => 'Semua', 'en' => 'All'],
-            'view_all' => ['id' => 'Lihat Semua Penghargaan', 'en' => 'View All Awards'],
-            'slide_prev' => ['id' => 'Penghargaan sebelumnya', 'en' => 'Previous award'],
-            'slide_next' => ['id' => 'Penghargaan berikutnya', 'en' => 'Next award'],
-            'empty' => ['id' => 'Penghargaan akan segera ditampilkan.', 'en' => 'Awards will be shown soon.'],
-            'items' => [
+            'all_title'      => ['id' => 'Semua Penghargaan', 'en' => 'All Awards'],
+            'all_text'       => ['id' => 'Jejak pengakuan yang kami terima dari tahun ke tahun.', 'en' => 'The recognition we have received over the years.'],
+            'filter_all'     => ['id' => 'Semua', 'en' => 'All'],
+            'view_all'       => ['id' => 'Lihat Semua Penghargaan', 'en' => 'View All Awards'],
+            'slide_prev'     => ['id' => 'Penghargaan sebelumnya', 'en' => 'Previous award'],
+            'slide_next'     => ['id' => 'Penghargaan berikutnya', 'en' => 'Next award'],
+            'empty'          => ['id' => 'Penghargaan akan segera ditampilkan.', 'en' => 'Awards will be shown soon.'],
+            'items'          => [
                 [
-                    'slug' => 'penghargaan-contoh-1',
-                    'year' => '2026',
+                    'slug'     => 'penghargaan-contoh-1',
+                    'year'     => '2026',
                     'featured' => true,
-                    'title' => ['id' => "Penghargaan Inovasi Digital (Contoh)", 'en' => "Digital Innovation Award (Sample)"],
-                    'text' => ['id' => "Contoh teks. Ganti dengan alasan penghargaan, misalnya produk atau program yang dinilai.", 'en' => "Sample text. Replace with the reason for the award, such as the product or programme recognised."],
-                    'image' => 'img/awards/penghargaan-contoh-1.jpg',
+                    'title'    => ['id' => "Penghargaan Inovasi Digital (Contoh)", 'en' => "Digital Innovation Award (Sample)"],
+                    'text'     => ['id' => "Contoh teks. Ganti dengan alasan penghargaan, misalnya produk atau program yang dinilai.", 'en' => "Sample text. Replace with the reason for the award, such as the product or programme recognised."],
+                    'image'    => 'img/awards/penghargaan-contoh-1.jpg',
                 ],
                 [
-                    'slug' => 'penghargaan-contoh-2',
-                    'year' => '2025',
+                    'slug'     => 'penghargaan-contoh-2',
+                    'year'     => '2025',
                     'featured' => false,
-                    'title' => ['id' => "Penghargaan Mitra Terbaik (Contoh)", 'en' => "Best Partner Award (Sample)"],
-                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
-                    'image' => 'img/awards/penghargaan-contoh-2.jpg',
+                    'title'    => ['id' => "Penghargaan Mitra Terbaik (Contoh)", 'en' => "Best Partner Award (Sample)"],
+                    'text'     => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image'    => 'img/awards/penghargaan-contoh-2.jpg',
                 ],
                 [
-                    'slug' => 'penghargaan-contoh-3',
-                    'year' => '2025',
+                    'slug'     => 'penghargaan-contoh-3',
+                    'year'     => '2025',
                     'featured' => false,
-                    'title' => ['id' => "Penghargaan Layanan Prima (Contoh)", 'en' => "Service Excellence Award (Sample)"],
-                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
-                    'image' => 'img/awards/penghargaan-contoh-3.jpg',
+                    'title'    => ['id' => "Penghargaan Layanan Prima (Contoh)", 'en' => "Service Excellence Award (Sample)"],
+                    'text'     => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image'    => 'img/awards/penghargaan-contoh-3.jpg',
                 ],
                 [
-                    'slug' => 'penghargaan-contoh-4',
-                    'year' => '2024',
+                    'slug'     => 'penghargaan-contoh-4',
+                    'year'     => '2024',
                     'featured' => false,
-                    'title' => ['id' => "Penghargaan Pertumbuhan Usaha (Contoh)", 'en' => "Business Growth Award (Sample)"],
-                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
-                    'image' => 'img/awards/penghargaan-contoh-4.jpg',
+                    'title'    => ['id' => "Penghargaan Pertumbuhan Usaha (Contoh)", 'en' => "Business Growth Award (Sample)"],
+                    'text'     => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image'    => 'img/awards/penghargaan-contoh-4.jpg',
                 ],
                 [
-                    'slug' => 'penghargaan-contoh-5',
-                    'year' => '2023',
+                    'slug'     => 'penghargaan-contoh-5',
+                    'year'     => '2023',
                     'featured' => false,
-                    'title' => ['id' => "Penghargaan Kontribusi Pendidikan (Contoh)", 'en' => "Education Contribution Award (Sample)"],
-                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
-                    'image' => 'img/awards/penghargaan-contoh-5.jpg',
+                    'title'    => ['id' => "Penghargaan Kontribusi Pendidikan (Contoh)", 'en' => "Education Contribution Award (Sample)"],
+                    'text'     => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image'    => 'img/awards/penghargaan-contoh-5.jpg',
                 ],
                 [
-                    'slug' => 'penghargaan-contoh-6',
-                    'year' => '2022',
+                    'slug'     => 'penghargaan-contoh-6',
+                    'year'     => '2022',
                     'featured' => false,
-                    'title' => ['id' => "Penghargaan Teknologi Terapan (Contoh)", 'en' => "Applied Technology Award (Sample)"],
-                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
-                    'image' => 'img/awards/penghargaan-contoh-6.jpg',
+                    'title'    => ['id' => "Penghargaan Teknologi Terapan (Contoh)", 'en' => "Applied Technology Award (Sample)"],
+                    'text'     => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image'    => 'img/awards/penghargaan-contoh-6.jpg',
                 ],
             ],
         ]);
@@ -1030,34 +1067,34 @@ class Content
         // Layanan, cara kerja, dan deskripsi pilar (dummy lama) dihapus: dokumen revisi hanya memuat
         // brand di tiap pilar. Isi lain dikosongkan sampai ada bahannya.
         return $unit + [
-            'projects' => array_values(array_filter(self::portfolio(), fn ($p) => $p['unit'] === $slug)),
+            'projects' => array_values(array_filter(self::portfolio(), fn($p) => $p['unit'] === $slug)),
         ];
     }
 
     public static function unitsPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
-            'title' => ['id' => 'Satu ekosistem, beragam bidang usaha', 'en' => 'One ecosystem, many lines of business'],
-            'lead' => [
+            'eyebrow'            => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
+            'title'              => ['id' => 'Satu ekosistem, beragam bidang usaha', 'en' => 'One ecosystem, many lines of business'],
+            'lead'               => [
                 'id' => 'Setiap bidang usaha fokus pada keahliannya dan saling melengkapi, sehingga kebutuhan Anda dapat dipenuhi dalam satu pintu.',
                 'en' => 'Each line of business focuses on its own expertise and complements the others, so your needs can be met in one place.',
             ],
-            'brands_title' => ['id' => 'Perusahaan di dalam pilar ini', 'en' => 'Companies in this pillar'],
-            'brands_empty' => ['id' => 'Informasi brand untuk pilar ini akan segera ditampilkan.', 'en' => 'Brand information for this pillar will be shown soon.'],
-            'more_info' => ['id' => 'Selengkapnya', 'en' => 'Read More'],
-            'brand_view' => ['id' => 'Lihat Profil', 'en' => 'View Profile'],
-            'brand_about' => ['id' => 'Tentang', 'en' => 'About'],
-            'brand_empty' => ['id' => 'Penjelasan untuk brand ini akan segera ditampilkan.', 'en' => 'The description for this brand will be shown soon.'],
-            'brand_pillar' => ['id' => 'Bagian dari pilar', 'en' => 'Part of the pillar'],
+            'brands_title'       => ['id' => 'Perusahaan di dalam pilar ini', 'en' => 'Companies in this pillar'],
+            'brands_empty'       => ['id' => 'Informasi brand untuk pilar ini akan segera ditampilkan.', 'en' => 'Brand information for this pillar will be shown soon.'],
+            'more_info'          => ['id' => 'Selengkapnya', 'en' => 'Read More'],
+            'brand_view'         => ['id' => 'Lihat Profil', 'en' => 'View Profile'],
+            'brand_about'        => ['id' => 'Tentang', 'en' => 'About'],
+            'brand_empty'        => ['id' => 'Penjelasan untuk brand ini akan segera ditampilkan.', 'en' => 'The description for this brand will be shown soon.'],
+            'brand_pillar'       => ['id' => 'Bagian dari pilar', 'en' => 'Part of the pillar'],
             'brand_others_title' => ['id' => 'Brand lain di pilar ini', 'en' => 'Other brands in this pillar'],
-            'back_to_pillars' => ['id' => 'Kembali ke Pilar Bisnis', 'en' => 'Back to Business Pillars'],
-            'services_title' => ['id' => 'Layanan utama', 'en' => 'Key services'],
-            'process_title' => ['id' => 'Cara kami bekerja', 'en' => 'How we work'],
-            'projects_title' => ['id' => 'Proyek terkait', 'en' => 'Related projects'],
-            'projects_empty' => ['id' => 'Proyek untuk pilar ini akan segera ditampilkan.', 'en' => 'Projects for this pillar will be shown soon.'],
-            'others_title' => ['id' => 'Pilar bisnis lainnya', 'en' => 'Other business pillars'],
-            'about_title' => ['id' => 'Tentang pilar ini', 'en' => 'About this pillar'],
+            'back_to_pillars'    => ['id' => 'Kembali ke Pilar Bisnis', 'en' => 'Back to Business Pillars'],
+            'services_title'     => ['id' => 'Layanan utama', 'en' => 'Key services'],
+            'process_title'      => ['id' => 'Cara kami bekerja', 'en' => 'How we work'],
+            'projects_title'     => ['id' => 'Proyek terkait', 'en' => 'Related projects'],
+            'projects_empty'     => ['id' => 'Proyek untuk pilar ini akan segera ditampilkan.', 'en' => 'Projects for this pillar will be shown soon.'],
+            'others_title'       => ['id' => 'Pilar bisnis lainnya', 'en' => 'Other business pillars'],
+            'about_title'        => ['id' => 'Tentang pilar ini', 'en' => 'About this pillar'],
         ]);
     }
 
@@ -1068,26 +1105,26 @@ class Content
     public static function portfolioPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
-            'title' => ['id' => 'Proyek yang telah kami kerjakan', 'en' => 'Projects we have delivered'],
-            'lead' => [
+            'eyebrow'        => ['id' => 'Portofolio', 'en' => 'Portfolio'],
+            'title'          => ['id' => 'Proyek yang telah kami kerjakan', 'en' => 'Projects we have delivered'],
+            'lead'           => [
                 'id' => 'Sebagian pekerjaan kami bersama instansi, sekolah, dan perusahaan di berbagai bidang.',
                 'en' => 'A selection of our work with agencies, schools, and companies across many fields.',
             ],
-            'filter_unit' => ['id' => 'Pilar bisnis', 'en' => 'Business pillar'],
-            'filter_year' => ['id' => 'Tahun', 'en' => 'Year'],
-            'all_units' => ['id' => 'Semua pilar', 'en' => 'All pillars'],
-            'all_years' => ['id' => 'Semua tahun', 'en' => 'All years'],
-            'shown' => ['id' => 'proyek ditampilkan', 'en' => 'projects shown'],
-            'empty' => ['id' => 'Tidak ada proyek untuk filter ini.', 'en' => 'No projects match this filter.'],
-            'reset' => ['id' => 'Atur ulang filter', 'en' => 'Reset filters'],
-            'client' => ['id' => 'Klien', 'en' => 'Client'],
-            'year' => ['id' => 'Tahun', 'en' => 'Year'],
-            'unit' => ['id' => 'Pilar bisnis', 'en' => 'Business pillar'],
-            'scope_title' => ['id' => 'Lingkup pekerjaan', 'en' => 'Scope of work'],
+            'filter_unit'    => ['id' => 'Pilar bisnis', 'en' => 'Business pillar'],
+            'filter_year'    => ['id' => 'Tahun', 'en' => 'Year'],
+            'all_units'      => ['id' => 'Semua pilar', 'en' => 'All pillars'],
+            'all_years'      => ['id' => 'Semua tahun', 'en' => 'All years'],
+            'shown'          => ['id' => 'proyek ditampilkan', 'en' => 'projects shown'],
+            'empty'          => ['id' => 'Tidak ada proyek untuk filter ini.', 'en' => 'No projects match this filter.'],
+            'reset'          => ['id' => 'Atur ulang filter', 'en' => 'Reset filters'],
+            'client'         => ['id' => 'Klien', 'en' => 'Client'],
+            'year'           => ['id' => 'Tahun', 'en' => 'Year'],
+            'unit'           => ['id' => 'Pilar bisnis', 'en' => 'Business pillar'],
+            'scope_title'    => ['id' => 'Lingkup pekerjaan', 'en' => 'Scope of work'],
             'overview_title' => ['id' => 'Ringkasan proyek', 'en' => 'Project overview'],
-            'more_title' => ['id' => 'Proyek lainnya', 'en' => 'More projects'],
-            'back' => ['id' => 'Semua proyek', 'en' => 'All projects'],
+            'more_title'     => ['id' => 'Proyek lainnya', 'en' => 'More projects'],
+            'back'           => ['id' => 'Semua proyek', 'en' => 'All projects'],
         ]);
     }
 
@@ -1095,33 +1132,33 @@ class Content
     {
         return self::localize([
             'kementerian' => ['id' => 'Kementerian', 'en' => 'Ministries'],
-            'pemerintah' => ['id' => 'Pemerintahan', 'en' => 'Government'],
-            'lembaga' => ['id' => 'Lembaga', 'en' => 'Institutions'],
+            'pemerintah'  => ['id' => 'Pemerintahan', 'en' => 'Government'],
+            'lembaga'     => ['id' => 'Lembaga', 'en' => 'Institutions'],
             'universitas' => ['id' => 'Universitas', 'en' => 'Universities'],
-            'organisasi' => ['id' => 'Organisasi', 'en' => 'Organizations'],
-            'perusahaan' => ['id' => 'Perusahaan', 'en' => 'Corporations'],
-            'swasta' => ['id' => 'Swasta', 'en' => 'Private Sector'],
+            'organisasi'  => ['id' => 'Organisasi', 'en' => 'Organizations'],
+            'perusahaan'  => ['id' => 'Perusahaan', 'en' => 'Corporations'],
+            'swasta'      => ['id' => 'Swasta', 'en' => 'Private Sector'],
         ]);
     }
 
     public static function clientsPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
-            'title' => ['id' => 'Klien & Mitra', 'en' => 'Clients & Partners'],
-            'lead' => [
+            'eyebrow'       => ['id' => 'Portofolio', 'en' => 'Portfolio'],
+            'title'         => ['id' => 'Klien & Mitra', 'en' => 'Clients & Partners'],
+            'lead'          => [
                 'id' => 'Institusi, lembaga, dan perusahaan yang mempercayakan kebutuhan teknologinya kepada kami.',
                 'en' => 'The institutions, agencies, and companies that trust us with their technology needs.',
             ],
             'intro_eyebrow' => ['id' => 'Dipercaya oleh', 'en' => 'Trusted by'],
-            'intro_title' => ['id' => 'Beragam sektor, satu komitmen layanan', 'en' => 'Many sectors, one commitment to service'],
-            'intro_text' => [
+            'intro_title'   => ['id' => 'Beragam sektor, satu komitmen layanan', 'en' => 'Many sectors, one commitment to service'],
+            'intro_text'    => [
                 'id' => 'Dari kementerian dan pemerintah daerah hingga universitas dan dunia usaha, kami bekerja bersama beragam pihak dengan standar layanan yang sama.',
                 'en' => 'From ministries and local governments to universities and the business world, we work with many parties to the same standard of service.',
             ],
-            'filter_label' => ['id' => 'Saring berdasarkan kategori', 'en' => 'Filter by category'],
-            'all' => ['id' => 'Semua', 'en' => 'All'],
-            'note' => [
+            'filter_label'  => ['id' => 'Saring berdasarkan kategori', 'en' => 'Filter by category'],
+            'all'           => ['id' => 'Semua', 'en' => 'All'],
+            'note'          => [
                 'id' => 'Logo ditampilkan atas izin masing-masing pihak.',
                 'en' => 'Logos are shown with the permission of each party.',
             ],
@@ -1135,136 +1172,136 @@ class Content
     public static function communityPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Keberlanjutan', 'en' => 'Sustainability'],
-            'about_title' => ['id' => 'Tentang komunitas', 'en' => 'About the community'],
-            'about' => [
+            'eyebrow'        => ['id' => 'Keberlanjutan', 'en' => 'Sustainability'],
+            'about_title'    => ['id' => 'Tentang komunitas', 'en' => 'About the community'],
+            'about'          => [
                 ['id' => 'Komunitas Peduli Digital adalah wadah CSR DECAA.ID untuk berbagi pengetahuan dan akses teknologi kepada masyarakat, terutama di sekolah dan desa.', 'en' => 'Komunitas Peduli Digital is the CSR platform of DECAA.ID for sharing technology knowledge and access with society, especially in schools and villages.'],
                 ['id' => 'Kegiatannya dijalankan bersama relawan, sekolah, dan komunitas lokal, dengan prinsip sederhana: teknologi harus dapat dimanfaatkan oleh semua orang.', 'en' => 'Its activities are run with volunteers, schools, and local communities, on a simple principle: technology should be usable by everyone.'],
             ],
-            'pillars_title' => ['id' => 'Fokus kami', 'en' => 'Our focus'],
-            'pillars' => [
+            'pillars_title'  => ['id' => 'Fokus kami', 'en' => 'Our focus'],
+            'pillars'        => [
                 ['title' => ['id' => 'Literasi digital', 'en' => 'Digital literacy'], 'text' => ['id' => 'Membekali warga dengan kemampuan dasar menggunakan teknologi secara aman dan bijak.', 'en' => 'Equipping residents with basic skills to use technology safely and wisely.']],
                 ['title' => ['id' => 'Akses teknologi', 'en' => 'Access to technology'], 'text' => ['id' => 'Mendukung pemerataan perangkat dan sarana belajar digital.', 'en' => 'Supporting equal access to devices and digital learning facilities.']],
                 ['title' => ['id' => 'Kolaborasi lokal', 'en' => 'Local collaboration'], 'text' => ['id' => 'Bekerja bersama sekolah, perangkat desa, dan komunitas setempat.', 'en' => 'Working with schools, village officials, and local communities.']],
             ],
             'programs_title' => ['id' => 'Program kegiatan', 'en' => 'Programs'],
             // DUMMY: ganti dengan program asli
-            'programs' => [
+            'programs'       => [
                 ['title' => ['id' => 'Kelas Literasi Digital', 'en' => 'Digital Literacy Classes'], 'text' => ['id' => 'Pelatihan dasar ponsel, internet, dan layanan digital untuk warga.', 'en' => 'Basic training on phones, the internet, and digital services for residents.']],
                 ['title' => ['id' => 'Klinik Perangkat Warga', 'en' => 'Community Device Clinic'], 'text' => ['id' => 'Pemeriksaan dan bantuan perawatan perangkat secara gratis.', 'en' => 'Free device checks and maintenance help.']],
                 ['title' => ['id' => 'Sekolah Aman Digital', 'en' => 'Digital Safe Schools'], 'text' => ['id' => 'Edukasi keamanan daring bagi siswa dan guru.', 'en' => 'Online safety education for students and teachers.']],
                 ['title' => ['id' => 'Relawan Teknologi', 'en' => 'Technology Volunteers'], 'text' => ['id' => 'Wadah bagi siapa pun yang ingin berbagi keahlian teknologi.', 'en' => 'A platform for anyone who wants to share technology skills.']],
             ],
-            'join_title' => ['id' => 'Ingin terlibat?', 'en' => 'Want to get involved?'],
-            'join_text' => ['id' => 'Sekolah, komunitas, maupun individu dapat bergabung sebagai peserta, mitra, atau relawan.', 'en' => 'Schools, communities, and individuals can join as participants, partners, or volunteers.'],
-            'join_cta' => ['id' => 'Hubungi komunitas', 'en' => 'Contact the community'],
-            'news_cta' => ['id' => 'Lihat kabar komunitas', 'en' => 'See community news'],
+            'join_title'     => ['id' => 'Ingin terlibat?', 'en' => 'Want to get involved?'],
+            'join_text'      => ['id' => 'Sekolah, komunitas, maupun individu dapat bergabung sebagai peserta, mitra, atau relawan.', 'en' => 'Schools, communities, and individuals can join as participants, partners, or volunteers.'],
+            'join_cta'       => ['id' => 'Hubungi komunitas', 'en' => 'Contact the community'],
+            'news_cta'       => ['id' => 'Lihat kabar komunitas', 'en' => 'See community news'],
         ]);
     }
 
     public static function careersPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Karir', 'en' => 'Careers'],
-            'title' => ['id' => 'Bangun karier bersama DECAA.ID', 'en' => 'Build your career with DECAA.ID'],
-            'lead' => [
+            'eyebrow'        => ['id' => 'Karir', 'en' => 'Careers'],
+            'title'          => ['id' => 'Bangun karier bersama DECAA.ID', 'en' => 'Build your career with DECAA.ID'],
+            'lead'           => [
                 'id' => 'Kami selalu terbuka bagi talenta yang ingin bertumbuh di bidang teknologi dan layanan.',
                 'en' => 'We are always open to talent who want to grow in technology and services.',
             ],
-            'why_title' => ['id' => 'Mengapa bergabung', 'en' => 'Why join us'],
-            'why' => [
+            'why_title'      => ['id' => 'Mengapa bergabung', 'en' => 'Why join us'],
+            'why'            => [
                 ['title' => ['id' => 'Beragam bidang', 'en' => 'Diverse fields'], 'text' => ['id' => 'Beragam bidang usaha membuka banyak jalur belajar dan berkarier.', 'en' => 'A wide range of businesses opens many paths to learn and build a career.']],
                 ['title' => ['id' => 'Belajar berkelanjutan', 'en' => 'Continuous learning'], 'text' => ['id' => 'Pelatihan dan pendampingan lewat Training & Research Centre.', 'en' => 'Training and mentoring through our Training & Research Centre.']],
                 ['title' => ['id' => 'Pekerjaan bermakna', 'en' => 'Meaningful work'], 'text' => ['id' => 'Proyek yang berdampak bagi sekolah, instansi, dan masyarakat.', 'en' => 'Projects that make a difference for schools, agencies, and communities.']],
                 ['title' => ['id' => 'Lingkungan kolaboratif', 'en' => 'Collaborative environment'], 'text' => ['id' => 'Tim yang saling mendukung lintas pilar dan kantor.', 'en' => 'Teams that support one another across pillars and offices.']],
             ],
-            'process_title' => ['id' => 'Proses seleksi', 'en' => 'Selection process'],
-            'process' => [
+            'process_title'  => ['id' => 'Proses seleksi', 'en' => 'Selection process'],
+            'process'        => [
                 ['title' => ['id' => 'Kirim CV', 'en' => 'Send your CV'], 'text' => ['id' => 'Kirim CV dan ringkasan diri melalui email.', 'en' => 'Send your CV and a short introduction by email.']],
                 ['title' => ['id' => 'Seleksi administrasi', 'en' => 'Screening'], 'text' => ['id' => 'Tim kami meninjau kesesuaian profil Anda.', 'en' => 'Our team reviews how your profile fits.']],
                 ['title' => ['id' => 'Wawancara', 'en' => 'Interview'], 'text' => ['id' => 'Diskusi tentang pengalaman dan harapan Anda.', 'en' => 'A conversation about your experience and expectations.']],
                 ['title' => ['id' => 'Keputusan', 'en' => 'Decision'], 'text' => ['id' => 'Kami mengabari hasilnya melalui email.', 'en' => 'We let you know the outcome by email.']],
             ],
-            'cv_title' => ['id' => 'Kirim CV Anda', 'en' => 'Send your CV'],
-            'cv_text' => [
+            'cv_title'       => ['id' => 'Kirim CV Anda', 'en' => 'Send your CV'],
+            'cv_text'        => [
                 'id' => 'Pilih bidang yang Anda minati, lalu kirim CV (disarankan PDF) ke alamat email berikut. Subjek email akan terisi otomatis.',
                 'en' => 'Choose the field you are interested in, then send your CV (PDF recommended) to the address below. The email subject is filled in automatically.',
             ],
-            'field_label' => ['id' => 'Bidang yang diminati', 'en' => 'Field of interest'],
-            'field_other' => ['id' => 'Lainnya / umum', 'en' => 'Other / general'],
+            'field_label'    => ['id' => 'Bidang yang diminati', 'en' => 'Field of interest'],
+            'field_other'    => ['id' => 'Lainnya / umum', 'en' => 'Other / general'],
             'subject_prefix' => ['id' => 'Lamaran - ', 'en' => 'Application - '],
-            'send_cv' => ['id' => 'Kirim CV', 'en' => 'Send CV'],
-            'copy_email' => ['id' => 'Salin alamat email', 'en' => 'Copy email address'],
-            'copied' => ['id' => 'Alamat disalin', 'en' => 'Address copied'],
-            'why_text' => [
+            'send_cv'        => ['id' => 'Kirim CV', 'en' => 'Send CV'],
+            'copy_email'     => ['id' => 'Salin alamat email', 'en' => 'Copy email address'],
+            'copied'         => ['id' => 'Alamat disalin', 'en' => 'Address copied'],
+            'why_text'       => [
                 'id' => 'Di DECAA.ID, setiap orang punya ruang untuk belajar, berkontribusi, dan berkembang bersama tim lintas bidang.',
                 'en' => 'At DECAA.ID, everyone has room to learn, contribute, and grow with teams across many fields.',
             ],
-            'open_note' => ['id' => 'Lamaran terbuka sepanjang waktu', 'en' => 'Applications are always open'],
-            'fields_title' => ['id' => 'Bidang yang bisa Anda tekuni', 'en' => 'Fields you can grow in'],
-            'fields_text' => [
+            'open_note'      => ['id' => 'Lamaran terbuka sepanjang waktu', 'en' => 'Applications are always open'],
+            'fields_title'   => ['id' => 'Bidang yang bisa Anda tekuni', 'en' => 'Fields you can grow in'],
+            'fields_text'    => [
                 'id' => 'Pilih bidang yang paling dekat dengan minat Anda, atau kirim lamaran umum.',
                 'en' => 'Pick the field closest to your interests, or send a general application.',
             ],
-            'process_text' => [
+            'process_text'   => [
                 'id' => 'Alur seleksi dibuat sederhana dan transparan dari awal sampai akhir.',
                 'en' => 'A simple, transparent selection flow from start to finish.',
             ],
-            'subject_label' => ['id' => 'Subjek email', 'en' => 'Email subject'],
-            'send_to' => ['id' => 'Kirim ke', 'en' => 'Send to'],
-            'step_label' => ['id' => 'Langkah', 'en' => 'Step'],
+            'subject_label'  => ['id' => 'Subjek email', 'en' => 'Email subject'],
+            'send_to'        => ['id' => 'Kirim ke', 'en' => 'Send to'],
+            'step_label'     => ['id' => 'Langkah', 'en' => 'Step'],
         ]);
     }
 
     public static function contactPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Kontak', 'en' => 'Contact'],
-            'title' => ['id' => 'Hubungi kami', 'en' => 'Get in touch'],
-            'lead' => [
+            'eyebrow'        => ['id' => 'Kontak', 'en' => 'Contact'],
+            'title'          => ['id' => 'Hubungi kami', 'en' => 'Get in touch'],
+            'lead'           => [
                 'id' => 'Sampaikan kebutuhan atau pertanyaan Anda. Tim kami akan menanggapi secepatnya.',
                 'en' => 'Tell us what you need or ask a question. Our team will respond as soon as possible.',
             ],
-            'form_title' => ['id' => 'Kirim pesan', 'en' => 'Send a message'],
-            'name' => ['id' => 'Nama lengkap', 'en' => 'Full name'],
-            'email' => ['id' => 'Email', 'en' => 'Email'],
-            'phone' => ['id' => 'Telepon (opsional)', 'en' => 'Phone (optional)'],
-            'subject' => ['id' => 'Subjek', 'en' => 'Subject'],
-            'message' => ['id' => 'Pesan', 'en' => 'Message'],
-            'send' => ['id' => 'Kirim pesan', 'en' => 'Send message'],
-            'subjects' => [
-                'general' => ['id' => 'Pertanyaan umum', 'en' => 'General inquiry'],
-                'quotation' => ['id' => 'Permintaan penawaran', 'en' => 'Quotation request'],
-                'documents' => ['id' => 'Permintaan Dokumen', 'en' => 'Document Request'],
+            'form_title'     => ['id' => 'Kirim pesan', 'en' => 'Send a message'],
+            'name'           => ['id' => 'Nama lengkap', 'en' => 'Full name'],
+            'email'          => ['id' => 'Email', 'en' => 'Email'],
+            'phone'          => ['id' => 'Telepon (opsional)', 'en' => 'Phone (optional)'],
+            'subject'        => ['id' => 'Subjek', 'en' => 'Subject'],
+            'message'        => ['id' => 'Pesan', 'en' => 'Message'],
+            'send'           => ['id' => 'Kirim pesan', 'en' => 'Send message'],
+            'subjects'       => [
+                'general'     => ['id' => 'Pertanyaan umum', 'en' => 'General inquiry'],
+                'quotation'   => ['id' => 'Permintaan penawaran', 'en' => 'Quotation request'],
+                'documents'   => ['id' => 'Permintaan Dokumen', 'en' => 'Document Request'],
                 'partnership' => ['id' => 'Kerja sama', 'en' => 'Partnership'],
-                'community' => ['id' => 'Komunitas Peduli Digital', 'en' => 'Komunitas Peduli Digital'],
+                'community'   => ['id' => 'Komunitas Peduli Digital', 'en' => 'Komunitas Peduli Digital'],
             ],
             // DUMMY: hapus catatan ini saat form diaktifkan (Tahap B4)
-            'preview_note' => [
+            'preview_note'   => [
                 'id' => 'Ini tampilan awal formulir. Pengiriman pesan akan diaktifkan pada tahap berikutnya; sementara itu silakan hubungi kami lewat email.',
                 'en' => 'This is a preview of the form. Message sending will be enabled in a later stage; in the meantime please contact us by email.',
             ],
             'channels_title' => ['id' => 'Kanal resmi', 'en' => 'Official channels'],
-            'offices_title' => ['id' => 'Kantor kami', 'en' => 'Our offices'],
-            'open_map' => ['id' => 'Buka di Google Maps', 'en' => 'Open in Google Maps'],
-            'whatsapp' => 'WhatsApp',
-            'form_text' => [
+            'offices_title'  => ['id' => 'Kantor kami', 'en' => 'Our offices'],
+            'open_map'       => ['id' => 'Buka di Google Maps', 'en' => 'Open in Google Maps'],
+            'whatsapp'       => 'WhatsApp',
+            'form_text'      => [
                 'id' => 'Isi formulir di bawah ini. Kolom bertanda * wajib diisi.',
                 'en' => 'Fill in the form below. Fields marked * are required.',
             ],
-            'subject_hint' => ['id' => 'Topik pesan Anda', 'en' => 'What is your message about?'],
-            'err_required' => ['id' => 'Kolom ini wajib diisi.', 'en' => 'This field is required.'],
-            'err_email' => ['id' => 'Format email belum benar.', 'en' => 'Please enter a valid email address.'],
-            'sending' => ['id' => 'Memproses', 'en' => 'Processing'],
-            'consent' => ['id' => 'Dengan mengirim pesan, Anda menyetujui', 'en' => 'By sending a message, you agree to our'],
-            'success_title' => ['id' => 'Pesan Anda sudah siap', 'en' => 'Your message is ready'],
-            'via_email' => ['id' => 'Kirim lewat email', 'en' => 'Send via email'],
-            'write_again' => ['id' => 'Tulis pesan baru', 'en' => 'Write another message'],
-            'channels_text' => [
+            'subject_hint'   => ['id' => 'Topik pesan Anda', 'en' => 'What is your message about?'],
+            'err_required'   => ['id' => 'Kolom ini wajib diisi.', 'en' => 'This field is required.'],
+            'err_email'      => ['id' => 'Format email belum benar.', 'en' => 'Please enter a valid email address.'],
+            'sending'        => ['id' => 'Memproses', 'en' => 'Processing'],
+            'consent'        => ['id' => 'Dengan mengirim pesan, Anda menyetujui', 'en' => 'By sending a message, you agree to our'],
+            'success_title'  => ['id' => 'Pesan Anda sudah siap', 'en' => 'Your message is ready'],
+            'via_email'      => ['id' => 'Kirim lewat email', 'en' => 'Send via email'],
+            'write_again'    => ['id' => 'Tulis pesan baru', 'en' => 'Write another message'],
+            'channels_text'  => [
                 'id' => 'Pilih kanal yang paling nyaman bagi Anda. Kami siap membantu.',
                 'en' => 'Choose the channel that suits you best. We are ready to help.',
             ],
-            'offices_text' => [
+            'offices_text'   => [
                 'id' => 'Kunjungi kantor kami di Jakarta, Pacitan, dan Ponorogo.',
                 'en' => 'Visit our offices in Jakarta, Pacitan, and Ponorogo.',
             ],
@@ -1278,19 +1315,19 @@ class Content
     public static function searchPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Pencarian', 'en' => 'Search'],
-            'title' => ['id' => 'Hasil pencarian', 'en' => 'Search results'],
+            'eyebrow'     => ['id' => 'Pencarian', 'en' => 'Search'],
+            'title'       => ['id' => 'Hasil pencarian', 'en' => 'Search results'],
             'placeholder' => ['id' => 'Cari pilar bisnis, proyek, atau berita', 'en' => 'Search business pillars, projects, or news'],
-            'button' => ['id' => 'Cari', 'en' => 'Search'],
-            'prompt' => ['id' => 'Ketik kata kunci (minimal 2 huruf) untuk mulai mencari.', 'en' => 'Type a keyword (at least 2 characters) to start searching.'],
-            'count' => ['id' => 'hasil untuk', 'en' => 'results for'],
-            'none_title' => ['id' => 'Tidak ada hasil', 'en' => 'No results'],
-            'none_text' => ['id' => 'Coba kata kunci lain, atau jelajahi halaman berikut.', 'en' => 'Try another keyword, or explore these pages.'],
-            'groups' => [
-                'pages' => ['id' => 'Halaman', 'en' => 'Pages'],
-                'units' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
+            'button'      => ['id' => 'Cari', 'en' => 'Search'],
+            'prompt'      => ['id' => 'Ketik kata kunci (minimal 2 huruf) untuk mulai mencari.', 'en' => 'Type a keyword (at least 2 characters) to start searching.'],
+            'count'       => ['id' => 'hasil untuk', 'en' => 'results for'],
+            'none_title'  => ['id' => 'Tidak ada hasil', 'en' => 'No results'],
+            'none_text'   => ['id' => 'Coba kata kunci lain, atau jelajahi halaman berikut.', 'en' => 'Try another keyword, or explore these pages.'],
+            'groups'      => [
+                'pages'    => ['id' => 'Halaman', 'en' => 'Pages'],
+                'units'    => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
                 'projects' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
-                'news' => ['id' => 'Berita', 'en' => 'News'],
+                'news'     => ['id' => 'Berita', 'en' => 'News'],
             ],
         ]);
     }
@@ -1308,8 +1345,8 @@ class Content
         }
 
         $needle = mb_strtolower($q);
-        $hit = fn (array $fields) => collect($fields)->contains(
-            fn ($f) => is_string($f) && $f !== '' && str_contains(mb_strtolower($f), $needle)
+        $hit    = fn(array $fields) => collect($fields)->contains(
+            fn($f) => is_string($f) && $f !== '' && str_contains(mb_strtolower($f), $needle)
         );
         $labels = self::searchPage()['groups'];
         $groups = [];
@@ -1376,16 +1413,16 @@ class Content
     public static function privacyPage(): array
     {
         return self::localize([
-            'eyebrow' => ['id' => 'Legal', 'en' => 'Legal'],
-            'title' => ['id' => 'Kebijakan Privasi', 'en' => 'Privacy Policy'],
-            'lead' => [
+            'eyebrow'       => ['id' => 'Legal', 'en' => 'Legal'],
+            'title'         => ['id' => 'Kebijakan Privasi', 'en' => 'Privacy Policy'],
+            'lead'          => [
                 'id' => 'Kami menghargai privasi Anda. Kebijakan ini menjelaskan data apa yang kami kumpulkan melalui situs ini dan bagaimana kami menggunakannya.',
                 'en' => 'We value your privacy. This policy explains what data we collect through this website and how we use it.',
             ],
             'updated_label' => ['id' => 'Terakhir diperbarui', 'en' => 'Last updated'],
-            'updated' => '2026-10-30',
-            'toc' => ['id' => 'Daftar isi', 'en' => 'Contents'],
-            'sections' => [
+            'updated'       => '2026-10-30',
+            'toc'           => ['id' => 'Daftar isi', 'en' => 'Contents'],
+            'sections'      => [
                 ['title' => ['id' => 'Data yang kami kumpulkan', 'en' => 'Data we collect'], 'text' => [
                     'id' => 'Data yang Anda berikan secara langsung, seperti nama, email, nomor telepon, dan isi pesan saat menghubungi kami. Kami juga dapat menerima data teknis dasar, seperti jenis peramban dan halaman yang dibuka.',
                     'en' => 'Data you give us directly, such as your name, email, phone number, and message when you contact us. We may also receive basic technical data, such as browser type and pages visited.']],

@@ -34,7 +34,7 @@
         <x-ui.reveal class="mt-8">
             <a href="{{ lroute('news.show', ['slug' => $featured['slug']]) }}"
                class="grid overflow-hidden rounded-2xl bg-white shadow-card transition duration-300 hover:shadow-card-hover md:grid-cols-2">
-                <x-ui.img :src="$featured['image']" :alt="$featured['title']" label="Foto berita (dummy)" :lazy="false"
+                <x-ui.img :src="$featured['image']" :alt="$featured['image_alt']" label="Foto berita" :lazy="false"
                           class="aspect-[16/10] h-full w-full object-cover md:aspect-auto" />
                 <div class="flex flex-col justify-center p-8 md:p-10">
                     <div class="flex items-center gap-3 text-xs">
@@ -57,7 +57,7 @@
             <x-ui.reveal :delay="($loop->index % 3) * 100" class="h-full">
                 <a href="{{ lroute('news.show', ['slug' => $post['slug']]) }}"
                    class="block h-full overflow-hidden rounded-xl bg-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
-                    <x-ui.img :src="$post['image']" :alt="$post['title']" label="Foto berita (dummy)" class="aspect-[16/10] w-full object-cover" />
+                    <x-ui.img :src="$post['image']" :alt="$post['image_alt']" label="Foto berita" class="aspect-[16/10] w-full object-cover" />
                     <div class="p-6">
                         <div class="flex items-center gap-3 text-xs">
                             <x-ui.badge tone="accent">{{ $post['category'] }}</x-ui.badge>

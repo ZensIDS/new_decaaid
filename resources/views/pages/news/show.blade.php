@@ -18,7 +18,7 @@
     $older = $sorted->get($i + 1);
 
     // Perkiraan waktu baca (±200 kata per menit)
-    $words = str_word_count(strip_tags($post['excerpt'].' '.collect($post['body'])->map(fn ($b) => is_array($b) ? $b['h'] : $b)->implode(' ')));
+    $words = str_word_count(strip_tags($post['excerpt'].' '.$post['body_html']));
     $minutes = max(1, (int) ceil($words / 200));
 
     $url = url()->current();
@@ -32,8 +32,8 @@
     $categoryUrl = lroute('news.category', ['slug' => $post['category_slug']]);
 @endphp
 
-@section('title', $post['title'].' | '.$page['eyebrow'].' | '.config('site.name'))
-@section('description', $post['excerpt'])
+@section('title', ($post['seo_title'] ?: $post['title']).' | '.$page['eyebrow'].' | '.config('site.name'))
+@section('description', $post['seo_description'] ?: $post['excerpt'])
 
 @section('content')
 <div x-data="{
@@ -88,7 +88,7 @@
     {{-- Foto utama (menumpuk di tepi bawah hero). DUMMY: ganti dengan foto berita asli --}}
     <div class="container relative z-10 -mt-20 md:-mt-32">
         <div class="animate-fade-up mx-auto max-w-5xl" style="animation-delay: 300ms">
-            <x-ui.img :src="$post['image']" :alt="$post['title']" label="Foto berita (dummy)" :lazy="false"
+            <x-ui.img :src="$post['image']" :alt="$post['image_alt']" label="Foto berita" :lazy="false"
                       class="aspect-[16/9] w-full rounded-3xl object-cover shadow-card-hover ring-1 ring-slate-200/60 md:rounded-[2rem]" />
         </div>
     </div>
@@ -125,16 +125,10 @@
                     <div class="max-w-3xl space-y-6 text-lg leading-8 text-slate-700">
                         <p class="border-l-4 border-accent-500 pl-5 text-xl font-medium leading-9 text-ink md:text-2xl md:leading-10">{{ $post['excerpt'] }}</p>
 
-                        @foreach ($post['body'] as $block)
-                            @if (is_array($block))
-                                <h2 class="flex items-center gap-3 pt-6 text-2xl text-ink md:text-3xl">
-                                    <span class="h-7 w-1 shrink-0 rounded-full bg-gradient-to-b from-brand-600 to-accent-500"></span>
-                                    {{ $block['h'] }}
-                                </h2>
-                            @else
-                                <p>{{ $block }}</p>
-                            @endif
-                        @endforeach
+                        {{-- Isi dari editor admin: HTML sudah disaring server (App\Support\Html::clean) --}}
+                        <div class="news-body space-y-6 [&_a]:font-semibold [&_a]:text-brand-700 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-slate-300 [&_blockquote]:pl-5 [&_blockquote]:italic [&_h2]:pt-6 [&_h2]:text-2xl [&_h2]:text-ink md:[&_h2]:text-3xl [&_h3]:pt-4 [&_h3]:text-xl [&_h3]:text-ink [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-2xl [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6">
+                            {!! $post['body_html'] !!}
+                        </div>
                     </div>
 
                     {{-- Bagikan (semua layar) --}}
@@ -201,7 +195,7 @@
                         <a href="{{ lroute('news.show', ['slug' => $item['slug']]) }}"
                            class="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover">
                             <div class="relative overflow-hidden">
-                                <x-ui.img :src="$item['image']" :alt="$item['title']" label="Foto berita (dummy)"
+                                <x-ui.img :src="$item['image']" :alt="$item['image_alt']" label="Foto berita"
                                           class="aspect-[16/10] w-full object-cover transition duration-700 group-hover:scale-105" />
                                 <span class="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-brand-800 shadow-sm backdrop-blur">{{ $item['category'] }}</span>
                             </div>

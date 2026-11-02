@@ -75,16 +75,27 @@
             <x-admin.card title="Pintasan" description="Aktif otomatis saat modulnya selesai.">
                 <div class="grid gap-3 sm:grid-cols-3">
                     @foreach ($shortcuts as $shortcut)
-                        <span aria-disabled="true" title="Segera hadir"
-                              class="flex cursor-not-allowed items-center gap-3 rounded-2xl bg-slate-50 px-4 py-4 text-sm text-slate-500 ring-1 ring-slate-900/5">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm">
-                                <x-admin.icon :name="$shortcut['icon']" class="h-5 w-5" />
+                        @if (! empty($shortcut['url']))
+                            <a href="{{ $shortcut['url'] }}"
+                               class="group flex items-center gap-3 rounded-2xl bg-white px-4 py-4 text-sm text-slate-700 shadow-sm ring-1 ring-slate-900/5 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-[#1B3590]/30">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1B3590] to-[#4A6CF0] text-white shadow-md shadow-blue-900/20">
+                                    <x-admin.icon :name="$shortcut['icon']" class="h-5 w-5" />
+                                </span>
+                                <span class="flex-1 font-semibold text-slate-800">{{ $shortcut['label'] }}</span>
+                                <x-admin.icon name="arrow-right" class="h-4 w-4 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#1B3590]" />
+                            </a>
+                        @else
+                            <span aria-disabled="true" title="Segera hadir"
+                                  class="flex cursor-not-allowed items-center gap-3 rounded-2xl bg-slate-50 px-4 py-4 text-sm text-slate-500 ring-1 ring-slate-900/5">
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm">
+                                    <x-admin.icon :name="$shortcut['icon']" class="h-5 w-5" />
+                                </span>
+                                <span class="flex-1">
+                                    <span class="block font-semibold text-slate-700">{{ $shortcut['label'] }}</span>
+                                    <span class="block text-[11px] font-medium text-slate-400">Segera</span>
+                                </span>
                             </span>
-                            <span class="flex-1">
-                                <span class="block font-semibold text-slate-700">{{ $shortcut['label'] }}</span>
-                                <span class="block text-[11px] font-medium text-slate-400">Segera</span>
-                            </span>
-                        </span>
+                        @endif
                     @endforeach
                 </div>
             </x-admin.card>

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Support;
 
 use App\Models\User;
@@ -23,10 +22,10 @@ class AdminMenu
     /** @return array<int, array{title: ?string, items: array<int, array<string, mixed>>}> */
     public static function for(User $user): array
     {
-        $S = self::S;
-        $A = self::A;
-        $E = self::E;
-        $semua = [$S, $A, $E];
+        $S      = self::S;
+        $A      = self::A;
+        $E      = self::E;
+        $semua  = [$S, $A, $E];
         $kelola = [$S, $A];
 
         $groups = [
@@ -40,7 +39,8 @@ class AdminMenu
                 self::item('Proyek', 'briefcase', null, 'admin.projects.*', $semua),
                 self::item('Klien & Mitra', 'users', null, 'admin.clients.*', $kelola),
                 self::item('Penghargaan', 'trophy', null, 'admin.awards.*', $semua),
-                self::item('Berita', 'newspaper', null, 'admin.news.*', $semua),
+                self::item('Berita', 'newspaper', 'admin.news.index', 'admin.news.*', $semua),
+                self::item('Kategori Berita', 'tag', 'admin.newscat.index', 'admin.newscat.*', $kelola),
                 self::item('Keberlanjutan', 'heart', null, 'admin.sustainability.*', $kelola),
                 self::item('Karir', 'academic', null, 'admin.careers.*', $kelola),
                 self::item('Halaman Legal', 'document', null, 'admin.pages.*', $kelola),
@@ -66,7 +66,7 @@ class AdminMenu
         foreach ($groups as $group) {
             $items = array_values(array_filter(
                 $group['items'],
-                fn (array $item) => in_array($user->role, $item['roles'], true)
+                fn(array $item) => in_array($user->role, $item['roles'], true)
             ));
 
             if ($items) {
@@ -83,12 +83,12 @@ class AdminMenu
         $ready = $route !== null && Route::has($route);
 
         return [
-            'label' => $label,
-            'icon' => $icon,
-            'url' => $ready ? route($route) : null,
-            'soon' => ! $ready,
+            'label'  => $label,
+            'icon'   => $icon,
+            'url'    => $ready ? route($route) : null,
+            'soon'   => ! $ready,
             'active' => $active,
-            'roles' => $roles,
+            'roles'  => $roles,
         ];
     }
 }

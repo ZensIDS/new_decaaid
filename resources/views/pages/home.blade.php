@@ -385,7 +385,7 @@
                         <a href="{{ lroute('news.show', ['slug' => $post['slug']]) }}"
                            class="group block h-full overflow-hidden rounded-xl bg-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
                             <div class="overflow-hidden">
-                                <x-ui.img :src="$post['image']" :alt="$post['title']" label="Foto berita (dummy)"
+                                <x-ui.img :src="$post['image']" :alt="$post['image_alt']" label="Foto berita"
                                           class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105" />
                             </div>
                             <div class="p-6">

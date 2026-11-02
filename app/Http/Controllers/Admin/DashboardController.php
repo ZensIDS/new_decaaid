@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\News;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -16,7 +18,7 @@ class DashboardController extends Controller
     {
         $stats = [
             ['label' => 'Pesan Baru', 'value' => 0, 'icon' => 'mail', 'tone' => 'brand', 'note' => 'Belum dibaca (modul B3l)'],
-            ['label' => 'Berita Draf', 'value' => 0, 'icon' => 'newspaper', 'tone' => 'amber', 'note' => 'Menunggu terbit (modul B3d)'],
+            ['label' => 'Berita Draf', 'value' => $this->draftCount(), 'icon' => 'newspaper', 'tone' => 'amber', 'note' => 'Menunggu terbit'],
             ['label' => 'Terjemahan Belum Ditinjau', 'value' => 0, 'icon' => 'translate', 'tone' => 'violet', 'note' => 'Status Otomatis (modul B5)'],
             ['label' => 'Item Dummy Tersisa', 'value' => count($this->checklist()), 'icon' => 'warning', 'tone' => 'red', 'note' => 'Wajib diganti sebelum go-live'],
         ];
@@ -33,7 +35,7 @@ class DashboardController extends Controller
             ->all();
 
         $shortcuts = [
-            ['label' => 'Tambah Berita', 'icon' => 'newspaper'],
+            ['label' => 'Tambah Berita', 'icon' => 'newspaper', 'url' => route('admin.news.create')],
             ['label' => 'Tambah Proyek', 'icon' => 'briefcase'],
             ['label' => 'Unggah Media', 'icon' => 'photo'],
         ];
@@ -44,6 +46,11 @@ class DashboardController extends Controller
             'shortcuts' => $shortcuts,
             'checklist' => $this->checklist(),
         ]);
+    }
+
+    protected function draftCount(): int
+    {
+        return Schema::hasTable('news') ? News::where('status', News::STATUS_DRAFT)->count() : 0;
     }
 
     /**

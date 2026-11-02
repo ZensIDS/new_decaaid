@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -25,10 +24,12 @@ class ActivityLog extends Model
 
     /** Kelompok aksi (awalan sebelum titik) untuk filter di layar Log Aktivitas. */
     public const GROUPS = [
-        'auth' => 'Masuk dan Keluar',
+        'auth'     => 'Masuk dan Keluar',
         'password' => 'Password',
-        'profile' => 'Profil',
-        'user' => 'Pengguna',
+        'profile'  => 'Profil',
+        'user'     => 'Pengguna',
+        'news'     => 'Berita',
+        'newscat'  => 'Kategori Berita',
     ];
 
     public function user()
@@ -46,13 +47,13 @@ class ActivityLog extends Model
             $actor ??= Auth::user();
 
             static::create([
-                'user_id' => $actor?->getKey(),
-                'user_name' => $actor?->name ?? 'Sistem',
-                'action' => $action,
-                'description' => mb_substr($description, 0, 255),
+                'user_id'      => $actor?->getKey(),
+                'user_name'    => $actor?->name ?? 'Sistem',
+                'action'       => $action,
+                'description'  => mb_substr($description, 0, 255),
                 'subject_type' => $subject ? $subject->getMorphClass() : null,
-                'subject_id' => $subject?->getKey(),
-                'ip_address' => request()?->ip(),
+                'subject_id'   => $subject?->getKey(),
+                'ip_address'   => request()?->ip(),
             ]);
         } catch (Throwable $e) {
             report($e);

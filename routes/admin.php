@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\LogController;
+use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\Admin\NewsCategoryController;
+use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PasswordController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\UserController;
@@ -41,6 +43,29 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                 // Profil sendiri (semua peran)
                 Route::get('profil', [ProfileController::class, 'edit'])->name('profile.edit');
                 Route::put('profil', [ProfileController::class, 'update'])->name('profile.update');
+
+                // Berita (B3d): semua peran boleh menulis dan mengubah
+                Route::middleware('admin.role:super_admin,admin,editor')->group(function () {
+                    Route::get('berita', [NewsController::class, 'index'])->name('news.index');
+                    Route::get('berita/tambah', [NewsController::class, 'create'])->name('news.create');
+                    Route::post('berita', [NewsController::class, 'store'])->name('news.store');
+                    Route::post('berita/unggah', [NewsController::class, 'upload'])->middleware('throttle:60,1')->name('news.upload');
+                    Route::get('berita/{news}/ubah', [NewsController::class, 'edit'])->name('news.edit');
+                    Route::put('berita/{news}', [NewsController::class, 'update'])->name('news.update');
+                    Route::post('berita/{news}/revisi/{revision}', [NewsController::class, 'restore'])->name('news.restore');
+                });
+
+                // Hapus berita dan kelola kategori: Super Admin dan Admin saja (Editor tidak bisa menghapus)
+                Route::middleware('admin.role:super_admin,admin')->group(function () {
+                    Route::delete('berita/{news}', [NewsController::class, 'destroy'])->name('news.destroy');
+
+                    Route::get('kategori-berita', [NewsCategoryController::class, 'index'])->name('newscat.index');
+                    Route::get('kategori-berita/tambah', [NewsCategoryController::class, 'create'])->name('newscat.create');
+                    Route::post('kategori-berita', [NewsCategoryController::class, 'store'])->name('newscat.store');
+                    Route::get('kategori-berita/{category}/ubah', [NewsCategoryController::class, 'edit'])->name('newscat.edit');
+                    Route::put('kategori-berita/{category}', [NewsCategoryController::class, 'update'])->name('newscat.update');
+                    Route::delete('kategori-berita/{category}', [NewsCategoryController::class, 'destroy'])->name('newscat.destroy');
+                });
 
                 // Khusus Super Admin: pengguna dan log aktivitas
                 Route::middleware('admin.role:super_admin')->group(function () {
