@@ -2,8 +2,8 @@
 
 > Tujuan: website korporat berkelas profesional tinggi yang mengikuti prinsip referensi (Kawan Lama Group), dengan admin panel buatan sendiri yang ramah pengguna, SEO kuat, performa cepat, dan dukungan dwibahasa (ID/EN).
 
-**Versi:** 23 (diperbarui 30 Okt 2026)
-**Status:** A0 (fondasi) menunggu verifikasimu; A1 (design system) menunggu dicek lewat `/style-guide`; A2 (layout global) dan A3 (beranda) file sudah dikirim, menunggu dicek di browser; A4 (Tentang Kami), A5 (Pilar Bisnis), A6 (Portofolio & Klien), A7 (Berita), A8 (Komunitas, Karir, Kontak), dan A9 (halaman pendukung) file sudah dikirim, menunggu dicek di browser. **Sedang berjalan: Revisi Tampilan Halaman Depan (Bagian 7, setelah A10)**, dimulai dari Beranda; Beranda putaran 2 sudah dikirim, menunggu kamu cek di browser. **Tentang Kami (putaran 1 dan 2) sudah dikirim**, menunggu kamu cek di browser. **Pilar Bisnis (daftar + detail) sudah didesain ulang**, menunggu kamu cek di browser. **Klien & Mitra sudah didesain ulang dengan logo asli**, menunggu kamu cek di browser. **Detail Berita (single page) sudah didesain ulang**, menunggu kamu cek di browser. Halaman lain menyusul satu per satu.
+**Versi:** 27 (diperbarui 2 Nov 2026)
+**Status:** **Tahap B (Admin): QA1-QA18 sudah dijawab dan dicatat sebagai K27-K32. Dimulai dari Tahap B-awal (login, dashboard dummy, CRUD pengguna), menunggu aba-aba "mulai" darimu. Belum ada kode admin yang dikerjakan.** A0 (fondasi) menunggu verifikasimu; A1 (design system) menunggu dicek lewat `/style-guide`; A2 (layout global) dan A3 (beranda) file sudah dikirim, menunggu dicek di browser; A4 (Tentang Kami), A5 (Pilar Bisnis), A6 (Portofolio & Klien), A7 (Berita), A8 (Komunitas, Karir, Kontak), dan A9 (halaman pendukung) file sudah dikirim, menunggu dicek di browser. **Sedang berjalan: Revisi Tampilan Halaman Depan (Bagian 7, setelah A10)**, dimulai dari Beranda; Beranda putaran 2 sudah dikirim, menunggu kamu cek di browser. **Tentang Kami (putaran 1 dan 2) sudah dikirim**, menunggu kamu cek di browser. **Pilar Bisnis (daftar + detail) sudah didesain ulang**, menunggu kamu cek di browser. **Klien & Mitra sudah didesain ulang dengan logo asli**, menunggu kamu cek di browser. **Detail Berita (single page) sudah didesain ulang**, menunggu kamu cek di browser. Halaman lain menyusul satu per satu. **Putaran revisi dari dokumen `Revisi_Website_decaaid.pdf` (2 Nov 2026) sedang berjalan, fokus tampilan dulu; bahan yang belum jelas dikosongkan.** R1 (slogan, Pilar Bisnis = 8 jenis bisnis + brand, menu, hapus Jajaran Kepemimpinan, Karir ikut pilar) sudah dikirim, menunggu kamu cek di browser. Lihat bagian "REVISI DARI DOKUMEN PDF".
 **Legenda:** `[ ]` belum, `[~]` file dikirim / menunggu verifikasi darimu, `[x]` selesai dan terverifikasi, **(I)** ide tambahan.
 
 ---
@@ -53,7 +53,7 @@
 | K7 | Fitur | Karir (CV ke `career@decaa.id`, **tanpa daftar posisi, bersifat umum**), Kontak (`info@decaa.id`), tanpa WhatsApp melayang, tanpa Investor, pencarian situs: ya | |
 | K8 | Domain & migrasi | Domain tetap; staging **`new.decaa.id`**; semua berita diimpor beserta foto | Jumlah artikel dibahas setelah ACC |
 | K9 | Kriteria audit | Tidak ada kriteria tertulis | Checklist Audit-Ready (Bagian 8) |
-| K10 | Unit bisnis | **Dipisah**: Software, Robotics, Hardware, Networking Services, Training & Research Centre, PaperKing (Stationery & Office Supply), Dapur Kirana (Food & Beverages) | Konfirmasi nama: Q8 |
+| K10 | Unit bisnis *(digantikan K22: 8 jenis bisnis)* | **Dipisah**: Software, Robotics, Hardware, Networking Services, Training & Research Centre, PaperKing (Stationery & Office Supply), Dapur Kirana (Food & Beverages) | Konfirmasi nama: Q8 |
 | K11 | CSR | **Komunitas Peduli Digital** (komunitas CSR DECAA.ID), bukan unit bisnis | Ditempatkan di menu "Komunitas" (Q10) |
 | K12 | Nama di website | **DECAA.ID** | |
 | K13 | Kantor | **Pusat: Jakarta** (Ad Premier Office Park, Jl. TB Simatupang, Ragunan, Pasar Minggu). **Cabang: Pacitan** (Jl. Letjend R. Suprapto, Sidoarjo) dan **Ponorogo** (Jl. Sultan Agung) | |
@@ -63,8 +63,19 @@
 | K17 | Gaya teks tombol | **Semua tombol dan elemen bergaya tombol: Capitalize Each Word** (CSS `capitalize`, berlaku ID dan EN) | Tombol baru wajib mengikuti |
 | K18 | Logo | Logo PNG dipangkas otomatis ruang kosongnya (`logo_url()`, salinan di `public/img/_trim/`, file asli tidak diubah) | Ukuran logo diatur lewat class tinggi (`h-7`, `h-9`, dst.) |
 | K19 | Menu Tentang Kami | **Legalitas dihapus** (halaman, menu, route) dan **diganti "Perjalanan Kami"** (`/id/tentang-kami/perjalanan-kami`, `/en/about-us/our-journey`). Bagian "Perjalanan kami" di Profil Perusahaan dihapus (pindah ke halaman sendiri) | Menggantikan sebagian K-Legalitas di Bagian 4B, 8, dan B3. URL lama `/tentang-kami/legalitas` kini 404 (aman di staging; tambahkan redirect 301 bila perlu) |
-| K20 | Tentang Kami, putaran 2 | **Perjalanan Kami mulai 2018** (semua tahun dan nama file foto ikut). Menu "Manajemen" diganti **"Jajaran Kepemimpinan"** (EN: Leadership; URL `/id/tentang-kami/jajaran-kepemimpinan`, `/en/about-us/leadership`), kartu hanya nama + foto, **jabatan hanya untuk CEO**. "Sektor yang kami layani" diganti **Chairman Message**. Angka ringkas (7 unit, 3 kantor, dst.) dihapus dari Profil | |
+| K20 | Tentang Kami, putaran 2 *(kepemimpinan dihapus oleh K23; tahun mulai ditinjau di Q14)* | **Perjalanan Kami mulai 2018** (semua tahun dan nama file foto ikut). Menu "Manajemen" diganti **"Jajaran Kepemimpinan"** (EN: Leadership; URL `/id/tentang-kami/jajaran-kepemimpinan`, `/en/about-us/leadership`), kartu hanya nama + foto, **jabatan hanya untuk CEO**. "Sektor yang kami layani" diganti **Chairman Message**. Angka ringkas (7 unit, 3 kantor, dst.) dihapus dari Profil | |
 | K21 | Istilah "Unit Bisnis" | **Diganti "Pilar Bisnis"** (EN: Business Pillars) di semua teks, menu, footer, pencarian, dan URL: `/id/pilar-bisnis` dan `/en/business-pillars` (detail: `/id/pilar-bisnis/{slug}`). Nama internal (route `units.*`, method `units()`, file `pages/units/`) sengaja tidak diubah agar kode aman | Catatan lama (K10, Q8, log) yang menyebut "unit bisnis" = Pilar Bisnis. URL lama `/unit-bisnis` kini 404 (staging; redirect 301 bila perlu) |
+| K22 | Pilar Bisnis = **jenis bisnis** (revisi PDF butir 2 dan 5) | **8 pilar**: Software & Robotics; Hardware & Peripheral; Networking Services; Commercial Technology; Training & Research Centre; Stationery & Office Supply; Lifestyle Store; Food & Beverage. Nama divisi/brand ada **di dalam** pilar (13 brand + 4 di Commercial Technology). Menu = daftar teks saja (tanpa logo). Data di `app/Support/Pillars.php` | Menggantikan K10 (7 unit) dan Q8. Slug lama (`/pilar-bisnis/software` dst.) kini 404. Ejaan \"Stationary\" di dokumen ditulis **Stationery**; \"Food & Beverages\" jadi **Food & Beverage** sesuai dokumen |
+| K23 | Jajaran Kepemimpinan | **Dihapus** (halaman, menu, route, data) | Menggantikan K20 bagian kepemimpinan. Chairman Message tidak disebut di revisi, jadi **tetap** |
+| K24 | Slogan | **Mitra Solusi untuk Segala Akselerasi**; teks bawah: \"Ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri\" (typo \"industry\" di dokumen ditulis \"industri\"). Label kecil di atas judul hero dikosongkan | EN: terjemahan draf |
+| K25 | Menu Portofolio | Ditambah **Penghargaan** (URL `/id/portofolio/penghargaan`, `/en/portfolio/awards`) berisi penghargaan dan sertifikat seluruh brand | Halaman dibuat di R4 (route dan menu sudah ada sejak R1) |
+| K26 | Isi brand | Deskripsi brand memakai teks dokumen apa adanya (ID); EN = terjemahan draf. Instagram, TikTok, dan deskripsi yang belum ada **dikosongkan** (tidak tampil). Tombol \"Selengkapnya\" membuka situs brand (More Info) | Tautan di dokumen berawalan `http://www.`: konfirmasi apakah dipakai apa adanya atau `https://` |
+| K27 | Admin: lingkup halaman dan menu (QA1-QA3) | Struktur halaman **tetap** + modul **Halaman Kustom**; menu **otomatis** (admin hanya ubah label, sembunyikan, urut tingkat atas); dikerjakan **modul demi modul, end-to-end** (admin + frontend per modul) | Menyempurnakan K4 |
+| K28 | Data awal dan WordPress (QA4, QA7) | Data kode **diimpor otomatis** ke database; berita sementara **dummy**, nanti diimpor dari WordPress **beserta foto**; disediakan perintah impor + tutorial. Media Library (WebP, thumbnail, alt, batas 5 MB, logo dipangkas otomatis) | Detail di B6 |
+| K29 | Pengguna admin (QA5) | Peran Super Admin / Admin / Editor; 2FA wajib untuk Super Admin dan Admin; alamat `/admin` ber-noindex + batas login; antarmuka admin Bahasa Indonesia. **Super Admin awal: `decaa@decaa.id`** | Password awal disampaikan lewat chat, tidak ditulis di berkas; wajib diganti saat login pertama |
+| K30 | Konten admin (QA6-QA13) | Teks antarmuka tetap di kode; Pilar/Brand boleh tambah-ubah-urut-sembunyikan (hapus hanya Super Admin); Klien: nama opsional, kategori dikelola, beranda via centang, kolom izin tampil; Proyek: satu pilar, galeri disiapkan; **Penghargaan sederhana** (tanpa jenis, penerbit, PDF; terbaru manual); Berita: Draf/Terbit/Terjadwal, kategori dikelola penuh dengan slug aman terhadap route, tanpa video/tag/penulis; **Statistik, Kepemimpinan, Legalitas tanpa modul admin** | |
+| K31 | Email (QA14) | Server email sendiri `mail.decaa.id` (SMTP 465). **Hanya satu akun: `info@decaa.id`** untuk pengirim, penerima pesan Kontak, dan notifikasi (tidak ada akun email lain). Selebihnya sesuai rekomendasi (balasan otomatis, honeypot + batas kirim, simpan 12 bulan) | Kredensial hanya di `.env` |
+| K32 | Sistem (QA15-QA18) | Tab ID/EN dan status terjemahan sejak awal, tombol terjemah di B5; SEO + Redirect + sitemap di admin; mode pemeliharaan dari admin, `SITE_NOINDEX` tetap di `.env`; log aktivitas, riwayat revisi (Berita + Halaman Kustom), dashboard kesehatan situs masuk Tahap B; live preview setelah CRUD selesai; mode gelap admin backlog | |
 
 ---
 
@@ -89,7 +100,151 @@ Catatan: aku hanya bisa membaca nama file dari screenshot, bukan isi gambar logo
 
 **Q10. Penempatan CSR (terjawab, lalu diganti K16 jadi "Keberlanjutan").** Usulanku: menu utama **"Komunitas"** (setara "Keberlanjutan" di referensi) berisi halaman Komunitas Peduli Digital, bisa bertambah program nanti. Alternatif: disimpan di bawah menu Tentang Kami. Setuju dengan menu "Komunitas"?
 
+**Q11. MBG Food Hub.** Ada di daftar menu (butir 2) tetapi tidak ada di daftar penjelasan (butir 5). Sementara kutaruh di **Commercial Technology** bersama Satu AI, Pasar Online, Desa Digital. Benar?
+
+**Q12. Bahan Commercial Technology.** Satu AI, Pasar Online, MBG Food Hub, Desa Digital belum punya deskripsi, tautan, dan logo di dokumen: sementara hanya nama (deskripsi kosong). Mau diisi nanti?
+
+**Q13. Misi.** Di dokumen tertulis \"Misi : Mengikuti\" (tampaknya belum selesai). Teks Misi dikosongkan sampai kamu kirim isinya (dipakai di R3).
+
+**Q14. Tahun Perjalanan Kami.** Dokumen mulai **2019** (garasi di daerah Veteran, Pacitan), sedangkan K20 mengatur mulai 2018. Di R3 aku ikut dokumen (2019 sampai 2026). Setuju?
+
+**Q15. Tautan brand.** Dipakai `http://www...` seperti di dokumen, atau diganti `https://` (disarankan karena situs memakai HTTPS)?
+
 *(Pertanyaan Q1-Q7 sebelumnya sudah terjawab dan dicatat di Bagian 2.)*
+
+---
+
+## 3B. Pertanyaan Tahap Admin (jawab langsung di sini, 2 Nov 2026)
+
+Cara menjawab: isi baris **Jawabanmu** di bawah tiap pertanyaan (cukup "ikut rekomendasi" atau pilihan huruf). Pertanyaan bertanda **[Penentu awal]** perlu dijawab sebelum kode admin dimulai; yang lain bisa dijawab nanti, saat modulnya akan dikerjakan. **Semua pertanyaan di bawah sudah dijawab (2 Nov 2026) dan dicatat di K27-K32.**
+
+### Kelompok 1: Arah & lingkup
+
+**QA1. [Penentu awal] Seberapa bebas admin mengatur halaman?** (menyempurnakan K4 "section-based")
+- **A.** Struktur halaman **tetap** seperti desain yang di-ACC. Admin mengubah isi tiap section; khusus **Beranda** bisa menampilkan/menyembunyikan dan mengurutkan section.
+- **B (rekomendasiku): A + modul "Halaman Kustom"** untuk halaman sederhana yang kamu tambah sendiri nanti (judul, slug ID/EN, isi teks kaya, SEO). Kebijakan Privasi dan halaman legal lain memakai modul ini.
+- **C.** Page builder penuh (tambah blok bebas di semua halaman). Paling fleksibel, tetapi paling mahal, dan mudah merusak desain yang sudah rapi.
+- Jawabanmu: Aku setuju dengan rekomendasi mu saja
+
+**QA2. [Penentu awal] Menu.** Sekarang menu dibentuk otomatis dari struktur halaman dan daftar pilar/brand.
+- **A (rekomendasiku):** tetap otomatis; admin hanya bisa mengubah label, menyembunyikan item, dan mengurutkan menu tingkat atas.
+- **B.** Menu builder drag-and-drop penuh (item bebas, tingkat bebas).
+- Jawabanmu: sesuai rekomendasimu
+
+**QA3. [Penentu awal] Urutan pengerjaan.**
+- **A (rekomendasiku): modul demi modul, end-to-end.** Satu modul selesai berarti adminnya jadi **dan** halaman depannya sudah membaca dari database, sehingga bisa langsung kamu uji (mis. Berita dulu, lalu Pilar Bisnis, dst.).
+- **B.** Seperti rencana lama: seluruh admin dibuat dulu, baru frontend dihubungkan di B4.
+- Jawabanmu: sesuai rekomendasimu
+
+**QA4. [Penentu awal] Data awal di admin.** Isi yang sekarang tertulis di kode (`Content.php`, `Pillars.php`, 90 logo klien, termasuk yang masih DUMMY) bisa dipindahkan otomatis ke database lewat perintah artisan.
+- **A (rekomendasiku):** diimpor otomatis, admin langsung terisi; item DUMMY ditandai agar mudah dicari dan diganti.
+- **B.** Admin mulai kosong, semua diketik ulang.
+- Jawabanmu: sesuai rekomendasimu. nah untuk berita itu sementara pakai dummy dulu. terakhir kalau misalkan sudah siap nanti kita import dari beriita lama di wordpress. termasuk fotonya juga ambil dari sana. kamu tinggal berikan fasilitas dan tutornya.
+
+**QA5. [Penentu awal] Pengguna, peran, dan akses admin.**
+1. Berapa orang yang akan memakai admin, dan siapa saja perannya?
+2. Usulan peran: **Super Admin** (semua + pengguna + pengaturan sistem), **Admin** (semua konten + pesan masuk + pengaturan situs), **Editor** (berita, proyek, penghargaan; tidak bisa menghapus dan tidak bisa mengubah pengaturan). Setuju atau ada perubahan?
+3. 2FA (kode aplikasi autentikator): wajib untuk Super Admin dan Admin, opsional untuk Editor? (rekomendasiku: ya)
+4. Alamat admin: `new.decaa.id/admin` (lalu `decaa.id/admin`), tidak diindeks mesin pencari, dibatasi percobaan login. Setuju? Bahasa antarmuka admin: **Indonesia saja** (rekomendasiku).
+- Jawabanmu: sesuai rekomendasimu. *Akun Super Admin awal: `decaa@decaa.id` (password awal diberikan lewat chat, tidak ditulis di berkas ini; wajib diganti saat login pertama).*
+
+**QA6. Teks antarmuka (tombol, label menu, teks aksesibilitas).** Ada sekitar 100 kunci dwibahasa di `Labels.php`.
+- **A (rekomendasiku):** tetap di kode; yang diedit dari admin hanya teks halaman dan konten. Perubahan label dikerjakan lewat aku.
+- **B.** Dibuat layar "Teks Antarmuka" di admin untuk mengedit semua label.
+- Jawabanmu: sesuai rekomendasimu
+
+### Kelompok 2: Media & isi konten
+
+**QA7. Media dan logo.** Sekarang foto dan logo berupa file di `public/img/...`.
+1. Dipindah ke **Media Library** (disimpan di `storage`, dikonversi WebP, thumbnail otomatis, wajib alt text ID/EN)? (rekomendasiku: ya)
+2. Batas upload: usulan **5 MB per foto**, dikecilkan otomatis. Setuju?
+3. Logo PNG tetap **dipangkas otomatis** ruang kosongnya saat diunggah (melanjutkan K18)? (rekomendasiku: ya)
+4. Logo yang sudah ada (7 pilar lama, 90 logo klien, logo brand baru) diimpor otomatis ke Media Library lewat perintah artisan.
+- Jawabanmu: sesuai rekomendasimu
+
+**QA8. Pilar Bisnis dan Brand.** Data sekarang: 8 pilar dan **20 brand** (13 di pilar biasa + 7 di Commercial Technology; catatan lama menyebut 17, sudah usang).
+1. Admin boleh **menambah/menghapus pilar** atau hanya mengubah isi 8 pilar yang ada? (rekomendasiku: boleh tambah/ubah/urut/sembunyikan; hapus hanya Super Admin)
+2. Brand boleh dipindah antarpilar, dan perubahan slug otomatis membuat redirect 301. Setuju?
+3. Ikon pilar dipilih dari daftar ikon yang sudah ada (code-bracket, cpu-chip, signal, pencil, gift, cake, dst.). Perlu upload ikon sendiri? (rekomendasiku: tidak)
+4. Kolom deskripsi/Instagram/TikTok/tautan boleh kosong (sesuai aturan "tidak diisi karangan"); brand tanpa deskripsi tampil seperti sekarang.
+- Jawabanmu: sesuai rekomendasimu
+
+**QA9. Klien & Mitra.** Sekarang hanya logo + kategori (dari nama folder), tanpa nama.
+1. Kolom **nama klien** di admin: opsional (rekomendasiku) atau wajib?
+2. Kategori (sekarang 7) bisa ditambah/diubah dari admin? (rekomendasiku: ya)
+3. Strip beranda: logo dipilih manual lewat centang "tampil di beranda" (rekomendasiku), atau otomatis 24 logo seperti sekarang?
+4. Tambah kolom internal **"izin tampil sudah ada"** (tidak tampil di publik) untuk melacak izin logo (lihat Risiko)?
+- Jawabanmu: sesuai rekomendasimu
+
+**QA10. Portofolio (proyek).**
+1. Satu proyek terhubung ke **satu pilar** (+ brand opsional)? (rekomendasiku) Atau boleh banyak pilar?
+2. **Galeri foto** (lebih dari satu foto per proyek): disiapkan di admin sekarang, atau menunggu sampai foto asli ada? (rekomendasiku: kolom galeri disiapkan, tampilan menyusul)
+3. Tiga proyek unggulan di beranda dipilih manual lewat centang "unggulan". Setuju?
+- Jawabanmu: sesuai rekomendasimu
+
+**QA11. Penghargaan & Sertifikat (K25: "penghargaan dan sertifikat seluruh brand").**
+1. Perlu pembeda **jenis** (Penghargaan / Sertifikat) dan filter di halaman? Perlu kolom **brand/pilar penerima**? (rekomendasiku: ya, keduanya opsional)
+2. Selain judul, tahun, deskripsi, dan foto, perlu **penerbit/pemberi** dan **file PDF sertifikat** yang bisa dilihat pengunjung?
+3. Penanda "Penghargaan Terbaru" otomatis dari tahun terbaru, atau dicentang manual (`featured`)? (rekomendasiku: manual)
+- Jawabanmu: tidak perlu pembeda, tidak perlu penerbit/pemberi dan file pdf juga tidak perlu. ya manual saja.
+
+**QA12. Berita.**
+1. **Editor teks kaya**: yang diizinkan paragraf, subjudul (H2/H3), daftar, tebal/miring, tautan, gambar, kutipan. Perlu **embed video YouTube**? Perlu tabel?
+   (Catatan teknis: isi berita sekarang berupa blok data; setelah admin jadi, isinya berupa HTML bersih. Ini juga yang diperlukan untuk impor artikel WordPress.)
+2. **Status:** Draf, Terbit, dan **Terjadwal** (butuh scheduler/cron di server). Setuju untuk Berita saja; modul lain cukup tombol "Tampilkan" (rekomendasiku)?
+3. Kategori berita **"Komunitas"** diganti **"Keberlanjutan"** (item lama yang belum dijawab; slug `community` tetap agar URL aman)? Kategori dikelola dari admin?
+4. Perlu **tag** dan **nama penulis** yang tampil di artikel? (rekomendasiku: tanpa tag, tanpa penulis tampil; pembuat tetap tercatat internal)
+- Jawabanmu: sesuai rekomendasimu. tidak perlu embed video di dalamnya. ya kategori dikelola penuh oleh admin jaga slugnya agar tidak crash dengan slug yang ada di route kita. setuju yang nomor 4 begitu saja.
+
+**QA13. Pembersihan lingkup (cukup dicentang).** Dari kode saat ini, tiga hal berikut **tidak akan dibuatkan modul admin** karena sudah tidak dipakai di tampilan: **Statistik/angka pencapaian** (`Content::stats()`, sudah diganti foto di Beranda), **Jajaran Kepemimpinan** (dihapus, K23), **Legalitas** (dihapus, K19). Setuju, atau ada yang mau dihidupkan lagi?
+- Jawabanmu: dihapus saja
+
+### Kelompok 3: Interaksi & sistem
+
+**QA14. Form Kontak dan pesan masuk (B4).**
+1. Server email apa yang dipakai mengirim (SMTP Google Workspace, Zoho, hosting sendiri, dst.)? Aku butuh jenisnya saja; kredensial hanya di `.env`-mu.
+2. Notifikasi email ke siapa saja? Boleh berbeda **per subjek** (mis. "Permintaan Dokumen" ke orang A, "Komunitas Peduli Digital" ke orang B, sisanya `info@decaa.id`)? Daftar subjek (5 sekarang) bisa diubah dari admin?
+3. Kirim **balasan otomatis** ke pengirim ("pesan Anda sudah kami terima")? (rekomendasiku: ya, singkat)
+4. Anti-spam: honeypot + batas kirim per IP (rekomendasiku) + Turnstile/reCAPTCHA (perlu akun Cloudflare/Google) sekarang atau nanti di Tahap C?
+5. Pesan disimpan di database berapa lama? (usulan: 12 bulan, lalu dihapus otomatis; sesuaikan dengan Kebijakan Privasi)
+- Jawabanmu: 1. server email sendiri: host `mail.decaa.id` (SMTP port 465; IMAP 993, POP3 995). 2. **Satu-satunya akun email untuk semua keperluan: `info@decaa.id`** (pengirim, penerima semua pesan Kontak, notifikasi). Sisanya sesuai rekomendasi.
+
+**QA15. Terjemahan otomatis di admin.** Penyedia terjemahan baru diputuskan di B5, setelah jumlah artikel WordPress diketahui.
+- **A (rekomendasiku):** semua form admin sudah punya tab ID | EN dan status terjemahan sejak awal; tombol "Terjemahkan otomatis" menyusul di B5.
+- **B.** Tombol terjemahan dibuat bersamaan dengan modul pertama.
+- Jawabanmu: sesuai rekomendasimu
+
+**QA16. SEO, redirect, dan analitik.**
+1. Setiap halaman dan setiap konten (berita, proyek, pilar, brand, halaman kustom) punya kolom SEO: judul, deskripsi, gambar share (ID dan EN), dengan nilai bawaan otomatis bila kosong. Setuju masuk admin sejak awal?
+2. Layar **Redirect** (URL lama ke baru) dikelola admin, dipakai juga untuk URL WordPress. Setuju?
+3. Kolom **ID analitik** (Plausible/Umami/GA4) dan **kode verifikasi Search Console** di Pengaturan. Mana yang dipilih (bisa diputuskan nanti di Tahap C)?
+- Jawabanmu: sesuai rekomendasimu yang terbaik
+
+**QA17. Pengaturan sistem.**
+1. **Mode pemeliharaan** (halaman 503 yang sudah ada) bisa dinyalakan dari admin oleh Super Admin, dengan tautan rahasia agar tim tetap bisa membuka situs. Setuju?
+2. Pengaturan **noindex staging** tetap di `.env` (`SITE_NOINDEX`), **tidak** dipindah ke admin, supaya situs live tidak sengaja ter-noindex. Setuju?
+- Jawabanmu: sesuai rekomendasimu
+
+**QA18. Lingkup tambahan (ide I1, I2, I5, I8).** Mana yang masuk Tahap B, dan mana yang tetap backlog?
+- **Log aktivitas** (siapa mengubah apa, kapan): rekomendasiku **masuk Tahap B**.
+- **Riwayat revisi** (kembalikan versi lama): rekomendasiku hanya untuk Berita dan Halaman Kustom.
+- **Live preview** sebelum Terbit: rekomendasiku setelah semua CRUD selesai.
+- **Dashboard kesehatan situs** (terjemahan belum ditinjau, gambar tanpa alt, halaman tanpa meta, item DUMMY tersisa): rekomendasiku **masuk**, karena murah dan sangat berguna menjelang go-live.
+- **Mode gelap admin** dan pintasan keyboard: rekomendasiku backlog.
+- Jawabanmu: sesuai rekomendasimu yang terbaik.
+
+**Catatan tambahan darimu:** ingin segera membuat halaman login dan admin agar desainnya bisa diperbaiki juga. Tahap awal: login, logout, dashboard (dummy), dan CRUD admin (pengguna); fitur penting lainnya menyusul. Dikerjakan sebagai **Tahap B-awal** (lihat Tahap B).
+
+### Pertanyaan lama yang ikut memengaruhi admin
+
+| # | Topik | Dampak ke admin |
+|---|---|---|
+| Q12 | Deskripsi, tautan, logo untuk 7 brand Commercial Technology | Kolom boleh kosong; isi lewat admin nanti |
+| Q13 | Teks Misi | Kolom Misi di admin; kode sekarang masih berisi 5 misi dummy |
+| Q14 | Tahun mulai Perjalanan Kami (2018 atau 2019) | Dikelola sebagai data lini waktu di admin |
+| Q15 | Tautan brand `http://www...` atau `https://` | Admin bisa menormalkan otomatis ke `https://` saat simpan, bila kamu setuju |
+| K16 | Kategori berita "Komunitas" | Lihat QA12 butir 3 |
+
 
 ---
 
@@ -175,9 +330,9 @@ Saran nanti (tidak mendesak): versi SVG atau WebP agar lebih tajam dan ringan.
 ## 6. Sitemap (Dibangun Semua di Tahap A, Konten Dummy)
 
 - **Beranda**
-- **Tentang Kami:** Profil Perusahaan, Visi & Misi, Perjalanan Kami, Jajaran Kepemimpinan
-- **Pilar Bisnis:** halaman daftar + halaman detail untuk 7 unit (satu template)
-- **Portofolio:** Proyek (daftar + detail), Klien & Mitra
+- **Tentang Kami:** Profil Perusahaan (termasuk Chairman Message), Visi & Misi, Perjalanan Kami *(Jajaran Kepemimpinan dan Legalitas sudah dihapus: K23, K19)*
+- **Pilar Bisnis:** halaman daftar (8 pilar) + halaman detail pilar (blok per brand) + **halaman brand** (`/id/pilar-bisnis/{pilar}/{brand}`, 20 brand)
+- **Portofolio:** Proyek (daftar + detail), Klien & Mitra, **Penghargaan**
 - **Berita:** daftar, kategori, detail
 - **Keberlanjutan** (dulu "Komunitas", K16): Komunitas Peduli Digital
 - **Karir:** umum, kirim CV ke email
@@ -307,7 +462,7 @@ Dikerjakan halaman demi halaman berdasarkan masukanmu. Urutan: **Beranda dulu**,
 - [~] 1. Legalitas dihapus (halaman, menu, route, teks); diganti **Perjalanan Kami**: lini waktu vertikal kiri-kanan bergantian, foto per peristiwa, label tahun, tombol loncat ke tahun, penutup "Perjalanan ini belum selesai". Template siap isi lewat `Content::about()['journey']` (6 peristiwa DUMMY, foto di `public/img/journey/{tahun}.jpg`)
 - [~] 2. Bagian "Perjalanan kami" di Profil Perusahaan dihapus
 - [~] 3. Keempat tab didesain ulang: tab jadi pil melayang di tepi bawah hero; Profil (foto bertumpuk, angka ringkas dari data, sektor gaya editorial, ubin pilar bisnis, kantor pusat menonjol); Visi & Misi (panel visi, misi dengan penanda centang, nilai kolom editorial); Manajemen (pimpinan utama besar + grid anggota)
-**Tentang Kami, putaran 2**
+**Tentang Kami, putaran 2** *(bagian Jajaran Kepemimpinan digantikan K23; Perjalanan mulai 2018 akan menyesuaikan di R3)*
 - [~] Perjalanan Kami dimulai 2018 (2018, 2019, 2021, 2022, 2024, 2026)
 - [~] Tab navigasi kini **menempel di bawah header** saat di-scroll (tidak tenggelam)
 - [~] Tab navigasi di HP: panah kiri/kanan (muncul hanya bila ada tab tersembunyi) dan tab aktif otomatis di tengah saat halaman dibuka
@@ -367,51 +522,211 @@ Dikerjakan halaman demi halaman berdasarkan masukanmu. Urutan: **Beranda dulu**,
 
 ---
 
+### REVISI DARI DOKUMEN PDF `Revisi_Website_decaaid.pdf` (2 Nov 2026, BERJALAN)
+
+Fokus **tampilan** dulu. Bahan yang belum jelas dikosongkan (tidak diisi karangan); yang sudah jelas langsung dipasang. Dikerjakan bertahap R1 sampai R5.
+
+| Butir PDF | Isi | Tahap | Status |
+|---|---|---|---|
+| 1 | Revisi slogan | R1 | `[~]` |
+| 2 | Menu Pilar Bisnis jadi 8 jenis bisnis (list teks) | R1 | `[~]` |
+| 3 | Profil perusahaan, visi, misi, perjalanan 2019-2026 | R3 | `[ ]` |
+| 4 | Jajaran Kepemimpinan dihilangkan | R1 | `[~]` |
+| 5 | Penjelasan pilar bisnis + brand, tombol Selengkapnya | R1 | `[~]` |
+| 6 | Isi 3 foto depan (kolase hero) | R2 | `[ ]` |
+| 1, 5 (Beranda) | Hero label DECAA.ID, Tentang DECAA.ID, brand 5 per baris | R2 | `[~]` |
+| 7 | Portofolio proyek: isi menyusul | R5 | `[ ]` |
+| 8 | Klien & Mitra: data dilengkapi, Ristekdikti diganti | R5 | `[ ]` |
+| 9 | Berita: data lama dimasukkan | R5 / B6 | `[ ]` |
+| 10 | Karir mengikuti 8 pilar (butir 5) | R1 | `[~]` |
+| 11 | Data kontak divalidasi | R5 | `[ ]` |
+| 12 | Menu baru Penghargaan | R4 | `[ ]` (route + menu sudah di R1) |
+
+**R1: Slogan, Pilar Bisnis, menu (file dikirim, menunggu dicek di browser)**
+- [~] Hero Beranda: judul \"Mitra Solusi untuk Segala Akselerasi\" + teks \"Ekosistem digital...\" (ID dan EN). Label kecil di atas judul dikosongkan (tampil otomatis bila diisi di `Content::home()['hero']['eyebrow']`). Judul tagline situs (`<title>`) ikut slogan
+- [~] Menu **Pilar Bisnis** (mega menu desktop, drawer HP, footer, pencarian cepat): 8 jenis bisnis, **teks saja tanpa logo**, tautan \"Lihat semua pilar bisnis\" tetap ada
+- [~] Data pilar + 17 brand di file baru `app/Support/Pillars.php` (teks dokumen apa adanya; Instagram/TikTok kosong; tautan More Info sesuai dokumen). `Content::rawUnits()` kini membaca file ini
+- [~] Beranda: bagian Pilar Bisnis = 8 kartu (ikon jenis bisnis, nama, daftar brand), tombol \"Lihat semua pilar bisnis\" di bawah grid (kartu gradasi lama dihapus karena jumlahnya kini genap)
+- [~] Halaman daftar Pilar Bisnis: grid 4x2, kartu berisi ikon, nomor, nama pilar, dan label brand. Band \"Satu pintu\" tetap (teks DUMMY)
+- [~] Halaman detail pilar: judul pilar, lalu **blok per brand** (logo, nama, penjelasan, ikon Instagram/TikTok bila diisi, tombol **Selengkapnya** ke situs brand di tab baru), lalu proyek terkait dan pilar lainnya. Bagian \"Layanan\" dan \"Cara kerja\" dummy lama **dihapus** (tidak ada di dokumen)
+- [~] Komponen baru `<x-ui.pillar-mark>` + 6 ikon baru di `components/ui/icon` (code-bracket, cpu-chip, signal, pencil, gift, cake). Karir (kartu bidang + pilihan bidang) dan ubin pilar di Profil Perusahaan ikut 8 pilar
+- [~] Jajaran Kepemimpinan: tab, menu, route (`about.team`), dan data `about()['team']` dihapus
+- [~] Menu Portofolio: **Penghargaan** ditambahkan (route `awards` sudah ada; halamannya R4, sementara tampil halaman placeholder)
+- [~] Proyek dummy dipetakan ke pilar baru (software/robotics -> Software & Robotics, dst.)
+- [ ] **Hapus file lama:** `resources/views/pages/about/team.blade.php` dan `resources/views/pages/about/legal.blade.php`
+- [ ] **Logo brand yang dibutuhkan** di `public/img/logo/` (selama kosong tampil placeholder berlabel): sudah ada `software.png`, `robotic.png`, `hardware.png`, `networking.png`, `trainingcentre.png`, `paperking.png`, `dapurkirana.png`. **Baru:** `mmc-computer.png`, `apple-kingdom.png`, `sekolah-robotika.png`, `gardenia.png`, `hba-supplier.png`, `fruvola.png`, `satu-ai.png`, `pasar-online.png`, `mbg-food-hub.png`, `desa-digital.png`
+- [ ] Cek di browser: menu (desktop dan HP), Beranda, `/id/pilar-bisnis`, kedelapan halaman detail (terutama Commercial Technology yang brand-nya belum punya deskripsi), kedua bahasa, lebar 360/768/1024/1440 px
+- [ ] Teks `lang/*.json` atau Labels yang masih menyebut \"tujuh pilar\": sudah dibersihkan di `Content.php`; cek sisanya di tampilan
+
+**R2: Beranda (file dikirim, menunggu dicek di browser; urutan R2 sekarang dikerjakan per halaman sesuai masukanmu)**
+- [~] Hero: judul memakai Capitalize Each Word; label kecil di atas judul diisi **DECAA.ID**
+- [~] Tentang DECAA.ID: judul **Everything Is Nothing Without Technology** (ID dan EN sama), deskripsi dari dokumen (EN = terjemahan draf); paragraf kedua (kantor Jakarta dst.) dihapus
+- [~] Pilar Bisnis di Beranda: kini menampilkan **semua brand** (Decaa Software, Decaa Robotics, dst., 17 brand) **5 per baris** di desktop (3 di tablet, 2 di HP). Logo yang belum ada tampil placeholder berlabel; tiap kartu menuju blok brand di halaman pilar-nya. Tombol \"Lihat semua pilar bisnis\" tetap
+- [ ] Tiga foto depan (butir 6): menunggu giliran (foto besar: semua brand decaa memakai baju berbeda-beda; dua lainnya belum jelas)
+- [ ] Cek ulang teks Beranda lain (nilai perusahaan, dst.) terhadap profil baru di R3
+
+**R3: Tentang Kami (butir 3) (menunggu)**
+- [ ] Profil Perusahaan: teks baru dari dokumen (5 pilar teknologi + bisnis pendukung, semangat \"everything is nothing without technology\")
+- [ ] Visi (dari dokumen); **Misi dikosongkan** (Q13); nilai-nilai dummy lama ditinjau
+- [ ] Perjalanan Kami: 2019 sampai 2026 sesuai dokumen (Q14); foto per tahun tetap placeholder
+
+**R4: Penghargaan (butir 12) (menunggu)**
+- [ ] Halaman `Penghargaan` (carousel kartu foto + judul, contoh di dokumen: \"Penghargaan Keberlanjutan\"); isi **kosong** sampai daftar penghargaan dan sertifikat dikirim
+
+**R5: Portofolio, Klien & Mitra, Berita, Kontak (butir 7, 8, 9, 11) (menunggu)**
+- [ ] Tampilan tetap; hanya data yang diisi. Menunggu bahan: proyek (terutama kementerian/klien besar), logo klien terbaru (Ristekdikti diganti kementerian barunya), berita lama (B6), validasi telepon/WA/sosmed
+
+---
+
 ### TAHAP B: BACK-OFFICE & ADMIN (SETELAH ACC)
 
+> **Disusun ulang 2 Nov 2026** mengikuti halaman dan data yang ada di kode sekarang (8 pilar + 20 brand, brand page, Penghargaan, Chairman Message, Perjalanan Kami, Klien & Mitra 7 kategori). **Belum ada yang dikerjakan.** Keputusan yang menentukan bentuk akhir ada di **Bagian 3B (QA1-QA18)**; item di bawah mengikuti rekomendasiku dan akan disesuaikan dengan jawabanmu. Penomoran B1-B6 dipertahankan agar rujukan lama tetap benar.
+
+**Prinsip rancangan (usulan)**
+1. **Frontend tidak ditulis ulang.** `App\Support\Content` dan `Pillars` diganti lapisan yang membaca database dan mengembalikan **array dengan bentuk yang sama**, sehingga view tetap.
+2. **Kolom dwibahasa = JSON `{"id": ..., "en": ...}`** + status terjemahan per record, tanpa paket pihak ketiga (mengurangi risiko Laravel 9 EOL).
+3. **Daftar berulang** (nilai-nilai, misi, program, alasan bergabung, langkah seleksi) disimpan sebagai *repeater* JSON di dalam konten halaman, bukan tabel sendiri; entitas yang punya halaman sendiri (pilar, brand, proyek, berita, dst.) memakai tabel sendiri.
+4. Data yang sekarang di kode **diimpor otomatis** (QA4); admin langsung terisi dan item DUMMY ditandai.
+5. Admin buatan sendiri: Blade + Tailwind + Alpine (K2), tanpa Livewire; tabel dan filter di sisi server.
+
+#### Peta konten: halaman publik ke modul admin
+
+| Halaman publik | Sumber sekarang | Modul admin | Isi yang bisa diedit |
+|---|---|---|---|
+| Header, footer, semua halaman | `Content::company()`, `config/site.php` | **Pengaturan Situs** (B3a) | Nama, slogan, logo terang/gelap, favicon, email umum + karir, telepon, WhatsApp, 6 sosmed, kantor (jenis, kota, alamat ID/EN, tautan peta, foto, urutan), teks hak cipta |
+| Menu | `Content::nav()` | **Menu** (B3o, QA2) | Label, tampil/sembunyi, urutan tingkat atas |
+| Beranda | `Content::home()` | **Beranda** (B3e) | Hero (label, judul, teks, 3 foto kolase), Tentang DECAA.ID (+2 foto), judul section, 4 nilai perusahaan, blok Keberlanjutan (3 poin + foto), CTA; pilih 3 proyek unggulan; tampil/urut section |
+| Tentang Kami: Profil | `Content::about()['profile']` | **Tentang Kami** (B3f) | Lead, paragraf cerita, 2 foto, **Chairman Message** (nama, jabatan, foto, judul, isi), foto kantor Jakarta |
+| Tentang Kami: Visi & Misi | `about()['vision']` | B3f | Visi, daftar misi (Q13), 5 nilai (judul + teks) |
+| Tentang Kami: Perjalanan Kami | `about()['journey']` | B3f | Intro, **lini waktu** (tahun, tag, judul, cerita, foto) |
+| Pilar Bisnis (daftar, detail, brand) | `App\Support\Pillars` | **Pilar & Brand** (B3c) | Pilar (nama, ikon, urutan, tampil); brand (pilar induk, nama, logo, deskripsi ID/EN, Instagram, TikTok, tautan Selengkapnya, urutan) |
+| Portofolio: Proyek | `Content::portfolio()` | **Proyek** (B3g) | Judul, pilar, klien, tahun, foto, ringkasan, deskripsi, lingkup kerja (daftar), unggulan, galeri (QA10) |
+| Portofolio: Klien & Mitra | folder `public/img/clients/*` | **Klien & Mitra** (B3h) | Logo, nama (opsional), kategori (dikelola), urutan, tampil di beranda, izin tampil (internal) |
+| Portofolio: Penghargaan | `Content::awardsPage()` | **Penghargaan** (B3i) | Judul, tahun, deskripsi, foto, unggulan (manual) (QA11) |
+| Berita | `Content::news()` | **Berita & Kategori** (B3d) | Judul, slug, kategori, tanggal, foto, ringkasan, isi (editor teks kaya), status Draf/Terbit/Terjadwal, SEO |
+| Keberlanjutan | `Content::communityPage()` | **Keberlanjutan** (B3j) | Tentang, 3 fokus, program (daftar), ajakan bergabung |
+| Karir | `Content::careersPage()` | **Karir** (B3k) | Pengantar, alasan bergabung, langkah seleksi, bidang (mengikuti 8 pilar), email tujuan |
+| Kontak | `Content::contactPage()` | **Kontak & Pesan Masuk** (B3l) | Pengantar, daftar subjek, tujuan email, **kotak masuk** pesan |
+| Kebijakan Privasi | `Content::privacyPage()` | **Halaman Legal/Kustom** (B3m) | Bagian-bagian (teks kaya), tanggal pembaruan |
+| Semua halaman | meta di layout | **SEO, Redirect, Sitemap** (B3n) | Judul, deskripsi, gambar share per halaman dan per konten; redirect 301 |
+
+*Tidak dibuatkan modul admin (QA13): Statistik, Jajaran Kepemimpinan, Legalitas. Teks antarmuka (`Labels.php`) tetap di kode kecuali QA6 dijawab B.*
+
+#### TAHAP B-AWAL: Login, Dashboard, dan CRUD Pengguna Admin (dikerjakan lebih dulu)
+
+Atas permintaanmu, admin dimulai dari kerangka yang bisa langsung dilihat dan didesain, sebelum modul konten. Bagian ini menjadi **bagian awal B2** (login, layout, komponen dasar) ditambah modul **Pengguna (B3o)**. Menunggu aba-aba "mulai" darimu sebelum ada kode.
+
+**Asumsi** (Q2-Q6 belum kamu jawab satu per satu; kuikuti rekomendasiku, koreksi bila perlu):
+- Pengguna baru dibuat Super Admin dengan password sementara, wajib ganti saat login pertama (tanpa undangan email).
+- Tahap awal: login, logout, ganti password sendiri, reset password oleh Super Admin. **Lupa password lewat email** menyusul setelah SMTP `info@decaa.id` teruji; **2FA** di putaran berikutnya.
+- Tampilan: sidebar navy tua, konten terang, aksen biru brand `#1B3590`, merah `#E5352E` hanya untuk peringatan/hapus.
+- Dashboard dummy: kartu ringkasan (pesan baru, berita draf, terjemahan belum ditinjau, item DUMMY tersisa), aktivitas terbaru, pintasan "Tambah Berita / Tambah Proyek" (nonaktif sampai modulnya ada). Semua angka ditandai DUMMY.
+- Hanya Super Admin yang bisa menambah, mengubah peran, menonaktifkan, dan menghapus pengguna; Admin dan Editor hanya mengubah profil dan password sendiri. Pengguna dinonaktifkan, bukan dihapus, agar log tetap utuh.
+- Akun awal: Super Admin `decaa@decaa.id`, dibuat lewat perintah artisan (bukan form daftar), `must_change_password = true`. Password awal tidak ditulis di berkas ini. Aturan password baru: minimal 10 karakter, kombinasi huruf dan angka.
+
+**BA1. Fondasi login dan pengguna**
+- [ ] Migration: tambah kolom di `users`: `role` (`super_admin|admin|editor`), `is_active`, `must_change_password`, `last_login_at`
+- [ ] `app/Models/User.php`: konstanta peran, helper `isSuperAdmin()`, dst.
+- [ ] Perintah artisan pembuat Super Admin (idempoten; email default `decaa@decaa.id`)
+- [ ] `routes/admin.php` (prefiks `/admin`, tanpa prefiks bahasa) dimuat dari `RouteServiceProvider`
+- [ ] Middleware: `admin.active` (tolak akun nonaktif), `admin.role:*`, `admin.password` (paksa ganti password), `admin.noindex` (header `X-Robots-Tag` + meta); `Authenticate` diarahkan ke login admin; locale admin dikunci `id`
+- [ ] Login: batas percobaan (throttle per email + IP), pesan galat generik, "ingat saya", regenerasi sesi; logout lewat POST
+- [ ] `lang/id/validation.php` dan `lang/id/auth.php` (pesan Indonesia untuk admin)
+
+**BA2. Layout admin dan dashboard**
+- [ ] `layouts/admin.blade.php`: sidebar (menu per peran), topbar (nama, peran, keluar), breadcrumb, responsif (sidebar jadi drawer di HP)
+- [ ] Komponen `components/admin/*`: tombol, input, select, toggle, kartu, tabel, badge status, modal konfirmasi, toast, state kosong
+- [ ] Halaman login (desain sendiri, memakai logo DECAA.ID) dan halaman ganti password wajib
+- [ ] Dashboard dummy (lihat asumsi); sidebar memuat menu modul mendatang dalam keadaan nonaktif ("Segera")
+- [ ] Memakai build Vite dan Tailwind yang sama dengan situs publik (tanpa mengubah `vite.config.js`); bila `content` Tailwind belum mencakup `resources/views/**/*.blade.php`, kuminta file konfigurasinya
+
+**BA3. CRUD Pengguna dan profil**
+- [ ] Daftar pengguna: cari, filter peran dan status, paginasi
+- [ ] Tambah / ubah / nonaktifkan-aktifkan / hapus (hanya Super Admin); reset password oleh Super Admin (password sementara + wajib ganti)
+- [ ] Pengaman: tidak bisa menonaktifkan atau menghapus diri sendiri; selalu tersisa minimal 1 Super Admin aktif
+- [ ] Profil sendiri: ubah nama dan password
+- [ ] Tabel `activity_logs` (siapa, aksi, sasaran, waktu, IP) dan pencatatan login, logout, serta perubahan pengguna; "Aktivitas terbaru" di dashboard membaca tabel ini
+- [ ] Uji: salah password berulang (throttle), akun nonaktif, peran tidak berhak membuka `/admin/users` (403), Super Admin terakhir tidak bisa dihapus
+
+**BA4. Poles desain admin**
+- [ ] Putaran revisi desain login, layout, dan dashboard berdasarkan masukanmu (seperti revisi halaman depan), lalu dikunci sebagai pola untuk semua modul
+
+*Pengiriman: hanya file yang dibutuhkan, satu file satu kartu, dengan path tujuan dan perintah (`php artisan migrate`, perintah pembuat Super Admin).*
+
 #### B1. Fondasi Data & Bahasa
-- [ ] Skema database (halaman, section, unit, portofolio, klien, berita, kategori, tim, lowongan umum, pesan, menu, pengaturan, media, terjemahan, redirect)
-- [ ] Sistem terjemahan (kolom JSON per bahasa; versi paket dipastikan kompatibel dengan Laravel 9)
-- [ ] Slug unik per bahasa + redirect otomatis saat slug berubah
-- [ ] Layer media: upload, validasi, konversi WebP, thumbnail responsif, alt text
-- [ ] Role: Super Admin, Admin, Editor
+- [ ] Jawaban QA1-QA6 dicatat sebagai keputusan baru di Bagian 2 (K27 dst.)
+- [ ] Skema database (migration), dikelompokkan:
+  - Sistem: `users` (+ peran, status aktif, 2FA), `settings` (kunci ke JSON), `media`, `redirects`, `activity_logs`, `messages`
+  - Entitas konten: `pillars`, `brands`, `projects`, `awards`, `client_categories`, `clients`, `news_categories`, `news`, `milestones`, `offices`
+  - Konten halaman: `page_contents` (satu baris per halaman/section, isi JSON dengan repeater) dan `pages` (halaman kustom/legal, sesuai QA1)
+- [ ] Pola kolom dwibahasa JSON + `translation_status` (Manual / Otomatis (belum ditinjau) / Ditinjau) per record
+- [ ] Slug unik per bahasa untuk entitas yang punya URL; redirect otomatis saat slug berubah
+- [ ] Layer media sesuai QA7: upload, validasi tipe dan ukuran, konversi WebP, thumbnail responsif, alt text ID/EN, pangkas logo otomatis
+- [ ] Peran dan *policy* sesuai QA5 (Super Admin, Admin, Editor)
+- [ ] Perintah artisan **impor data awal** (idempoten) dari `Content.php`, `Pillars.php`, dan `public/img/clients/*`; logo dan foto yang ada ikut masuk Media Library (QA4, QA7)
+- [ ] Strategi cache: hasil query di-cache (driver `file`), dibersihkan otomatis saat admin menyimpan
 
 #### B2. Admin: Fondasi
-- [ ] Login aman (rate limit, lupa password), opsional 2FA
-- [ ] Layout admin modern: sidebar, topbar, breadcrumb, mode terang/gelap, responsif
-- [ ] Komponen reusable: tabel (cari/filter/sort/paginasi), form, toggle, select, modal konfirmasi, toast
-- [ ] Upload gambar (drag-and-drop, preview, crop)
-- [ ] Rich text editor yang bersih
-- [ ] Tab bahasa ID | EN + indikator status terjemahan
-- [ ] Dashboard, Media Library, log aktivitas
+- [ ] Login aman (batas percobaan, lupa password), 2FA sesuai QA5, alamat `/admin` ber-`noindex`
+- [ ] Layout admin: sidebar, topbar, breadcrumb, responsif; antarmuka dan pesan validasi berbahasa Indonesia
+- [ ] Komponen reusable: tabel (cari/filter/sort/paginasi), form, toggle, select, repeater (tambah/hapus/urut), modal konfirmasi, toast
+- [ ] Upload gambar (drag-and-drop, preview, crop) dan pemilih dari Media Library
+- [ ] Editor teks kaya yang bersih (sesuai QA12)
+- [ ] Tab bahasa ID | EN + indikator status terjemahan di semua form
+- [ ] Dashboard: pesan belum dibaca, draf berita, terjemahan belum ditinjau, **checklist item DUMMY yang tersisa** (lihat daftar di bawah) (QA18)
+- [ ] Log aktivitas (QA18)
 
-#### B3. Admin: Modul Konten
-- [ ] Pengaturan situs (logo, kontak, kantor pusat/cabang, sosmed, footer)
-- [ ] Menu (drag-and-drop)
-- [ ] Halaman + page builder section (+ live preview)
-- [ ] Hero, Pilar Bisnis, Portofolio, Klien & Mitra, Berita, Kepemimpinan, Chairman Message, Perjalanan Kami (lini waktu), Statistik, Komunitas, Karir
-- [ ] Pesan masuk dari Kontak (status baca, ekspor)
-- [ ] Pengguna & role
-- [ ] SEO per halaman
+#### B3. Admin: Modul Konten (urutan usulan, mengikuti QA3)
+- [ ] **B3a. Pengaturan Situs:** identitas, logo terang/gelap, favicon, kontak (email umum, email karir, telepon, WhatsApp), sosmed, kantor (tambah/ubah/urut, foto, tautan peta), teks footer, SEO bawaan situs
+- [ ] **B3b. Media Library:** grid, cari, filter jenis, ganti nama, alt text, lihat di mana dipakai, cegah hapus bila masih dipakai
+- [ ] **B3c. Pilar & Brand:** 8 pilar dan 20 brand (field di peta konten), urut dengan seret-dan-lepas, tampil/sembunyi, tautan `https://` dinormalkan (Q15), redirect saat slug berubah
+- [ ] **B3d. Berita & Kategori:** daftar + filter status/kategori, editor, jadwal tayang (cron `schedule:run`), kategori dikelola (QA12), SEO per artikel
+- [ ] **B3e. Beranda:** edit teks tiap section, pilih proyek unggulan, tampil/sembunyi + urut section (QA1)
+- [ ] **B3f. Tentang Kami:** Profil + Chairman Message, Visi & Misi + nilai, Perjalanan Kami (lini waktu, urut tahun)
+- [ ] **B3g. Proyek:** daftar + filter pilar/tahun, field di peta konten, unggulan
+- [ ] **B3h. Klien & Mitra:** kategori dikelola, unggah banyak logo sekaligus, urut, tampil di beranda
+- [ ] **B3i. Penghargaan & Sertifikat:** judul, tahun, deskripsi, foto, unggulan manual (tanpa jenis, penerbit, PDF; QA11)
+- [ ] **B3j. Keberlanjutan:** tentang, fokus, program, ajakan bergabung
+- [ ] **B3k. Karir:** pengantar, alasan, langkah seleksi; bidang diambil otomatis dari 8 pilar
+- [ ] **B3l. Kontak & Pesan Masuk:** pengaturan subjek (tujuan email selalu `info@decaa.id`, K31); kotak masuk (status baca/belum, balas lewat email, hapus, ekspor CSV)
+- [ ] **B3m. Halaman Legal/Kustom:** Kebijakan Privasi (8 bagian + daftar isi + tanggal) dan halaman kustom (QA1)
+- [ ] **B3n. SEO, Redirect, Sitemap:** SEO per halaman (ID/EN), layar Redirect, `sitemap.xml` per bahasa dibuat otomatis (QA16)
+- [ ] **B3o. Menu, Pengguna & Role:** sesuai QA2 dan QA5
+- [ ] **B3p. Pengaturan Sistem:** mode pemeliharaan + tautan rahasia (QA17), ID analitik dan kode verifikasi (QA16), alamat email pengirim (`info@decaa.id`)
 
 #### B4. Menghubungkan Frontend ke Database
-- [ ] Ganti isi `App\Support\Content` menjadi query database (view tidak ditulis ulang)
-- [ ] Form Kontak aktif (email ke `info@decaa.id`, anti-spam)
-- [ ] Pencarian situs berfungsi (lintas berita, unit, portofolio, halaman)
+- [ ] Ganti isi `App\Support\Content` dan `Pillars` menjadi query database **per modul** (bentuk array sama, view tidak ditulis ulang), mengikuti QA3
+- [ ] Form Kontak aktif: validasi, simpan ke `messages`, email notifikasi ke `info@decaa.id` (satu-satunya akun email, K31), balasan otomatis, anti-spam (QA14); hapus teks `preview_note`
+- [ ] Pencarian situs berfungsi dari database (berita, pilar, brand, portofolio, halaman); kata kunci minimal 2 huruf tetap
+- [ ] Filter Portofolio dan Klien & Mitra tetap instan (Alpine), datanya dari database
+- [ ] Bersihkan kode yang tak terpakai: `Content::stats()`, `TrimLogos.php`, `about/team.blade.php`, `about/legal.blade.php`, salinan `resources/js/vite.config.js`
+- [ ] Uji ID dan EN di semua halaman, dan fallback ke ID bila terjemahan EN kosong
 
 #### B5. Terjemahan Otomatis (lihat Bagian 4A)
-- [ ] Lapisan penyedia terjemahan + glosarium proteksi
-- [ ] Tombol "Terjemahkan otomatis" di admin + status terjemahan
-- [ ] Perintah artisan terjemahan massal via queue
-- [ ] Label "Diterjemahkan otomatis" dan fallback ke ID
+- [ ] Lapisan penyedia terjemahan + glosarium proteksi (nama brand: DECAA.ID, Decaa Software, Satu AI, dst.)
+- [ ] Tombol "Terjemahkan otomatis" di admin + status terjemahan (waktu pengerjaan mengikuti QA15)
+- [ ] Perintah artisan terjemahan massal via queue (queue `sync` diganti `database`)
+- [ ] Label "Diterjemahkan otomatis" dan fallback ke ID; halaman inti wajib ditinjau sebelum tampil di EN
 
 #### B6. Migrasi dari WordPress
-- [ ] Bahas jumlah artikel dan ukuran media (K15)
+- [ ] Bahas jumlah artikel dan ukuran media (K15). Sesuai K28: disediakan perintah impor + **tutorial langkah demi langkah** (ekspor dari WordPress, impor, cek hasil)
 - [ ] Ekspor semua artikel, kategori, tag, dan **seluruh foto** dari WordPress
-- [ ] Skrip impor (rapikan HTML, perbaiki path gambar, konversi WebP)
-- [ ] Peta redirect 301 URL lama ke baru
+- [ ] Skrip impor (rapikan HTML, perbaiki path gambar, konversi WebP, petakan kategori lama ke 5 kategori baru)
+- [ ] Peta redirect 301 URL lama ke baru (lewat layar Redirect)
 - [ ] Terjemahan massal artikel lama (B5)
 - [ ] Verifikasi hasil impor (sampel + hitung jumlah)
+
+#### Daftar DUMMY yang harus diganti lewat admin sebelum go-live
+Ini juga menjadi sumber checklist di dashboard admin.
+- [ ] Telepon (`+62 21 0000 0000`), WhatsApp, dan 6 URL sosmed (`#`)
+- [ ] Chairman Message: nama, foto, isi pesan
+- [ ] Teks Beranda: 4 nilai perusahaan; blok Keberlanjutan; "Satu pintu" di halaman Pilar Bisnis
+- [ ] Program Komunitas Peduli Digital (4 program contoh)
+- [ ] Kebijakan Privasi (draf, **wajib ditinjau pihak hukum**)
+- [ ] Brand Commercial Technology (7 brand tanpa deskripsi dan logo) dan 10 logo brand baru
+- [ ] Misi (Q13) dan foto Perjalanan Kami per tahun
+- [ ] Foto dummy: hero (3), tentang (2), komunitas, berita, proyek, penghargaan, tim/kantor
+- [ ] Nama proyek dan klien dummy di Portofolio; 6 penghargaan contoh
 
 ---
 
@@ -455,7 +770,7 @@ Dikerjakan halaman demi halaman berdasarkan masukanmu. Urutan: **Beranda dulu**,
 - [ ] Identitas jelas: nama, profil, visi-misi, bidang usaha
 - [ ] ~~Legalitas tampil~~ (halaman dihapus, K19): tentukan pengganti, mis. cara meminta dokumen lewat Kontak
 - [ ] Alamat kantor pusat dan cabang, email, telepon resmi mudah ditemukan
-- [ ] Pilar bisnis dan bukti kerja (portofolio, klien) jelas
+- [ ] Pilar bisnis (8 jenis bisnis dan brand-nya) dan bukti kerja (portofolio, klien, penghargaan) jelas
 - [ ] Struktur menu bersifat korporat, berita bukan pusat halaman
 - [ ] Tampilan konsisten (font, warna, bahasa), tanpa teks di dalam gambar
 - [ ] Konten terbaru dan tanggal konsisten
@@ -479,6 +794,7 @@ Dikerjakan halaman demi halaman berdasarkan masukanmu. Urutan: **Beranda dulu**,
 - **(I7)** Video hero ringan dengan fallback gambar di HP
 - **(I8)** Mode terang/gelap dan pintasan keyboard di admin
 - **(I9)** Halaman "Mitra & Sertifikasi" bila nanti ada (ISO, partner resmi vendor)
+- **(I10)** Checklist kesiapan konten di dashboard admin: daftar item DUMMY yang tersisa sebelum go-live (diusulkan masuk B2, lihat QA18)
 
 ---
 
@@ -535,3 +851,7 @@ Dikerjakan halaman demi halaman berdasarkan masukanmu. Urutan: **Beranda dulu**,
 | 30 Okt 2026 | v21: angka di halaman Pilar Bisnis dihapus; **Klien & Mitra** memakai logo asli (90 logo, 7 kategori) dan didesain ulang. File: `pages/clients.blade.php`, `pages/units/index.blade.php`, `pages/units/show.blade.php`, `pages/home.blade.php` (strip 24 logo), `app/Support/Content.php` (`clients()`, `clientCategories()`, `clientsPage()`), `app/Support/Labels.php` (kunci `units.*` yang tak terpakai dibuang) |
 | 30 Okt 2026 | v22: **Redesain detail Berita** (hero + foto menumpuk, progres baca, rel bagikan, sebelumnya/berikutnya, terkait). File: `pages/news/show.blade.php`, `app/Support/Labels.php` (kunci `news.*`). Tanpa perubahan `Content.php`, route, atau CSS |
 | 30 Okt 2026 | v23: ikon merek untuk footer dan bagikan berita, LinkedIn ditambahkan. File: `components/ui/social-icon.blade.php` (baru), `partials/footer.blade.php`, `pages/news/show.blade.php`, `app/Support/Content.php` (kunci `social.linkedin`) |
+| 2 Nov 2026 | v24: **Revisi dari `Revisi_Website_decaaid.pdf`, tahap R1**: slogan baru, Pilar Bisnis = 8 jenis bisnis + 17 brand (K22), Jajaran Kepemimpinan dihapus (K23), menu Penghargaan ditambahkan (K25), Karir ikut pilar. File: `app/Support/Pillars.php` (baru), `app/Support/Content.php`, `config/site.php`, `partials/header`, `pages/home`, `pages/units/index`, `pages/units/show`, `pages/careers`, `pages/about/profile`, `components/ui/pillar-mark` (baru), `components/ui/icon`. Tahap R2-R5 menyusul |
+| 2 Nov 2026 | v25: **R2 Beranda**: hero Capitalize Each Word + label DECAA.ID; Tentang DECAA.ID (judul dan deskripsi baru); Pilar Bisnis tampil per brand 5 per baris. File: `app/Support/Content.php`, `resources/views/pages/home.blade.php` |
+| 2 Nov 2026 | v26: **Perencanaan Tahap B (Admin)**. Ditambah Bagian 3B (QA1-QA18, pertanyaan untuk dijawab); Bagian 6 (sitemap) diperbarui (8 pilar, halaman brand, Penghargaan, Chairman Message; Kepemimpinan dan Legalitas dihapus); Tahap B disusun ulang (peta konten ke modul admin, B1-B6 dirinci, daftar DUMMY). Temuan: brand sekarang 20 (bukan 17), `Content::stats()` tidak dipakai lagi. **Tanpa perubahan kode** |
+| 2 Nov 2026 | v27: jawaban QA1-QA18 dicatat (K27-K32), koreksi email (hanya `info@decaa.id`, `mail.decaa.id` = server), Super Admin awal `decaa@decaa.id`; ditambah **Tahap B-awal** (BA1-BA4: login, layout + dashboard dummy, CRUD pengguna, poles desain); lingkup Penghargaan disederhanakan. **Tanpa perubahan kode** |

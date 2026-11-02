@@ -51,10 +51,6 @@ return [
             'slug' => ['id' => 'tentang-kami/perjalanan-kami', 'en' => 'about-us/our-journey'],
             'action' => 'page',
         ],
-        'about.team' => [
-            'slug' => ['id' => 'tentang-kami/jajaran-kepemimpinan', 'en' => 'about-us/leadership'],
-            'action' => 'page',
-        ],
 
         // Pilar Bisnis
         'units.index' => [
@@ -65,10 +61,19 @@ return [
             'slug' => ['id' => 'pilar-bisnis/{slug}', 'en' => 'business-pillars/{slug}'],
             'action' => 'unit',
         ],
+        'units.brand' => [
+            'slug' => ['id' => 'pilar-bisnis/{slug}/{brand}', 'en' => 'business-pillars/{slug}/{brand}'],
+            'action' => 'brand',
+        ],
 
         // Portofolio
         'portfolio.index' => [
             'slug' => ['id' => 'portofolio', 'en' => 'portfolio'],
+            'action' => 'page',
+        ],
+        // Penghargaan: HARUS didaftar sebelum 'portfolio.show' agar tidak tertangkap {slug}
+        'awards' => [
+            'slug' => ['id' => 'portofolio/penghargaan', 'en' => 'portfolio/awards'],
             'action' => 'page',
         ],
         'portfolio.show' => [

@@ -10,6 +10,7 @@
     $clients = \App\Support\Content::clients(24);
     $posts = \App\Support\Content::posts();
     $community = \App\Support\Content::community();
+    $awards = \App\Support\Content::awardsPage();
 @endphp
 
 @section('content')
@@ -24,12 +25,14 @@
 
         <div class="container grid items-center gap-14 py-20 sm:py-24 lg:min-h-[40rem] lg:grid-cols-12 lg:gap-10 lg:py-28">
             <div class="lg:col-span-6">
-                <p class="animate-fade-up inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-brand-100 backdrop-blur">
-                    <span class="h-1.5 w-1.5 rounded-full bg-accent-400"></span>
-                    {{ $home['hero']['eyebrow'] }}
-                </p>
+                @if (! empty($home['hero']['eyebrow']))
+                    <p class="animate-fade-up inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-brand-100 backdrop-blur">
+                        <span class="h-1.5 w-1.5 rounded-full bg-accent-500"></span>
+                        {{ $home['hero']['eyebrow'] }}
+                    </p>
+                @endif
                 <h1 id="hero-title"
-                    class="animate-fade-up mt-7 text-4xl font-extrabold leading-[1.08] text-white sm:text-5xl lg:text-[3.5rem]"
+                    class="animate-fade-up capitalize @if (! empty($home['hero']['eyebrow'])) mt-7 @endif text-4xl font-extrabold leading-[1.08] text-white sm:text-5xl lg:text-[3.5rem]"
                     style="animation-delay: 100ms">
                     {{ $home['hero']['title'] }}
                 </h1>
@@ -70,7 +73,6 @@
                 <p class="eyebrow">{{ $home['about']['eyebrow'] }}</p>
                 <h2 id="about-title" class="mt-3 text-3xl leading-tight md:text-4xl">{{ $home['about']['title'] }}</h2>
                 <p class="mt-5 text-base leading-relaxed md:text-lg">{{ $home['about']['text'] }}</p>
-                <p class="mt-4 text-base leading-relaxed md:text-lg">{{ $home['about']['text2'] }}</p>
                 <div class="mt-7">
                     <x-ui.button :href="lroute('about.profile')" variant="outline" icon="arrow-right">
                         {{ t('home.about_more') }}
@@ -111,40 +113,27 @@
                 </div>
             </x-ui.reveal>
 
-            <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {{-- Semua brand dari semua pilar, 5 per baris (desktop). Logo yang belum ada tampil placeholder. --}}
+            <ul class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 lg:gap-5">
                 @foreach ($units as $unit)
-                    <x-ui.reveal :delay="($loop->index % 4) * 80" class="h-full">
-                        <x-ui.card :href="lroute('units.show', ['slug' => $unit['slug']])" class="group flex flex-col">
-                            <x-ui.img :src="$unit['logo']" :alt="$unit['name']" :label="$unit['name']"
-                                      class="h-14 w-32 rounded-lg object-contain object-left" />
-                            <h3 class="mt-5 text-lg">{{ $unit['name'] }}</h3>
-                            <p class="mt-2 flex-1 text-sm leading-relaxed">{{ $unit['summary'] }}</p>
-                            <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold capitalize text-brand-700">
-                                {{ t('ui.read_more') }}
-                                <x-ui.icon name="arrow-right" class="h-4 w-4 transition group-hover:translate-x-1" />
-                            </span>
-                        </x-ui.card>
-                    </x-ui.reveal>
+                    @foreach ($unit['brands'] as $brand)
+                        <li>
+                            <x-ui.reveal :delay="($loop->parent->index + $loop->index) % 5 * 70" class="h-full">
+                                <a href="{{ lroute('units.brand', ['slug' => $unit['slug'], 'brand' => $brand['slug']]) }}"
+                                   class="group flex h-full flex-col items-center gap-4 rounded-2xl bg-white p-5 text-center shadow-card ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:ring-brand-200">
+                                    <x-ui.img :src="$brand['logo']" :alt="$brand['name']" :label="$brand['name']"
+                                              class="h-20 w-full rounded-lg object-contain" />
+                                    <span class="text-sm font-semibold leading-snug text-ink transition group-hover:text-brand-700">{{ $brand['name'] }}</span>
+                                </a>
+                            </x-ui.reveal>
+                        </li>
+                    @endforeach
                 @endforeach
+            </ul>
 
-                {{-- Kartu ke-8: ajakan melihat semua unit (melengkapi grid 4x2) --}}
-                <x-ui.reveal :delay="240" class="h-full">
-                    <a href="{{ lroute('units.index') }}"
-                       class="group relative isolate flex h-full min-h-[14rem] flex-col justify-between overflow-hidden rounded-xl bg-gradient-to-br from-brand-700 to-brand-900 p-6 text-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
-                        <span class="absolute -right-10 -top-10 -z-10 h-40 w-40 rounded-full bg-white/10 transition duration-500 group-hover:scale-125"></span>
-                        <span class="absolute -bottom-16 -left-10 -z-10 h-40 w-40 rounded-full bg-accent-500/20 blur-2xl"></span>
-
-                        <span class="text-xs font-semibold uppercase tracking-widest text-brand-200">{{ $home['units']['eyebrow'] }}</span>
-
-                        <span class="mt-8 inline-flex items-center justify-between gap-3 rounded-full bg-white py-2 pl-5 pr-2 text-sm font-bold capitalize text-brand-800 shadow-sm">
-                            {{ t('nav.all_units') }}
-                            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-700 text-white transition group-hover:translate-x-0.5 group-hover:bg-accent-500">
-                                <x-ui.icon name="arrow-right" class="h-4 w-4" />
-                            </span>
-                        </span>
-                    </a>
-                </x-ui.reveal>
-            </div>
+            <x-ui.reveal class="mt-10 flex justify-center">
+                <x-ui.button :href="lroute('units.index')" variant="outline" icon="arrow-right">{{ t('nav.all_units') }}</x-ui.button>
+            </x-ui.reveal>
         </div>
     </section>
 
@@ -290,6 +279,89 @@
             </x-ui.reveal>
         </div>
     </section>
+
+    {{-- 7b. PENGHARGAAN: carousel kartu (4 per tampilan di desktop, 2 di tablet, 1 di ponsel). Data: Content::awardsPage() --}}
+    @if (! empty($awards['items']))
+        <section class="relative isolate overflow-hidden bg-brand-950 py-12 text-white md:py-16" aria-labelledby="awards-title"
+                 x-data="{ i: 0, pv: 4, n: {{ count($awards['items']) }}, timer: null,
+                           get max() { return Math.max(0, this.n - this.pv) },
+                           calc() { this.pv = window.innerWidth >= 1024 ? 4 : (window.innerWidth >= 640 ? 2 : 1); if (this.i > this.max) this.i = this.max },
+                           next() { this.i = this.i >= this.max ? 0 : this.i + 1 },
+                           prev() { this.i = this.i <= 0 ? this.max : this.i - 1 },
+                           start() { if (this.max > 0 && ! window.matchMedia('(prefers-reduced-motion: reduce)').matches) { this.stop(); this.timer = setInterval(() => this.next(), 4500) } },
+                           stop() { clearInterval(this.timer) } }"
+                 x-init="calc(); start()" @resize.window.debounce.150ms="calc()"
+                 @mouseenter="stop()" @mouseleave="start()" @focusin="stop()" @focusout="start()">
+            <div class="absolute inset-0 -z-10 bg-gradient-to-br from-brand-900 via-brand-950 to-brand-950"></div>
+            <div class="absolute inset-0 -z-10 opacity-50 [background-image:radial-gradient(rgba(255,255,255,0.14)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_at_85%_15%,#000,transparent_70%)]"></div>
+            <div class="absolute -left-28 top-0 -z-10 h-72 w-72 rounded-full bg-brand-600/30 blur-3xl"></div>
+            <div class="absolute -bottom-28 right-1/4 -z-10 h-64 w-64 rounded-full bg-accent-500/10 blur-3xl"></div>
+
+            <div class="container">
+                <x-ui.reveal>
+                    <div class="flex flex-wrap items-end justify-between gap-5">
+                        <div class="max-w-xl">
+                            <p class="eyebrow inline-flex items-center gap-3 text-accent-400">
+                                <span class="h-0.5 w-8 rounded-full bg-accent-500"></span>{{ $awards['eyebrow'] }}
+                            </p>
+                            <h2 id="awards-title" class="mt-3 text-2xl leading-tight text-white md:text-3xl">{{ $awards['title'] }}</h2>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <x-ui.button :href="lroute('awards')" variant="outline-light" size="sm" icon="arrow-right" class="hidden sm:inline-flex">{{ $awards['view_all'] }}</x-ui.button>
+                            <button type="button" @click="prev()" aria-label="{{ $awards['slide_prev'] }}"
+                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white hover:text-brand-800">
+                                <x-ui.icon name="chevron-left" class="h-5 w-5" />
+                            </button>
+                            <button type="button" @click="next()" aria-label="{{ $awards['slide_next'] }}"
+                                    class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/20 transition hover:bg-white hover:text-brand-800">
+                                <x-ui.icon name="chevron-right" class="h-5 w-5" />
+                            </button>
+                        </div>
+                    </div>
+                </x-ui.reveal>
+
+                <x-ui.reveal :delay="100">
+                    {{-- Jendela geser: -mx/px menjaga bayangan dan jarak antar kartu --}}
+                    <div class="-mx-2.5 mt-8 overflow-hidden py-2">
+                        <ul class="flex transition-transform duration-700 ease-out" :style="`transform: translateX(-${i * 100 / pv}%)`">
+                            @foreach ($awards['items'] as $award)
+                                <li class="shrink-0 px-2.5" :style="`width: ${100 / pv}%`">
+                                    <a href="{{ lroute('awards') }}"
+                                       class="group flex h-full flex-col overflow-hidden rounded-2xl bg-white/[0.06] ring-1 ring-white/10 backdrop-blur transition duration-300 hover:-translate-y-1 hover:bg-white/[0.1] hover:ring-white/25">
+                                        <div class="relative overflow-hidden">
+                                            <x-ui.img :src="$award['image']" :alt="$award['title']" :label="$award['title']"
+                                                      class="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105" />
+                                            <span class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-xs font-bold text-brand-800 shadow-sm backdrop-blur">
+                                                <svg class="h-3.5 w-3.5 text-accent-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>
+                                                {{ $award['year'] }}
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-1 flex-col p-4">
+                                            <h3 class="line-clamp-2 text-base font-bold leading-snug text-white">{{ $award['title'] }}</h3>
+                                            <p class="mt-1.5 line-clamp-2 text-sm leading-relaxed text-brand-100">{{ $award['text'] }}</p>
+                                        </div>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </x-ui.reveal>
+
+                <div class="mt-5 flex items-center justify-between gap-4" x-show="max > 0">
+                    {{-- Titik penunjuk posisi --}}
+                    <div class="flex items-center gap-2">
+                        <template x-for="d in max + 1" :key="d">
+                            <button type="button" @click="i = d - 1" :aria-label="`${d}`"
+                                    class="h-2 rounded-full transition-all duration-300"
+                                    :class="i === d - 1 ? 'w-7 bg-accent-500' : 'w-2 bg-white/30 hover:bg-white/60'"></button>
+                        </template>
+                    </div>
+                    <x-ui.button :href="lroute('awards')" variant="link" size="sm" icon="arrow-right" class="text-white sm:hidden">{{ $awards['view_all'] }}</x-ui.button>
+                </div>
+            </div>
+        </section>
+    @endif
 
     {{-- 8. BERITA TERBARU --------------------------------------------------- --}}
     <section class="section-y bg-slate-50" aria-labelledby="news-title">

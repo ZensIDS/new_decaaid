@@ -4,6 +4,14 @@
     $ui = \App\Support\Content::ui();
     $page = \App\Support\Content::careersPage();
     $units = \App\Support\Content::units();
+
+    // Semua perusahaan/brand dari semua pilar (satu daftar datar). Ikon pilar dipakai bila logo belum ada.
+    $companies = [];
+    foreach ($units as $u) {
+        foreach ($u['brands'] as $b) {
+            $companies[] = ['name' => $b['name'], 'logo' => $b['logo'], 'unit' => $u];
+        }
+    }
     $email = \App\Support\Content::company()['email']['career'];
 
     $whyIcons = ['briefcase', 'academic-cap', 'heart', 'users'];
@@ -64,15 +72,18 @@
             </x-ui.reveal>
 
             <ul class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($units as $unit)
+                @foreach ($companies as $company)
                     <li>
                         <x-ui.reveal :delay="($loop->index % 4) * 80" class="h-full">
                             <div class="group flex h-full items-center gap-4 rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/60 transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
-                                <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-slate-50 p-2 ring-1 ring-slate-200/70">
-                                    <x-ui.img :src="$unit['logo']" :alt="$unit['name']" :label="null"
-                                              class="max-h-full max-w-full object-contain" />
-                                </span>
-                                <span class="text-sm font-bold leading-snug text-ink">{{ $unit['name'] }}</span>
+                                @if ($company['logo'] && file_exists(public_path($company['logo'])))
+                                    <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 p-2 ring-1 ring-brand-100">
+                                        <x-ui.img :src="$company['logo']" :alt="$company['name']" class="h-full w-full object-contain" />
+                                    </span>
+                                @else
+                                    <x-ui.pillar-mark :unit="$company['unit']" class="h-14 w-14" />
+                                @endif
+                                <span class="text-sm font-bold leading-snug text-ink">{{ $company['name'] }}</span>
                             </div>
                         </x-ui.reveal>
                     </li>
@@ -80,7 +91,7 @@
 
                 {{-- Pelengkap grid: lamaran umum --}}
                 <li>
-                    <x-ui.reveal :delay="(count($units) % 4) * 80" class="h-full">
+                    <x-ui.reveal :delay="(count($companies) % 4) * 80" class="h-full">
                         <a href="#kirim-cv"
                            class="group flex h-full items-center gap-4 rounded-2xl bg-gradient-to-br from-brand-700 to-brand-900 p-4 text-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
                             <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/10 text-accent-400 ring-1 ring-white/20">
@@ -162,10 +173,10 @@
                         <legend class="text-sm font-bold text-ink">{{ $page['field_label'] }}</legend>
 
                         <div class="mt-4 flex flex-wrap gap-2.5">
-                            @foreach ($units as $unit)
+                            @foreach ($companies as $company)
                                 <label class="cursor-pointer">
-                                    <input type="radio" name="field" value="{{ $unit['name'] }}" x-model="field" class="peer sr-only">
-                                    <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-700 peer-checked:border-brand-700 peer-checked:bg-brand-700 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2">{{ $unit['name'] }}</span>
+                                    <input type="radio" name="field" value="{{ $company['name'] }}" x-model="field" class="peer sr-only">
+                                    <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-700 peer-checked:border-brand-700 peer-checked:bg-brand-700 peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2">{{ $company['name'] }}</span>
                                 </label>
                             @endforeach
                             <label class="cursor-pointer">

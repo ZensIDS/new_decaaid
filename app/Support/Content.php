@@ -46,8 +46,8 @@ class Content
         return self::localize([
             'name' => 'DECAA.ID',
             'tagline' => [
-                'id' => 'Solusi teknologi dan layanan terpadu untuk institusi dan bisnis',
-                'en' => 'Integrated technology solutions and services for institutions and businesses',
+                'id' => 'Mitra Solusi untuk Segala Akselerasi',
+                'en' => 'Your Solutions Partner for Every Acceleration',
             ],
             'logo' => [
                 'on_light' => 'img/logo/decaaid-black.png',
@@ -99,80 +99,20 @@ class Content
      | Pilar bisnis
      * ------------------------------------------------------------------- */
 
+    /**
+     * Pilar Bisnis = JENIS BISNIS (bukan nama divisi). Data lengkap + brand ada di App\Support\Pillars.
+     * 'summary' diturunkan dari nama brand di dalamnya (fakta dari dokumen, bukan karangan).
+     * 'subtitle' dan 'logo' dipertahankan (null) agar view lama tidak error.
+     */
     protected static function rawUnits(): array
     {
-        return [
-            [
-                'slug' => 'software',
-                'name' => 'Software',
-                'subtitle' => null,
-                'logo' => 'img/logo/software.png',
-                'summary' => [
-                    'id' => 'Pengembangan sistem informasi, aplikasi web, dan solusi digital yang disesuaikan dengan kebutuhan institusi dan bisnis.',
-                    'en' => 'Development of information systems, web applications, and digital solutions tailored to the needs of institutions and businesses.',
-                ],
-            ],
-            [
-                'slug' => 'robotics',
-                'name' => 'Robotics',
-                'subtitle' => null,
-                'logo' => 'img/logo/robotic.png',
-                'summary' => [
-                    'id' => 'Edukasi, pengembangan, dan penerapan teknologi robotika serta otomasi untuk sekolah, kampus, dan industri.',
-                    'en' => 'Education, development, and application of robotics and automation technology for schools, universities, and industry.',
-                ],
-            ],
-            [
-                'slug' => 'hardware',
-                'name' => 'Hardware',
-                'subtitle' => null,
-                'logo' => 'img/logo/hardware.png',
-                'summary' => [
-                    'id' => 'Pengadaan perangkat teknologi informasi dan perangkat penunjang kerja, lengkap dengan layanan purna jual.',
-                    'en' => 'Procurement of information technology equipment and work-support devices, complete with after-sales service.',
-                ],
-            ],
-            [
-                'slug' => 'networking-services',
-                'name' => 'Networking Services',
-                'subtitle' => null,
-                'logo' => 'img/logo/networking.png',
-                'summary' => [
-                    'id' => 'Perancangan, instalasi, dan pemeliharaan jaringan, CCTV, serta infrastruktur pendukung operasional.',
-                    'en' => 'Design, installation, and maintenance of networks, CCTV, and supporting operational infrastructure.',
-                ],
-            ],
-            [
-                'slug' => 'training-research-centre',
-                'name' => 'Training & Research Centre',
-                'subtitle' => null,
-                'logo' => 'img/logo/trainingcentre.png',
-                'summary' => [
-                    'id' => 'Pelatihan, workshop, dan riset teknologi untuk meningkatkan kompetensi sumber daya manusia.',
-                    'en' => 'Training, workshops, and technology research to improve the competence of human resources.',
-                ],
-            ],
-            [
-                'slug' => 'paperking',
-                'name' => 'PaperKing',
-                'subtitle' => 'Stationery & Office Supply',
-                'logo' => 'img/logo/paperking.png',
-                'summary' => [
-                    'id' => 'Penyediaan alat tulis kantor dan perlengkapan perkantoran untuk instansi dan perusahaan.',
-                    'en' => 'Supply of stationery and office equipment for agencies and companies.',
-                ],
-            ],
-            [
-                'slug' => 'dapur-kirana',
-                'name' => 'Dapur Kirana',
-                'subtitle' => 'Food & Beverages',
-                'logo' => 'img/logo/dapurkirana.png',
-                'summary' => [
-                    'id' => 'Layanan makanan dan minuman, termasuk penyediaan konsumsi untuk kegiatan instansi dan korporasi.',
-                    'en' => 'Food and beverage services, including catering for agency and corporate events.',
-                ],
-            ],
-        ];
+        return array_map(function (array $pillar) {
+            $pillar['subtitle'] = null;
+            $pillar['logo'] = null;
+            $pillar['summary'] = implode(', ', array_column($pillar['brands'], 'name'));
+
+            return $pillar;
+        }, Pillars::all());
     }
 
     public static function units(): array
@@ -185,6 +125,20 @@ class Content
         foreach (self::units() as $unit) {
             if ($unit['slug'] === $slug) {
                 return $unit;
+            }
+        }
+
+        return null;
+    }
+
+    /** Satu brand/perusahaan di dalam sebuah pilar (untuk halaman detail brand). */
+    public static function brand(string $unitSlug, string $brandSlug): ?array
+    {
+        $unit = self::unit($unitSlug);
+
+        foreach ($unit['brands'] ?? [] as $brand) {
+            if ($brand['slug'] === $brandSlug) {
+                return $brand;
             }
         }
 
@@ -216,11 +170,18 @@ class Content
 
     public static function nav(): array
     {
+        // Menu bertingkat: Pilar Bisnis > Pilar > Brand/perusahaan. 'logo' => true menandai anak unit
+        // agar tidak ikut dihitung sebagai "halaman" di pencarian (hasilnya ada di grup Pilar Bisnis).
         $unitChildren = array_map(fn ($unit) => [
             'label' => $unit['name'],
             'route' => 'units.show',
             'params' => ['slug' => $unit['slug']],
-            'logo' => $unit['logo'],
+            'logo' => true,
+            'children' => array_map(fn ($brand) => [
+                'label' => $brand['name'],
+                'route' => 'units.brand',
+                'params' => ['slug' => $unit['slug'], 'brand' => $brand['slug']],
+            ], $unit['brands']),
         ], self::units());
 
         return self::localize([
@@ -231,7 +192,6 @@ class Content
                     ['label' => ['id' => 'Profil Perusahaan', 'en' => 'Company Profile'], 'route' => 'about.profile'],
                     ['label' => ['id' => 'Visi & Misi', 'en' => 'Vision & Mission'], 'route' => 'about.vision'],
                     ['label' => ['id' => 'Perjalanan Kami', 'en' => 'Our Journey'], 'route' => 'about.journey'],
-                    ['label' => ['id' => 'Jajaran Kepemimpinan', 'en' => 'Leadership'], 'route' => 'about.team'],
                 ],
             ],
             [
@@ -245,6 +205,7 @@ class Content
                 'children' => [
                     ['label' => ['id' => 'Proyek', 'en' => 'Projects'], 'route' => 'portfolio.index'],
                     ['label' => ['id' => 'Klien & Mitra', 'en' => 'Clients & Partners'], 'route' => 'clients'],
+                    ['label' => ['id' => 'Penghargaan', 'en' => 'Awards'], 'route' => 'awards'],
                 ],
             ],
             [
@@ -274,31 +235,29 @@ class Content
     {
         return self::localize([
             'hero' => [
-                'eyebrow' => ['id' => 'Mitra teknologi dan layanan terpadu', 'en' => 'Integrated technology and services partner'],
-                'title' => ['id' => 'Solusi teknologi yang menggerakkan institusi dan bisnis Anda', 'en' => 'Technology solutions that move your institution and business forward'],
+                // Slogan baru (Revisi_Website_decaaid.pdf butir 1). Label kecil di atas judul = DECAA.ID.
+                'eyebrow' => ['id' => 'DECAA.ID', 'en' => 'DECAA.ID'],
+                'title' => ['id' => 'Mitra Solusi untuk Segala Akselerasi', 'en' => 'Your Solutions Partner for Every Acceleration'],
                 'text' => [
-                    'id' => 'DECAA.ID menghadirkan tujuh pilar bisnis dalam satu ekosistem: perangkat lunak, robotika, perangkat keras, jaringan, pelatihan, perlengkapan kantor, hingga layanan makanan dan minuman.',
-                    'en' => 'DECAA.ID brings seven business pillars together in one ecosystem: software, robotics, hardware, networking, training, office supplies, and food and beverage services.',
+                    'id' => 'Ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.',
+                    'en' => 'A digital ecosystem with inclusive, secure, and sustainable innovation for every line of industry.',
                 ],
             ],
             'about' => [
                 'eyebrow' => ['id' => 'Tentang DECAA.ID', 'en' => 'About DECAA.ID'],
-                'title' => ['id' => 'Satu mitra untuk beragam kebutuhan teknologi dan layanan', 'en' => 'One partner for a wide range of technology and service needs'],
+                'title' => ['id' => 'Everything Is Nothing Without Technology', 'en' => 'Everything Is Nothing Without Technology'],
                 'text' => [
-                    'id' => 'DECAA.ID menaungi pilar-pilar bisnis di bidang teknologi informasi, robotika, perangkat keras, jaringan, pelatihan, perlengkapan kantor, serta makanan dan minuman.',
-                    'en' => 'DECAA.ID oversees business pillars in information technology, robotics, hardware, networking, training, office supplies, and food and beverages.',
-                ],
-                'text2' => [
-                    'id' => 'Dengan kantor pusat di Jakarta dan cabang di Pacitan serta Ponorogo, kami melayani institusi pemerintah, pendidikan, dan swasta.',
-                    'en' => 'With our headquarters in Jakarta and branches in Pacitan and Ponorogo, we serve government, education, and private institutions.',
+                    'id' => 'Decaa.id merupakan group usaha yang terdiri dari 5 pilar utama bisnis didunia teknologi digital ditambah dengan beberapa bisnis pendukung di sektor office supply, lifestyle hingga food & beverages. Kami memulai langkah dari kebutuhan institusi yang membutuhkan mitra terpercaya untuk ekosistem digital di bidang teknologi, dari perangkat hingga aplikasi. Seiring dengan berjalannya waktu, kebutuhan kebutuhan yang semakin kompleks dan kami menjawabnya dengan menghadirkan pilar-pilar bisnis yang saling melengkapi.',
+                    // EN: terjemahan draf
+                    'en' => 'Decaa.id is a business group made up of 5 main business pillars in the digital technology world, complemented by supporting businesses in office supply, lifestyle, and food & beverages. We began from the needs of institutions looking for a trusted partner for their digital ecosystem in technology, from devices to applications. Over time, as needs grew more complex, we answered by introducing business pillars that complement one another.',
                 ],
             ],
             'units' => [
                 'eyebrow' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
-                'title' => ['id' => 'Tujuh pilar, satu ekosistem layanan', 'en' => 'Seven pillars, one service ecosystem'],
+                'title' => ['id' => 'Satu ekosistem, beragam bidang usaha', 'en' => 'One ecosystem, many lines of business'],
                 'text' => [
-                    'id' => 'Setiap pilar fokus pada keahliannya, dan saling melengkapi untuk kebutuhan Anda.',
-                    'en' => 'Each pillar focuses on its own expertise, and they complement each other to meet your needs.',
+                    'id' => 'Setiap bidang usaha fokus pada keahliannya, dan saling melengkapi untuk kebutuhan Anda.',
+                    'en' => 'Each line of business focuses on its own expertise, and they complement each other to meet your needs.',
                 ],
             ],
             'projects' => [
@@ -385,7 +344,7 @@ class Content
         $projects = self::localize([
             [
                 'slug' => 'sistem-informasi-akademik',
-                'unit' => 'software',
+                'unit' => 'software-robotics',
                 'title' => ['id' => 'Sistem Informasi Akademik Terpadu', 'en' => 'Integrated Academic Information System'],
                 'client' => 'Universitas Contoh',
                 'year' => 2025,
@@ -396,7 +355,7 @@ class Content
             ],
             [
                 'slug' => 'laboratorium-robotika-sekolah',
-                'unit' => 'robotics',
+                'unit' => 'software-robotics',
                 'title' => ['id' => 'Laboratorium Robotika Sekolah', 'en' => 'School Robotics Laboratory'],
                 'client' => 'SMA Negeri Contoh',
                 'year' => 2025,
@@ -418,7 +377,7 @@ class Content
             ],
             [
                 'slug' => 'pengadaan-laptop-dinas-pendidikan',
-                'unit' => 'hardware',
+                'unit' => 'hardware-peripheral',
                 'title' => ['id' => 'Pengadaan Laptop Dinas Pendidikan', 'en' => 'Education Office Laptop Procurement'],
                 'client' => 'Dinas Pendidikan Contoh',
                 'year' => 2025,
@@ -440,7 +399,7 @@ class Content
             ],
             [
                 'slug' => 'aplikasi-layanan-publik-desa',
-                'unit' => 'software',
+                'unit' => 'software-robotics',
                 'title' => ['id' => 'Aplikasi Layanan Publik Desa', 'en' => 'Village Public Service Application'],
                 'client' => 'Pemerintah Desa Contoh',
                 'year' => 2024,
@@ -451,7 +410,7 @@ class Content
             ],
             [
                 'slug' => 'kompetisi-robotika-pelajar',
-                'unit' => 'robotics',
+                'unit' => 'software-robotics',
                 'title' => ['id' => 'Program Kompetisi Robotika Pelajar', 'en' => 'Student Robotics Competition Program'],
                 'client' => 'Dinas Pendidikan Contoh',
                 'year' => 2023,
@@ -462,7 +421,7 @@ class Content
             ],
             [
                 'slug' => 'pengadaan-atk-instansi',
-                'unit' => 'paperking',
+                'unit' => 'stationery-office-supply',
                 'title' => ['id' => 'Pengadaan ATK Tahunan Instansi', 'en' => 'Annual Office Supplies for an Agency'],
                 'client' => 'Kantor Contoh',
                 'year' => 2025,
@@ -473,7 +432,7 @@ class Content
             ],
             [
                 'slug' => 'katering-konferensi-daerah',
-                'unit' => 'dapur-kirana',
+                'unit' => 'food-beverage',
                 'title' => ['id' => 'Katering Konferensi Daerah', 'en' => 'Regional Conference Catering'],
                 'client' => 'Panitia Contoh',
                 'year' => 2025,
@@ -813,18 +772,18 @@ class Content
                 'eyebrow' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
                 'title' => ['id' => 'Profil Perusahaan', 'en' => 'Company Profile'],
                 'lead' => [
-                    'id' => 'DECAA.ID adalah perusahaan yang menaungi pilar bisnis teknologi dan layanan pendukung bagi institusi pemerintah, pendidikan, dan swasta.',
-                    'en' => 'DECAA.ID is a company overseeing technology and support-service business pillars for government, education, and private institutions.',
+                    'id' => 'Decaa.id merupakan group usaha yang terdiri dari 5 pilar utama bisnis didunia teknologi digital ditambah dengan beberapa bisnis pendukung di sektor office supply, lifestyle hingga food & beverages.',
+                    'en' => 'Decaa.id is a business group made up of 5 main business pillars in the digital technology world, complemented by supporting businesses in office supply, lifestyle, and food & beverages.',
                 ],
                 'story_title' => ['id' => 'Siapa kami', 'en' => 'Who we are'],
                 'story' => [
                     [
-                        'id' => 'Kami memulai langkah dari kebutuhan sederhana: institusi membutuhkan mitra yang bisa dipercaya untuk urusan teknologi, dari perangkat hingga aplikasi. Seiring waktu, kebutuhan itu tumbuh dan kami menjawabnya dengan menghadirkan pilar-pilar bisnis yang saling melengkapi.',
-                        'en' => 'We started from a simple need: institutions wanted a trustworthy partner for technology, from devices to applications. As the need grew, we responded by building business pillars that complement one another.',
+                        'id' => 'Decaa.id merupakan group usaha yang terdiri dari 5 pilar utama bisnis didunia teknologi digital ditambah dengan beberapa bisnis pendukung di sektor office supply, lifestyle hingga food & beverages.',
+                        'en' => 'Decaa.id is a business group made up of 5 main business pillars in the digital technology world, complemented by supporting businesses in office supply, lifestyle, and food & beverages.',
                     ],
                     [
-                        'id' => 'Hari ini DECAA.ID bekerja dari kantor pusat di Jakarta dengan cabang di Pacitan dan Ponorogo, melayani klien dengan pendekatan yang sama: jelas, terukur, dan bertanggung jawab hingga layanan purna jual.',
-                        'en' => 'Today DECAA.ID operates from its headquarters in Jakarta with branches in Pacitan and Ponorogo, serving clients with the same approach: clear, measurable, and accountable through after-sales support.',
+                        'id' => 'Kami memulai langkah dari kebutuhan institusi yang membutuhkan mitra terpercaya untuk ekosistem digital di bidang teknologi, dari perangkat hingga aplikasi. Seiring dengan berjalannya waktu, kebutuhan-kebutuhan yang semakin kompleks dan kami menjawabnya dengan menghadirkan pilar-pilar bisnis yang saling melengkapi.',
+                        'en' => 'We began from the needs of institutions looking for a trusted partner for their digital ecosystem in technology, from devices to applications. Over time, as needs grew more complex, we answered by introducing business pillars that complement one another.',
                     ],
                 ],
                 // CHAIRMAN MESSAGE. DUMMY: ganti nama, pesan, dan foto (public/img/chairman.jpg, potret vertikal 4:5)
@@ -863,16 +822,17 @@ class Content
                 ],
                 'vision_label' => ['id' => 'Visi', 'en' => 'Vision'],
                 'vision' => [
-                    'id' => 'Menjadi mitra teknologi dan layanan terpadu yang paling dipercaya oleh institusi dan bisnis di Indonesia.',
-                    'en' => 'To be the most trusted integrated technology and services partner for institutions and businesses in Indonesia.',
+                    'id' => 'Menjadi mitra ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.',
+                    'en' => 'To be a digital ecosystem partner with inclusive, secure, and sustainable innovation for every line of industry.',
                 ],
                 'mission_label' => ['id' => 'Misi', 'en' => 'Mission'],
+                // Misi disusun agar sejalan dengan visi (mitra ekosistem digital; inklusif, aman, berkelanjutan; semua lini industri).
                 'missions' => [
-                    ['id' => 'Menyediakan solusi teknologi yang tepat guna dan sesuai kebutuhan klien.', 'en' => 'Provide fit-for-purpose technology solutions that match client needs.'],
-                    ['id' => 'Membangun ekosistem pilar bisnis yang saling melengkapi dan efisien.', 'en' => 'Build an ecosystem of complementary and efficient business pillars.'],
-                    ['id' => 'Meningkatkan kompetensi sumber daya manusia melalui pelatihan dan riset.', 'en' => 'Improve human resource competence through training and research.'],
-                    ['id' => 'Menjaga mutu layanan dengan proses kerja yang terukur dan transparan.', 'en' => 'Maintain service quality through measurable and transparent processes.'],
-                    ['id' => 'Berkontribusi pada literasi dan pemerataan akses teknologi bagi masyarakat.', 'en' => 'Contribute to digital literacy and equal access to technology for society.'],
+                    ['id' => 'Menghadirkan ekosistem digital yang terpadu, dari perangkat hingga aplikasi, untuk kebutuhan semua lini industri.', 'en' => 'Deliver an integrated digital ecosystem, from devices to applications, for the needs of every line of industry.'],
+                    ['id' => 'Mengembangkan inovasi teknologi yang inklusif, mudah diakses, dan bermanfaat bagi institusi, pelaku usaha, hingga masyarakat.', 'en' => 'Develop inclusive, accessible technology innovation that benefits institutions, businesses, and communities.'],
+                    ['id' => 'Menjaga keamanan sistem, data, dan layanan agar klien dapat tumbuh dengan tenang dan tepercaya.', 'en' => 'Safeguard systems, data, and services so clients can grow with confidence and trust.'],
+                    ['id' => 'Membangun pilar-pilar bisnis yang saling melengkapi dan berkelanjutan, dari teknologi hingga bisnis pendukung.', 'en' => 'Build complementary, sustainable business pillars, from technology to supporting businesses.'],
+                    ['id' => 'Meningkatkan kompetensi sumber daya manusia melalui pelatihan, riset, dan pendampingan purna jual.', 'en' => 'Improve human resource competence through training, research, and after-sales support.'],
                 ],
                 'values_title' => ['id' => 'Nilai-nilai kami', 'en' => 'Our values'],
                 'values' => [
@@ -894,7 +854,7 @@ class Content
             //   image : foto di public/img/journey/ (rasio 16:10 ideal).
             //           Bila file belum ada, tampil placeholder rapi.
             // Urutan tampil = urutan di sini. Kiri-kanan bergantian otomatis.
-            // SEMUA ISI DI BAWAH ADALAH DUMMY.
+            // Isi milestone = dari dokumen revisi (2019-2026). Foto belum ada: placeholder.
             // ---------------------------------------------------------------
             'journey' => [
                 'eyebrow' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
@@ -913,45 +873,59 @@ class Content
                 ],
                 'milestones' => [
                     [
-                        'year' => '2018',
-                        'tag' => ['id' => 'Awal', 'en' => 'Beginning'],
-                        'title' => ['id' => 'DECAA.ID mulai beroperasi', 'en' => 'DECAA.ID begins operating'],
-                        'text' => ['id' => 'Kami memulai dengan layanan teknologi informasi untuk institusi di sekitar kami.', 'en' => 'We started with information technology services for institutions around us.'],
-                        'image' => 'img/journey/2018.jpg',
-                    ],
-                    [
                         'year' => '2019',
-                        'tag' => ['id' => 'Tumbuh', 'en' => 'Growth'],
-                        'title' => ['id' => 'Memperluas ke perangkat keras dan jaringan', 'en' => 'Expanding into hardware and networking'],
-                        'text' => ['id' => 'Kebutuhan klien mendorong kami menghadirkan layanan perangkat keras dan infrastruktur jaringan.', 'en' => 'Client needs led us to add hardware and network infrastructure services.'],
+                        'tag' => ['id' => "Awal", 'en' => "Beginning"],
+                        'title' => ['id' => "Berdiri di Pacitan", 'en' => "Founded in Pacitan"],
+                        'text' => ['id' => "Perusahaan kami berdiri di kota kecil Pacitan, Jawa Timur, dengan kata “bismillah” dan niat kuat untuk fokus yang bukan sekadar mengikuti tren, melainkan menciptakan standar baru melalui teknologi yang mendorong efisiensi dan pertumbuhan tanpa batas. Kami memulai decaa dari garasi rumah di daerah Veteran, Kabupaten Pacitan, Jawa Timur.", 'en' => "Our company was founded in the small city of Pacitan, East Java, with the word “bismillah” and a strong intention to focus not merely on following trends, but on creating new standards through technology that drives efficiency and limitless growth. We started decaa from a home garage in the Veteran area, Pacitan Regency, East Java."],
                         'image' => 'img/journey/2019.jpg',
                     ],
                     [
+                        'year' => '2020',
+                        'tag' => ['id' => "Software", 'en' => "Software"],
+                        'title' => ['id' => "Fokus pada Software", 'en' => "Focusing on Software"],
+                        'text' => ['id' => "Kami fokus menjadikan “software” atau aplikasi sebagai bidang usaha kami. Di saat pandemi COVID yang semakin meningkat, kami sukses mengembangkan aplikasi DESA DIGITAL untuk administrasi dan pelayanan data kependudukan digital, serta aplikasi PASAR ONLINE untuk membantu pasar tradisional kembali bisa mendapatkan hasil di saat pandemi sedang melanda.", 'en' => "We focused on making “software” our line of business. As the COVID pandemic intensified, we successfully developed the DESA DIGITAL application for digital population data administration and services, and the PASAR ONLINE application to help traditional markets earn income again during the pandemic."],
+                        'image' => 'img/journey/2020.jpg',
+                    ],
+                    [
                         'year' => '2021',
-                        'tag' => ['id' => 'Ekspansi', 'en' => 'Expansion'],
-                        'title' => ['id' => 'Kantor cabang pertama dibuka', 'en' => 'First branch office opens'],
-                        'text' => ['id' => 'Kehadiran di daerah mendekatkan layanan kami kepada klien dan memperkuat tim lapangan.', 'en' => 'A presence in the regions brought our services closer to clients and strengthened our field team.'],
+                        'tag' => ['id' => "Tumbuh", 'en' => "Growth"],
+                        'title' => ['id' => "Masuk Hardware & Networking", 'en' => "Entering Hardware & Networking"],
+                        'text' => ['id' => "Kami masuk ke pasar “hardware” dan “networking” untuk semakin bisa membangun sebuah ekosistem digital yang berkelanjutan bagi industri.", 'en' => "We entered the “hardware” and “networking” markets to build a sustainable digital ecosystem for industry."],
                         'image' => 'img/journey/2021.jpg',
                     ],
                     [
                         'year' => '2022',
-                        'tag' => ['id' => 'Kompetensi', 'en' => 'Capability'],
-                        'title' => ['id' => 'Pilar pelatihan dan riset berdiri', 'en' => 'Training and research pillar established'],
-                        'text' => ['id' => 'Kami membangun pusat pelatihan agar kompetensi tim dan klien terus bertumbuh.', 'en' => 'We built a training centre so the skills of our team and clients keep growing.'],
+                        'tag' => ['id' => "Tiga Pilar", 'en' => "Three Pillars"],
+                        'title' => ['id' => "Tiga Pilar Utama Teknologi", 'en' => "Three Main Technology Pillars"],
+                        'text' => ['id' => "Terus bertumbuh dan berkembang dengan tiga pilar utama teknologi, yaitu software, hardware, dan networking service.", 'en' => "We kept growing with three main technology pillars: software, hardware, and networking services."],
                         'image' => 'img/journey/2022.jpg',
                     ],
                     [
+                        'year' => '2023',
+                        'tag' => ['id' => "Kompetensi", 'en' => "Capability"],
+                        'title' => ['id' => "Training & Research Centre", 'en' => "Training & Research Centre"],
+                        'text' => ['id' => "Kami bergerak ke sektor “training & research centre” sebagai pendukung beberapa sektor yang sudah kami bangun sebelumnya. Di tahun ini bangunan kantor decaa.id mulai berdiri.", 'en' => "We moved into the “training & research centre” sector to support the sectors we had built before. This year, the decaa.id office building began to rise."],
+                        'image' => 'img/journey/2023.jpg',
+                    ],
+                    [
                         'year' => '2024',
-                        'tag' => ['id' => 'Ekosistem', 'en' => 'Ecosystem'],
-                        'title' => ['id' => 'Tujuh pilar bisnis dalam satu ekosistem', 'en' => 'Seven business pillars, one ecosystem'],
-                        'text' => ['id' => 'Pilar-pilar bisnis kami kini saling melengkapi dan melayani kebutuhan klien secara terpadu.', 'en' => 'Our business pillars now complement each other and serve client needs in an integrated way.'],
+                        'tag' => ['id' => "Lima Pilar", 'en' => "Five Pillars"],
+                        'title' => ['id' => "Lima Pilar Utama Teknologi", 'en' => "Five Main Technology Pillars"],
+                        'text' => ['id' => "Dengan kepercayaan client yang semakin meningkat, kami melanjutkan pergerakan ke sektor robotika. Di tahun ini akhirnya lima pilar utama teknologi kami berhasil berdiri, mulai dari software, kemudian hardware, training & research centre, networking service, dan robotic.", 'en' => "With growing client trust, we continued into the robotics sector. This year our five main technology pillars were finally established: software, followed by hardware, training & research centre, networking service, and robotics."],
                         'image' => 'img/journey/2024.jpg',
                     ],
                     [
+                        'year' => '2025',
+                        'tag' => ['id' => "Ekspansi", 'en' => "Expansion"],
+                        'title' => ['id' => "Pindah ke Jakarta", 'en' => "Moving to Jakarta"],
+                        'text' => ['id' => "Decaa.id resmi pindah kantor ke Jakarta sebagai jantung dan kota ibukota di Indonesia, dan membuka cabang di Pacitan dan Ponorogo, Jawa Timur. Di tahun ini kami banyak terjun ke sektor di luar teknologi, mulai dari sektor office supply, lifestyle, hingga food & beverages.", 'en' => "Decaa.id officially moved its office to Jakarta, the heart and capital city of Indonesia, and opened branches in Pacitan and Ponorogo, East Java. This year we also entered many sectors beyond technology, from office supply and lifestyle to food & beverages."],
+                        'image' => 'img/journey/2025.jpg',
+                    ],
+                    [
                         'year' => '2026',
-                        'tag' => ['id' => 'Hari ini', 'en' => 'Today'],
-                        'title' => ['id' => 'Tampil dengan wajah baru', 'en' => 'A fresh look for DECAA.ID'],
-                        'text' => ['id' => 'Situs dan identitas digital baru kami hadir untuk melayani klien dengan lebih jelas dan mudah.', 'en' => 'Our new website and digital identity make it clearer and easier to work with us.'],
+                        'tag' => ['id' => "Hari ini", 'en' => "Today"],
+                        'title' => ['id' => "7 Years of decaa.id", 'en' => "7 Years of decaa.id"],
+                        'text' => ['id' => "7 Years of decaa.id: kami semakin melangkah maju, dengan dukungan dari ribuan client yang sudah menggunakan produk kami. Kini kami semakin konsisten melangkah ke arah misi untuk menjadi mitra ekosistem digital dengan inovasi yang inklusif, aman, dan berkelanjutan bagi semua lini industri.", 'en' => "7 Years of decaa.id: we keep moving forward, supported by thousands of clients who already use our products. We are increasingly consistent in moving toward our mission of being a digital ecosystem partner with inclusive, secure, and sustainable innovation for every line of industry."],
                         'image' => 'img/journey/2026.jpg',
                     ],
                 ],
@@ -961,30 +935,81 @@ class Content
                     'en' => 'We keep learning, building, and growing with our clients and partners. Tell us what you need, and let us write the next chapter together.',
                 ],
             ],
+        ]);
+    }
 
-            'team' => [
-                'eyebrow' => ['id' => 'Tentang Kami', 'en' => 'About Us'],
-                'title' => ['id' => 'Jajaran Kepemimpinan', 'en' => 'Leadership'],
-                'lead' => [
-                    'id' => 'Orang-orang yang memimpin DECAA.ID dan pilar-pilar bisnisnya.',
-                    'en' => 'The people leading DECAA.ID and its business pillars.',
+    /* ---------------------------------------------------------------------
+     | Penghargaan (Portofolio > Penghargaan)
+     | DUMMY: semua entri di 'items' adalah CONTOH agar desain terlihat. Ganti dengan data asli
+     | (tambah / ubah / hapus baris). Entri dengan 'featured' => true tampil besar di atas.
+     | Foto/piagam: public/img/awards/{slug}.jpg (rasio 4:3). Bila belum ada tampil placeholder.
+     * ------------------------------------------------------------------- */
+
+    public static function awardsPage(): array
+    {
+        return self::localize([
+            'eyebrow' => ['id' => 'Portofolio', 'en' => 'Portfolio'],
+            'title' => ['id' => 'Penghargaan', 'en' => 'Awards'],
+            'lead' => [
+                'id' => 'Pengakuan atas kerja keras tim dan kepercayaan para klien serta mitra kami.',
+                'en' => 'Recognition of our team’s hard work and the trust of our clients and partners.',
+            ],
+            'featured_label' => ['id' => 'Penghargaan Terbaru', 'en' => 'Latest Award'],
+            'all_title' => ['id' => 'Semua Penghargaan', 'en' => 'All Awards'],
+            'all_text' => ['id' => 'Jejak pengakuan yang kami terima dari tahun ke tahun.', 'en' => 'The recognition we have received over the years.'],
+            'filter_all' => ['id' => 'Semua', 'en' => 'All'],
+            'view_all' => ['id' => 'Lihat Semua Penghargaan', 'en' => 'View All Awards'],
+            'slide_prev' => ['id' => 'Penghargaan sebelumnya', 'en' => 'Previous award'],
+            'slide_next' => ['id' => 'Penghargaan berikutnya', 'en' => 'Next award'],
+            'empty' => ['id' => 'Penghargaan akan segera ditampilkan.', 'en' => 'Awards will be shown soon.'],
+            'items' => [
+                [
+                    'slug' => 'penghargaan-contoh-1',
+                    'year' => '2026',
+                    'featured' => true,
+                    'title' => ['id' => "Penghargaan Inovasi Digital (Contoh)", 'en' => "Digital Innovation Award (Sample)"],
+                    'text' => ['id' => "Contoh teks. Ganti dengan alasan penghargaan, misalnya produk atau program yang dinilai.", 'en' => "Sample text. Replace with the reason for the award, such as the product or programme recognised."],
+                    'image' => 'img/awards/penghargaan-contoh-1.jpg',
                 ],
-                'members_title' => ['id' => 'Board of Executive', 'en' => 'Board of Executive'],
-                // DUMMY: nama fiktif. Anggota PERTAMA = CEO, tampil di kartu besar sendiri di atas "Board of Executive".
-                // 'role' hanya diisi untuk CEO; kosongkan (null) untuk lainnya.
-                // Foto asli: public/img/team/{nomor}.jpg (potret vertikal 4:5, latar terang)
-                'members' => [
-                    [
-                        'name' => 'Nama CEO',
-                        'role' => ['id' => 'CEO', 'en' => 'CEO'],
-                        // Opsional: ringkasan singkat, hanya tampil di kartu CEO. Hapus baris 'bio' bila tidak diperlukan.
-                        'bio' => ['id' => 'Memimpin arah strategis dan pengembangan ekosistem DECAA.ID bersama seluruh pilar bisnis.', 'en' => 'Leads the strategic direction and development of the DECAA.ID ecosystem together with all business pillars.'],
-                    ],
-                    ['name' => 'Nama Anggota 2', 'role' => null],
-                    ['name' => 'Nama Anggota 3', 'role' => null],
-                    ['name' => 'Nama Anggota 4', 'role' => null],
-                    ['name' => 'Nama Anggota 5', 'role' => null],
-                    ['name' => 'Nama Anggota 6', 'role' => null],
+                [
+                    'slug' => 'penghargaan-contoh-2',
+                    'year' => '2025',
+                    'featured' => false,
+                    'title' => ['id' => "Penghargaan Mitra Terbaik (Contoh)", 'en' => "Best Partner Award (Sample)"],
+                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image' => 'img/awards/penghargaan-contoh-2.jpg',
+                ],
+                [
+                    'slug' => 'penghargaan-contoh-3',
+                    'year' => '2025',
+                    'featured' => false,
+                    'title' => ['id' => "Penghargaan Layanan Prima (Contoh)", 'en' => "Service Excellence Award (Sample)"],
+                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image' => 'img/awards/penghargaan-contoh-3.jpg',
+                ],
+                [
+                    'slug' => 'penghargaan-contoh-4',
+                    'year' => '2024',
+                    'featured' => false,
+                    'title' => ['id' => "Penghargaan Pertumbuhan Usaha (Contoh)", 'en' => "Business Growth Award (Sample)"],
+                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image' => 'img/awards/penghargaan-contoh-4.jpg',
+                ],
+                [
+                    'slug' => 'penghargaan-contoh-5',
+                    'year' => '2023',
+                    'featured' => false,
+                    'title' => ['id' => "Penghargaan Kontribusi Pendidikan (Contoh)", 'en' => "Education Contribution Award (Sample)"],
+                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image' => 'img/awards/penghargaan-contoh-5.jpg',
+                ],
+                [
+                    'slug' => 'penghargaan-contoh-6',
+                    'year' => '2022',
+                    'featured' => false,
+                    'title' => ['id' => "Penghargaan Teknologi Terapan (Contoh)", 'en' => "Applied Technology Award (Sample)"],
+                    'text' => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
+                    'image' => 'img/awards/penghargaan-contoh-6.jpg',
                 ],
             ],
         ]);
@@ -1002,82 +1027,10 @@ class Content
             return null;
         }
 
-        $extra = self::localize([
-            'software' => [
-                'description' => ['id' => 'Kami merancang dan membangun sistem informasi yang sesuai alur kerja institusi Anda, dari analisis kebutuhan hingga pemeliharaan.', 'en' => 'We design and build information systems that fit your institution’s workflow, from requirements analysis through maintenance.'],
-                'services' => [
-                    ['title' => ['id' => 'Aplikasi web dan mobile', 'en' => 'Web and mobile applications'], 'text' => ['id' => 'Aplikasi khusus yang disesuaikan dengan proses bisnis.', 'en' => 'Custom applications tailored to your business processes.']],
-                    ['title' => ['id' => 'Sistem informasi instansi', 'en' => 'Institutional information systems'], 'text' => ['id' => 'Akademik, kepegawaian, keuangan, dan layanan publik.', 'en' => 'Academic, HR, finance, and public service systems.']],
-                    ['title' => ['id' => 'Integrasi dan migrasi data', 'en' => 'Integration and data migration'], 'text' => ['id' => 'Menghubungkan sistem lama dan baru dengan aman.', 'en' => 'Safely connecting legacy and new systems.']],
-                    ['title' => ['id' => 'Pemeliharaan dan dukungan', 'en' => 'Maintenance and support'], 'text' => ['id' => 'Pembaruan berkala dan bantuan teknis berkelanjutan.', 'en' => 'Regular updates and ongoing technical support.']],
-                ],
-            ],
-            'robotics' => [
-                'description' => ['id' => 'Kami membawa robotika dan otomasi ke ruang kelas dan industri, lengkap dengan perangkat, kurikulum, dan pendampingan.', 'en' => 'We bring robotics and automation into classrooms and industry, complete with equipment, curriculum, and mentoring.'],
-                'services' => [
-                    ['title' => ['id' => 'Laboratorium robotika', 'en' => 'Robotics laboratories'], 'text' => ['id' => 'Perancangan dan pengadaan laboratorium untuk sekolah dan kampus.', 'en' => 'Design and procurement of labs for schools and universities.']],
-                    ['title' => ['id' => 'Kurikulum dan modul belajar', 'en' => 'Curriculum and learning modules'], 'text' => ['id' => 'Materi bertahap dari dasar hingga lanjutan.', 'en' => 'Staged materials from beginner to advanced.']],
-                    ['title' => ['id' => 'Pelatihan guru dan instruktur', 'en' => 'Teacher and instructor training'], 'text' => ['id' => 'Meningkatkan kemampuan pengajar menggunakan perangkat.', 'en' => 'Building educators’ ability to use the equipment.']],
-                    ['title' => ['id' => 'Otomasi sederhana untuk industri', 'en' => 'Light industrial automation'], 'text' => ['id' => 'Solusi otomasi skala kecil dan menengah.', 'en' => 'Small and medium-scale automation solutions.']],
-                ],
-            ],
-            'hardware' => [
-                'description' => ['id' => 'Kami menyediakan perangkat teknologi informasi yang andal dan sesuai spesifikasi, dengan dukungan purna jual.', 'en' => 'We supply reliable IT equipment that meets specifications, backed by after-sales support.'],
-                'services' => [
-                    ['title' => ['id' => 'Komputer dan laptop', 'en' => 'Computers and laptops'], 'text' => ['id' => 'Perangkat kerja untuk kantor, sekolah, dan laboratorium.', 'en' => 'Workstations for offices, schools, and laboratories.']],
-                    ['title' => ['id' => 'Server dan penyimpanan', 'en' => 'Servers and storage'], 'text' => ['id' => 'Perangkat pusat data skala instansi.', 'en' => 'Institution-scale data center equipment.']],
-                    ['title' => ['id' => 'Periferal dan perangkat penunjang', 'en' => 'Peripherals and accessories'], 'text' => ['id' => 'Printer, proyektor, layar interaktif, dan lainnya.', 'en' => 'Printers, projectors, interactive displays, and more.']],
-                    ['title' => ['id' => 'Garansi dan servis', 'en' => 'Warranty and servicing'], 'text' => ['id' => 'Layanan perbaikan dan penggantian yang jelas.', 'en' => 'Clear repair and replacement services.']],
-                ],
-            ],
-            'networking-services' => [
-                'description' => ['id' => 'Kami merancang, memasang, dan merawat infrastruktur jaringan agar operasional Anda berjalan stabil dan aman.', 'en' => 'We design, install, and maintain network infrastructure so your operations run stably and securely.'],
-                'services' => [
-                    ['title' => ['id' => 'Jaringan LAN dan Wi-Fi', 'en' => 'LAN and Wi-Fi networks'], 'text' => ['id' => 'Perancangan jaringan kabel dan nirkabel.', 'en' => 'Wired and wireless network design.']],
-                    ['title' => ['id' => 'CCTV dan pengawasan', 'en' => 'CCTV and surveillance'], 'text' => ['id' => 'Instalasi dan integrasi sistem pemantauan.', 'en' => 'Installation and integration of monitoring systems.']],
-                    ['title' => ['id' => 'Keamanan jaringan', 'en' => 'Network security'], 'text' => ['id' => 'Pengaturan akses, firewall, dan pemantauan.', 'en' => 'Access control, firewalls, and monitoring.']],
-                    ['title' => ['id' => 'Pemeliharaan berkala', 'en' => 'Routine maintenance'], 'text' => ['id' => 'Pemeriksaan rutin dan penanganan gangguan.', 'en' => 'Routine checks and incident handling.']],
-                ],
-            ],
-            'training-research-centre' => [
-                'description' => ['id' => 'Kami menyelenggarakan pelatihan dan riset teknologi untuk meningkatkan kompetensi tim dan institusi Anda.', 'en' => 'We run technology training and research to raise the competence of your teams and institutions.'],
-                'services' => [
-                    ['title' => ['id' => 'Pelatihan teknologi informasi', 'en' => 'IT training'], 'text' => ['id' => 'Kelas untuk pemula hingga profesional.', 'en' => 'Classes from beginners to professionals.']],
-                    ['title' => ['id' => 'Workshop dan bimbingan teknis', 'en' => 'Workshops and technical guidance'], 'text' => ['id' => 'Sesi praktik langsung dengan studi kasus.', 'en' => 'Hands-on sessions with real case studies.']],
-                    ['title' => ['id' => 'Riset dan kajian teknologi', 'en' => 'Technology research and studies'], 'text' => ['id' => 'Kajian kebutuhan dan rekomendasi solusi.', 'en' => 'Needs assessments and solution recommendations.']],
-                    ['title' => ['id' => 'Sertifikasi kompetensi', 'en' => 'Competency certification'], 'text' => ['id' => 'Pendampingan menuju sertifikasi yang relevan.', 'en' => 'Guidance toward relevant certifications.']],
-                ],
-            ],
-            'paperking' => [
-                'description' => ['id' => 'Kami memasok alat tulis dan perlengkapan kantor yang lengkap, tepat waktu, dan dengan harga yang jelas.', 'en' => 'We supply complete office stationery and equipment, on time and at clear prices.'],
-                'services' => [
-                    ['title' => ['id' => 'Alat tulis kantor', 'en' => 'Office stationery'], 'text' => ['id' => 'Kebutuhan harian perkantoran dan sekolah.', 'en' => 'Everyday needs for offices and schools.']],
-                    ['title' => ['id' => 'Kertas dan cetakan', 'en' => 'Paper and printing'], 'text' => ['id' => 'Kertas, formulir, dan bahan cetak.', 'en' => 'Paper, forms, and printed materials.']],
-                    ['title' => ['id' => 'Perlengkapan arsip dan ruang kerja', 'en' => 'Filing and workspace supplies'], 'text' => ['id' => 'Penataan dokumen dan area kerja.', 'en' => 'Document filing and workspace organization.']],
-                    ['title' => ['id' => 'Pengadaan berkala', 'en' => 'Scheduled procurement'], 'text' => ['id' => 'Pasokan rutin sesuai jadwal instansi.', 'en' => 'Regular supply on your institution’s schedule.']],
-                ],
-            ],
-            'dapur-kirana' => [
-                'description' => ['id' => 'Kami menyajikan makanan dan minuman berkualitas untuk kegiatan instansi dan perusahaan, dikelola dengan standar kebersihan yang baik.', 'en' => 'We serve quality food and beverages for institutional and corporate events, managed to good hygiene standards.'],
-                'services' => [
-                    ['title' => ['id' => 'Katering kegiatan', 'en' => 'Event catering'], 'text' => ['id' => 'Konsumsi rapat, pelatihan, dan acara.', 'en' => 'Meals for meetings, training, and events.']],
-                    ['title' => ['id' => 'Konsumsi harian kantor', 'en' => 'Daily office meals'], 'text' => ['id' => 'Paket makan rutin untuk karyawan.', 'en' => 'Regular meal packages for staff.']],
-                    ['title' => ['id' => 'Kudapan dan minuman', 'en' => 'Snacks and beverages'], 'text' => ['id' => 'Pilihan kudapan dan minuman untuk berbagai acara.', 'en' => 'Snack and drink options for various occasions.']],
-                    ['title' => ['id' => 'Menu sesuai kebutuhan', 'en' => 'Tailored menus'], 'text' => ['id' => 'Penyesuaian menu dan jumlah porsi.', 'en' => 'Menus and portions adjusted to your needs.']],
-                ],
-            ],
-        ])[$slug] ?? ['description' => $unit['summary'], 'services' => []];
-
-        $projects = array_values(array_filter(self::portfolio(), fn ($p) => $p['unit'] === $slug));
-
-        return $unit + $extra + [
-            'projects' => $projects,
-            'steps' => self::localize([
-                ['title' => ['id' => 'Konsultasi', 'en' => 'Consultation'], 'text' => ['id' => 'Memahami kebutuhan dan kendala Anda.', 'en' => 'Understanding your needs and constraints.']],
-                ['title' => ['id' => 'Perancangan', 'en' => 'Planning'], 'text' => ['id' => 'Menyusun solusi, jadwal, dan anggaran yang jelas.', 'en' => 'Preparing a clear solution, schedule, and budget.']],
-                ['title' => ['id' => 'Pelaksanaan', 'en' => 'Delivery'], 'text' => ['id' => 'Mengerjakan sesuai rencana dengan laporan berkala.', 'en' => 'Executing to plan with regular reporting.']],
-                ['title' => ['id' => 'Pendampingan', 'en' => 'Support'], 'text' => ['id' => 'Layanan purna jual setelah proyek selesai.', 'en' => 'After-sales support once the project is complete.']],
-            ]),
+        // Layanan, cara kerja, dan deskripsi pilar (dummy lama) dihapus: dokumen revisi hanya memuat
+        // brand di tiap pilar. Isi lain dikosongkan sampai ada bahannya.
+        return $unit + [
+            'projects' => array_values(array_filter(self::portfolio(), fn ($p) => $p['unit'] === $slug)),
         ];
     }
 
@@ -1085,11 +1038,20 @@ class Content
     {
         return self::localize([
             'eyebrow' => ['id' => 'Pilar Bisnis', 'en' => 'Business Pillars'],
-            'title' => ['id' => 'Tujuh pilar, satu ekosistem layanan', 'en' => 'Seven pillars, one service ecosystem'],
+            'title' => ['id' => 'Satu ekosistem, beragam bidang usaha', 'en' => 'One ecosystem, many lines of business'],
             'lead' => [
-                'id' => 'Setiap pilar fokus pada keahliannya dan saling melengkapi, sehingga kebutuhan Anda dapat dipenuhi dalam satu pintu.',
-                'en' => 'Each pillar focuses on its own expertise and complements the others, so your needs can be met in one place.',
+                'id' => 'Setiap bidang usaha fokus pada keahliannya dan saling melengkapi, sehingga kebutuhan Anda dapat dipenuhi dalam satu pintu.',
+                'en' => 'Each line of business focuses on its own expertise and complements the others, so your needs can be met in one place.',
             ],
+            'brands_title' => ['id' => 'Perusahaan di dalam pilar ini', 'en' => 'Companies in this pillar'],
+            'brands_empty' => ['id' => 'Informasi brand untuk pilar ini akan segera ditampilkan.', 'en' => 'Brand information for this pillar will be shown soon.'],
+            'more_info' => ['id' => 'Selengkapnya', 'en' => 'Read More'],
+            'brand_view' => ['id' => 'Lihat Profil', 'en' => 'View Profile'],
+            'brand_about' => ['id' => 'Tentang', 'en' => 'About'],
+            'brand_empty' => ['id' => 'Penjelasan untuk brand ini akan segera ditampilkan.', 'en' => 'The description for this brand will be shown soon.'],
+            'brand_pillar' => ['id' => 'Bagian dari pilar', 'en' => 'Part of the pillar'],
+            'brand_others_title' => ['id' => 'Brand lain di pilar ini', 'en' => 'Other brands in this pillar'],
+            'back_to_pillars' => ['id' => 'Kembali ke Pilar Bisnis', 'en' => 'Back to Business Pillars'],
             'services_title' => ['id' => 'Layanan utama', 'en' => 'Key services'],
             'process_title' => ['id' => 'Cara kami bekerja', 'en' => 'How we work'],
             'projects_title' => ['id' => 'Proyek terkait', 'en' => 'Related projects'],
@@ -1211,7 +1173,7 @@ class Content
             ],
             'why_title' => ['id' => 'Mengapa bergabung', 'en' => 'Why join us'],
             'why' => [
-                ['title' => ['id' => 'Beragam bidang', 'en' => 'Diverse fields'], 'text' => ['id' => 'Tujuh pilar bisnis membuka banyak jalur belajar dan berkarier.', 'en' => 'Seven business pillars open many paths to learn and build a career.']],
+                ['title' => ['id' => 'Beragam bidang', 'en' => 'Diverse fields'], 'text' => ['id' => 'Beragam bidang usaha membuka banyak jalur belajar dan berkarier.', 'en' => 'A wide range of businesses opens many paths to learn and build a career.']],
                 ['title' => ['id' => 'Belajar berkelanjutan', 'en' => 'Continuous learning'], 'text' => ['id' => 'Pelatihan dan pendampingan lewat Training & Research Centre.', 'en' => 'Training and mentoring through our Training & Research Centre.']],
                 ['title' => ['id' => 'Pekerjaan bermakna', 'en' => 'Meaningful work'], 'text' => ['id' => 'Proyek yang berdampak bagi sekolah, instansi, dan masyarakat.', 'en' => 'Projects that make a difference for schools, agencies, and communities.']],
                 ['title' => ['id' => 'Lingkungan kolaboratif', 'en' => 'Collaborative environment'], 'text' => ['id' => 'Tim yang saling mendukung lintas pilar dan kantor.', 'en' => 'Teams that support one another across pillars and offices.']],
@@ -1376,6 +1338,11 @@ class Content
         foreach (self::units() as $u) {
             if ($hit([$u['name'], $u['subtitle'], $u['summary']])) {
                 $units[] = ['title' => $u['name'], 'excerpt' => $u['summary'], 'url' => lroute('units.show', ['slug' => $u['slug']])];
+            }
+            foreach ($u['brands'] as $b) {
+                if ($hit([$b['name'], $b['description']])) {
+                    $units[] = ['title' => $b['name'], 'excerpt' => (string) ($b['description'] ?? $u['name']), 'url' => lroute('units.brand', ['slug' => $u['slug'], 'brand' => $b['slug']])];
+                }
             }
         }
         if ($units) {

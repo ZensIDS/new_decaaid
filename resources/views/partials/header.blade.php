@@ -68,21 +68,36 @@
                             </div>
 
                             @if ($has && $mega)
-                                {{-- Mega menu Unit Bisnis (logo unit) --}}
+                                {{-- Mega menu Pilar Bisnis: daftar jenis bisnis (teks saja, tanpa logo; revisi PDF butir 2) --}}
                                 <div x-cloak x-show="open === {{ $i }}" x-transition.opacity.duration.150ms
                                      class="absolute inset-x-0 top-full border-t border-slate-100 bg-white shadow-card-hover">
-                                    <div class="container py-8">
-                                        <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                                    <div class="container py-6">
+                                        {{-- Tiap kolom = satu pilar (judul bisa diklik) + daftar perusahaan/brand di dalamnya --}}
+                                        <ul class="grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-4">
                                             @foreach ($item['children'] as $child)
-                                                <a href="{{ lroute($child['route'], $child['params'] ?? []) }}"
-                                                   class="flex items-center gap-3 rounded-xl p-3 transition hover:bg-brand-50">
-                                                    <x-ui.img :src="$child['logo']" :alt="$child['label']"
-                                                              class="h-12 w-16 shrink-0 rounded-lg bg-slate-50 object-contain" />
-                                                    <span class="text-sm font-semibold text-ink">{{ $child['label'] }}</span>
-                                                </a>
+                                                <li>
+                                                    <a href="{{ lroute($child['route'], $child['params'] ?? []) }}"
+                                                       class="group flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-bold text-ink transition hover:bg-brand-50 hover:text-brand-700">
+                                                        {{ $child['label'] }}
+                                                        <x-ui.icon name="arrow-right" class="h-4 w-4 -translate-x-1 text-brand-700 opacity-0 transition group-hover:translate-x-0 group-hover:opacity-100" />
+                                                    </a>
+                                                    @if (! empty($child['children']))
+                                                        <ul class="mt-1 ml-3 space-y-0.5 border-l border-slate-200 pl-2">
+                                                            @foreach ($child['children'] as $sub)
+                                                                <li>
+                                                                    <a href="{{ lroute($sub['route'], $sub['params'] ?? []) }}"
+                                                                       @if ($current === $sub['route'] && (request()->route('brand') === ($sub['params']['brand'] ?? null))) aria-current="page" @endif
+                                                                       class="block rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-brand-50 hover:text-brand-700">
+                                                                        {{ $sub['label'] }}
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    @endif
+                                                </li>
                                             @endforeach
-                                        </div>
-                                        <div class="mt-5 border-t border-slate-100 pt-4">
+                                        </ul>
+                                        <div class="mt-4 border-t border-slate-100 pt-4">
                                             <x-ui.button :href="lroute($item['route'])" variant="link" size="sm" icon="arrow-right">
                                                 {{ t('nav.all_units') }}
                                             </x-ui.button>
@@ -166,11 +181,32 @@
                             @if ($has)
                                 <ul x-cloak x-show="o" x-collapse class="ml-3 border-l border-slate-200 pl-2">
                                     @foreach ($item['children'] as $child)
-                                        <li>
-                                            <a href="{{ lroute($child['route'], $child['params'] ?? []) }}"
-                                               class="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-brand-50 hover:text-brand-700">
-                                                {{ $child['label'] }}
-                                            </a>
+                                        @php $sub = ! empty($child['children']); @endphp
+                                        <li x-data="{ s: false }">
+                                            <div class="flex items-center">
+                                                <a href="{{ lroute($child['route'], $child['params'] ?? []) }}"
+                                                   class="flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-brand-50 hover:text-brand-700">
+                                                    {{ $child['label'] }}
+                                                </a>
+                                                @if ($sub)
+                                                    <button type="button" @click="s = ! s" :aria-expanded="s" class="rounded-lg p-2.5 text-slate-500">
+                                                        <span class="sr-only">{{ t('nav.submenu') }}: {{ $child['label'] }}</span>
+                                                        <x-ui.icon name="chevron-down" class="h-4 w-4 transition" ::class="s && 'rotate-180'" />
+                                                    </button>
+                                                @endif
+                                            </div>
+                                            @if ($sub)
+                                                <ul x-cloak x-show="s" x-collapse class="ml-3 border-l border-slate-200 pl-2">
+                                                    @foreach ($child['children'] as $grand)
+                                                        <li>
+                                                            <a href="{{ lroute($grand['route'], $grand['params'] ?? []) }}"
+                                                               class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-500 hover:bg-brand-50 hover:text-brand-700">
+                                                                {{ $grand['label'] }}
+                                                            </a>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
                                         </li>
                                     @endforeach
                                 </ul>

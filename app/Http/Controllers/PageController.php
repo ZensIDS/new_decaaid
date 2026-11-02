@@ -27,6 +27,14 @@ class PageController extends Controller
         return $this->render($this->key($request), compact('unit'));
     }
 
+    public function brand(Request $request, string $slug, string $brand): View
+    {
+        $unit = Content::unit($slug) ?? abort(404);
+        $brand = Content::brand($slug, $brand) ?? abort(404);
+
+        return $this->render($this->key($request), compact('unit', 'brand'));
+    }
+
     public function project(Request $request, string $slug): View
     {
         // A6: ganti dengan data dummy portofolio

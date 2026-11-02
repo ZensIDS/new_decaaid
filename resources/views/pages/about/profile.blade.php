@@ -5,6 +5,7 @@
     $company = \App\Support\Content::company();
     $p = \App\Support\Content::about()['profile'];
     $units = \App\Support\Content::units();
+    $home = \App\Support\Content::home();
     $offices = $company['offices'];
     $chair = $p['chairman'];
 
@@ -81,39 +82,40 @@
         </div>
     </section>
 
-    {{-- Unit bisnis: ubin logo ------------------------------------------------- --}}
-    <section class="section-y bg-white" aria-labelledby="units-title">
+    {{-- Pilar Bisnis: sama persis dengan section di Beranda --}}
+    <section class="section-y bg-slate-50" aria-labelledby="units-title">
         <div class="container">
             <x-ui.reveal>
-                <x-ui.section-title id="units-title" :title="\App\Support\Content::home()['units']['title']" />
+                <div class="flex flex-wrap items-end justify-between gap-6">
+                    <div class="max-w-2xl">
+                        <p class="eyebrow">{{ $home['units']['eyebrow'] }}</p>
+                        <h2 id="units-title" class="mt-3 text-3xl leading-tight md:text-4xl">{{ $home['units']['title'] }}</h2>
+                        <p class="mt-4 text-base leading-relaxed md:text-lg">{{ $home['units']['text'] }}</p>
+                    </div>
+                </div>
             </x-ui.reveal>
 
-            <ul class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {{-- Semua brand dari semua pilar, 5 per baris (desktop). Logo yang belum ada tampil placeholder. --}}
+            <ul class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 lg:gap-5">
                 @foreach ($units as $unit)
-                    <li>
-                        <x-ui.reveal :delay="($loop->index % 4) * 80" class="h-full">
-                            <a href="{{ lroute('units.show', ['slug' => $unit['slug']]) }}"
-                               class="group flex h-full min-h-[10rem] flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-center transition duration-300 hover:border-brand-200 hover:bg-brand-50/60 hover:shadow-card-hover">
-                                <x-ui.img :src="$unit['logo']" :alt="$unit['name']" :label="$unit['name']" class="h-12 w-full object-contain" />
-                                <span class="text-sm font-semibold text-ink transition group-hover:text-brand-700">{{ $unit['name'] }}</span>
-                            </a>
-                        </x-ui.reveal>
-                    </li>
+                    @foreach ($unit['brands'] as $brand)
+                        <li>
+                            <x-ui.reveal :delay="($loop->parent->index + $loop->index) % 5 * 70" class="h-full">
+                                <a href="{{ lroute('units.brand', ['slug' => $unit['slug'], 'brand' => $brand['slug']]) }}"
+                                   class="group flex h-full flex-col items-center gap-4 rounded-2xl bg-white p-5 text-center shadow-card ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:ring-brand-200">
+                                    <x-ui.img :src="$brand['logo']" :alt="$brand['name']" :label="$brand['name']"
+                                              class="h-20 w-full rounded-lg object-contain" />
+                                    <span class="text-sm font-semibold leading-snug text-ink transition group-hover:text-brand-700">{{ $brand['name'] }}</span>
+                                </a>
+                            </x-ui.reveal>
+                        </li>
+                    @endforeach
                 @endforeach
-
-                <li>
-                    <x-ui.reveal :delay="(count($units) % 4) * 80" class="h-full">
-                        <a href="{{ lroute('units.index') }}"
-                           class="group relative flex h-full min-h-[10rem] flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl bg-brand-700 p-6 text-center text-white transition duration-300 hover:bg-brand-800">
-                            <span class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-brand-600/50" aria-hidden="true"></span>
-                            <span class="relative text-sm font-semibold capitalize">{{ $ui['view_all_units'] }}</span>
-                            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-white/15 transition group-hover:translate-x-1">
-                                <x-ui.icon name="arrow-right" class="h-4 w-4" />
-                            </span>
-                        </a>
-                    </x-ui.reveal>
-                </li>
             </ul>
+
+            <x-ui.reveal class="mt-10 flex justify-center">
+                <x-ui.button :href="lroute('units.index')" variant="outline" icon="arrow-right">{{ t('nav.all_units') }}</x-ui.button>
+            </x-ui.reveal>
         </div>
     </section>
 
