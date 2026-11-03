@@ -11,6 +11,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Noindex (staging)
+    |--------------------------------------------------------------------------
+    | SITE_NOINDEX=true di .env staging: semua halaman noindex dan robots.txt melarang semua.
+    | Produksi: false.
+    */
+    'noindex' => (bool) env('SITE_NOINDEX', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Bahasa yang didukung
     |--------------------------------------------------------------------------
     | URL publik selalu berprefiks bahasa: /id/... dan /en/...

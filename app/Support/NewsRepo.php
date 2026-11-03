@@ -42,6 +42,25 @@ class NewsRepo
             ->all();
     }
 
+    /**
+     * B4: pencarian berita langsung di database (judul, ringkasan, isi), terbaru dulu, dibatasi SiteSearch::LIMIT.
+     * Mengembalikan [['title', 'excerpt', 'slug']]; excerpt = ringkasan, atau cuplikan isi bila ringkasan kosong.
+     */
+    public static function search(string $q, int $limit = SiteSearch::LIMIT): array
+    {
+        $query = News::query()->visible();
+
+        SiteSearch::whereJsonLike($query, ['title', 'excerpt', 'body'], $q);
+
+        return $query->orderByDesc('published_at')->orderByDesc('id')->limit($limit)->get()
+            ->map(fn(News $n) => [
+                'title'   => $n->t('title'),
+                'excerpt' => $n->t('excerpt') !== '' ? $n->t('excerpt') : SiteSearch::snippet($n->t('body'), $q),
+                'slug'    => $n->slug,
+            ])
+            ->all();
+    }
+
     public static function find(string $slug): ?array
     {
         $news = News::query()->visible()->with('category')->where('slug', $slug)->first();

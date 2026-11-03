@@ -8,6 +8,8 @@ use App\Models\NewsCategory;
 use App\Models\NewsRevision;
 use App\Support\Html;
 use App\Support\ImageStore;
+use App\Support\SlugRedirects;
+use App\Support\MediaStore;
 use App\Support\NewsAutoTranslate;
 use App\Support\Translator;
 use Illuminate\Http\JsonResponse;
@@ -77,6 +79,8 @@ class NewsController extends Controller
 
         if ($request->hasFile('image')) {
             $news->image = ImageStore::store($request->file('image'), 'news');
+        } elseif ($picked = MediaStore::pick($request->input('image_path'))) {
+            $news->image = $picked; // dipilih dari Media Library
         }
 
         $news->save();
@@ -103,6 +107,8 @@ class NewsController extends Controller
 
         $this->remember($news, $request->user()->id, $request->user()->name);
 
+        $oldSlug = $news->slug;
+
         $news->fill($data);
         $news->updated_by = $request->user()->id;
         $news->is_dummy   = false; // sudah disentuh admin: tidak ikut tertimpa --refresh
@@ -111,14 +117,21 @@ class NewsController extends Controller
             $news->image = ImageStore::store($request->file('image'), 'news');
         } elseif ($request->boolean('remove_image')) {
             $news->image = null;
+        } elseif ($picked = MediaStore::pick($request->input('image_path'))) {
+            $news->image = $picked; // dipilih dari Media Library
         }
 
         $news->save();
 
+        // B3n: slug berubah pada berita yang sudah pernah tayang -> Redirect 301 otomatis (ID dan EN).
+        $redirected = $oldSlug !== $news->slug && $news->status !== News::STATUS_DRAFT
+            ? SlugRedirects::changed('news.show', ['slug' => $oldSlug], ['slug' => $news->slug], 'slug berita berubah')
+            : 0;
+
         ActivityLog::record('news.updated', "mengubah berita \"{$news->t('title', 'id')}\" ({$news->statusLabel()})", $news);
 
         return redirect()->route('admin.news.edit', $news)
-            ->with('status', 'Perubahan disimpan. ' . $this->translationNote() . $this->visibilityNote($news))
+            ->with('status', 'Perubahan disimpan. ' . $this->translationNote() . $this->visibilityNote($news) . SlugRedirects::note($redirected))
             ->with('error', $this->translateWarning);
     }
 

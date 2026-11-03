@@ -7,6 +7,8 @@ use App\Models\Brand;
 use App\Models\Pillar;
 use App\Models\Project;
 use App\Support\ImageStore;
+use App\Support\SlugRedirects;
+use App\Support\MediaStore;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -70,6 +72,8 @@ class ProjectController extends Controller
 
         if ($request->hasFile('image')) {
             $project->image = ImageStore::store($request->file('image'), 'projects');
+        } elseif ($picked = MediaStore::pick($request->input('image_path'))) {
+            $project->image = $picked; // dipilih dari Media Library
         }
 
         $project->save();
@@ -89,6 +93,8 @@ class ProjectController extends Controller
     {
         $data = $this->validated($request, $project);
 
+        $oldSlug = $project->slug;
+
         $project->fill($data);
         $project->updated_by = $request->user()->id;
         $project->is_dummy   = false; // sudah disentuh admin: tidak ikut tertimpa --refresh
@@ -97,14 +103,21 @@ class ProjectController extends Controller
             $project->image = ImageStore::store($request->file('image'), 'projects');
         } elseif ($request->boolean('remove_image')) {
             $project->image = null;
+        } elseif ($picked = MediaStore::pick($request->input('image_path'))) {
+            $project->image = $picked; // dipilih dari Media Library
         }
 
         $project->save();
 
+        // B3n: slug berubah pada proyek yang tampil -> Redirect 301 otomatis (ID dan EN).
+        $redirected = $oldSlug !== $project->slug && $project->is_visible
+            ? SlugRedirects::changed('portfolio.show', ['slug' => $oldSlug], ['slug' => $project->slug], 'slug proyek berubah')
+            : 0;
+
         ActivityLog::record('project.updated', "mengubah proyek \"{$project->t('title', 'id')}\"", $project);
 
         return redirect()->route('admin.projects.edit', $project)
-            ->with('status', 'Perubahan disimpan. ' . $this->visibilityNote($project));
+            ->with('status', 'Perubahan disimpan. ' . $this->visibilityNote($project) . SlugRedirects::note($redirected));
     }
 
     /** Tampilkan atau sembunyikan dari situs. */

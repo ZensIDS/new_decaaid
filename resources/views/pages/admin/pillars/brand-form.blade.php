@@ -38,7 +38,7 @@
     ];
 
     $slugHint = $editing
-        ? 'Mengubah slug mengubah alamat halaman brand; tautan lama berhenti bekerja (redirect otomatis menyusul di B3n).'
+        ? 'Mengubah slug mengubah alamat halaman brand; tautan lama otomatis dialihkan (301) ke alamat baru.'
         : 'Kosongkan agar dibuat otomatis dari nama. Hanya huruf kecil, angka, dan tanda hubung.';
     $fieldClass = 'mt-1.5 block w-full rounded-xl border-0 bg-slate-50 px-4 py-3 text-sm text-slate-900 ring-1 ring-inset ring-slate-200 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-inset focus:ring-[#1B3590]';
 @endphp

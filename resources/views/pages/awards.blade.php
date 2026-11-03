@@ -52,7 +52,7 @@
                             <div class="lg:col-span-5">
                                 <div class="relative mx-auto max-w-md lg:max-w-none">
                                     <div class="absolute inset-0 translate-x-3 translate-y-3 rotate-2 rounded-3xl bg-gradient-to-br from-accent-400/40 to-brand-500/30" aria-hidden="true"></div>
-                                    <x-ui.img :src="$featured['image']" :alt="$featured['title']" :label="$featured['title']" :lazy="false"
+                                    <x-ui.img :src="$featured['image']" :alt="$featured['image_alt'] ?? $featured['title']" :label="$featured['title']" :lazy="false"
                                               class="relative aspect-[4/3] w-full rounded-3xl border-4 border-white/90 object-cover shadow-2xl" />
                                 </div>
                             </div>
@@ -92,7 +92,7 @@
                                         <span class="pointer-events-none absolute inset-x-0 top-0 z-10 h-1 origin-left scale-x-0 bg-gradient-to-r from-brand-600 to-accent-500 transition duration-500 group-hover:scale-x-100" aria-hidden="true"></span>
 
                                         <div class="relative overflow-hidden">
-                                            <x-ui.img :src="$award['image']" :alt="$award['title']" :label="$award['title']"
+                                            <x-ui.img :src="$award['image']" :alt="$award['image_alt'] ?? $award['title']" :label="$award['title']"
                                                       class="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105" />
                                             <span class="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-brand-800 shadow-sm backdrop-blur">{{ $award['year'] }}</span>
                                         </div>

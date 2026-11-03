@@ -16,6 +16,11 @@
     }
     $companyLinks[] = [t('footer.privacy'), lroute('privacy')];
 
+    // B3m (QA1): halaman kustom yang dicentang "tampil di footer"
+    foreach (\App\Support\CustomPageRepo::footerLinks() as $custom) {
+        $companyLinks[] = [$custom['title'], lroute('custom', ['slug' => $custom['slug']])];
+    }
+
     $link = 'text-sm text-brand-200 transition hover:text-white';
     $heading = 'text-sm font-bold uppercase tracking-widest text-white';
 @endphp

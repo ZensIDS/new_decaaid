@@ -37,7 +37,9 @@
                     @foreach ($page['sections'] as $section)
                         <section id="s{{ $loop->iteration }}" class="scroll-mt-28">
                             <h2 class="text-2xl">{{ $loop->iteration }}. {{ $section['title'] }}</h2>
-                            <p class="mt-3 text-base leading-8 text-slate-700 md:text-lg">{{ $section['text'] }}</p>
+                            @foreach (preg_split('/\R+/u', trim($section['text'])) ?: [] as $para)
+                                <p class="mt-3 text-base leading-8 text-slate-700 md:text-lg">{{ $para }}</p>
+                            @endforeach
                         </section>
                     @endforeach
                 </div>

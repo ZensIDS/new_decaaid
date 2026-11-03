@@ -93,6 +93,9 @@
                         required: @js($page['err_required']),
                         invalid: @js($page['err_email']),
                         to: @js($company['email']['general']),
+                        action: @js(lroute('contact.send')),
+                        tooMany: @js($page['err_many']),
+                        failed: @js($page['err_send']),
                      })">
 
                     {{-- Keadaan: mengisi --}}
@@ -102,7 +105,7 @@
 
                         <form class="mt-8 grid gap-5 md:grid-cols-2" x-ref="form" @submit.prevent="submit()" novalidate>
                             @csrf
-                            {{-- Honeypot anti-spam (aktifkan validasinya di B4) --}}
+                            {{-- Honeypot anti-spam: bot mengisi kolom ini, server mengabaikan pesannya --}}
                             <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
 
                             <x-ui.float-field name="name" :label="$page['name']" icon="user" required autocomplete="name" />
@@ -133,6 +136,11 @@
                                 </p>
                             </div>
 
+                            <div x-show="failed" x-cloak role="alert" class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-inset ring-red-200 md:col-span-2">
+                                <span x-text="failed"></span>
+                                <a :href="mailto" class="ml-1 font-semibold underline">{{ $page['via_email'] }}</a>
+                            </div>
+
                             <div class="flex flex-col gap-4 md:col-span-2 md:flex-row md:items-center md:justify-between">
                                 <p class="text-xs leading-relaxed text-slate-500 md:max-w-xs">
                                     {{ $page['consent'] }}
@@ -152,22 +160,18 @@
                         </form>
                     </div>
 
-                    {{-- Keadaan: selesai (DUMMY: pengiriman server diaktifkan di Tahap B4) --}}
+                    {{-- Keadaan: selesai --}}
                     <div x-show="sent" x-cloak x-transition.opacity.duration.400ms
                          class="flex min-h-[26rem] flex-col items-center justify-center text-center" role="status">
                         <span class="relative flex h-20 w-20 items-center justify-center rounded-full bg-brand-50 text-brand-700 ring-8 ring-brand-50/60">
                             <x-ui.icon name="check-circle" class="h-10 w-10" />
                         </span>
                         <h2 class="mt-7 text-2xl md:text-3xl">{{ $page['success_title'] }}</h2>
-                        <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed md:text-base">{{ $page['preview_note'] }}</p>
+                        <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed md:text-base">{{ $page['success_text'] }}</p>
 
                         <div class="mt-8 flex flex-wrap justify-center gap-3">
-                            <a :href="mailto"
-                               class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 py-3.5 text-base font-semibold capitalize text-white shadow-lg shadow-brand-700/25 transition hover:-translate-y-0.5 hover:bg-brand-800">
-                                <x-ui.icon name="mail" class="h-5 w-5" /> {{ $page['via_email'] }}
-                            </a>
                             <button type="button" @click="again()"
-                                    class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-6 py-3.5 text-base font-semibold text-ink transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800">
+                                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 py-3.5 text-base font-semibold capitalize text-white shadow-lg shadow-brand-700/25 transition hover:-translate-y-0.5 hover:bg-brand-800">
                                 {{ $page['write_again'] }}
                             </button>
                         </div>
@@ -225,6 +229,7 @@
                 touched: {},
                 sending: false,
                 sent: false,
+                failed: '',
 
                 get errors() {
                     const e = {};
@@ -238,16 +243,37 @@
                 show(k) { return !! (this.touched[k] && this.errors[k]); },
                 touch(k) { this.touched[k] = true; },
 
-                submit() {
+                async submit() {
                     this.touched = { name: true, email: true, message: true };
                     const first = Object.keys(this.errors)[0];
                     if (first) {
                         this.$refs.form.elements[first]?.focus();
                         return;
                     }
+                    if (this.sending) return;
                     this.sending = true;
-                    // DUMMY (Tahap B4): ganti dengan POST ke server (fetch + CSRF), lalu set sent = true bila sukses.
-                    setTimeout(() => { this.sending = false; this.sent = true; }, 700);
+                    this.failed = '';
+                    try {
+                        const res = await fetch(cfg.action, {
+                            method: 'POST',
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            body: new FormData(this.$refs.form),
+                        });
+                        if (res.ok) {
+                            this.sent = true;
+                        } else if (res.status === 429) {
+                            this.failed = cfg.tooMany;
+                        } else if (res.status === 422) {
+                            const j = await res.json().catch(() => ({}));
+                            this.failed = j.message || cfg.failed;
+                        } else {
+                            // 419 (sesi habis) dan galat server: sarankan coba lagi / email
+                            this.failed = cfg.failed;
+                        }
+                    } catch (e) {
+                        this.failed = cfg.failed;
+                    }
+                    this.sending = false;
                 },
 
                 // Cadangan sementara: buka aplikasi email dengan isi pesan terisi otomatis.
@@ -260,6 +286,7 @@
                 again() {
                     this.values = { name: '', email: '', phone: '', subject: cfg.subject, message: '' };
                     this.touched = {};
+                    this.failed = '';
                     this.sent = false;
                 },
             }));

@@ -12,7 +12,7 @@
             $companies[] = ['name' => $b['name'], 'logo' => $b['logo'], 'unit' => $u];
         }
     }
-    $email = \App\Support\Content::company()['email']['career'];
+    $email = $page['cv_email'] ?: \App\Support\Content::company()['email']['career'];
 
     $whyIcons = ['briefcase', 'academic-cap', 'heart', 'users'];
 @endphp

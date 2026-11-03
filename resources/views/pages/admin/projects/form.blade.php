@@ -19,7 +19,7 @@
     $startLang = $enErrors && ! $idErrors ? 'en' : 'id';
 
     $slugHint = $editing
-        ? 'Mengubah slug mengubah alamat proyek; tautan lama berhenti bekerja (redirect otomatis menyusul di B3n).'
+        ? 'Mengubah slug mengubah alamat proyek; tautan lama otomatis dialihkan (301) ke alamat baru.'
         : 'Kosongkan agar dibuat otomatis dari judul. Hanya huruf kecil, angka, dan tanda hubung.';
 
     $brandRows = $brands->map(fn ($b) => ['id' => $b->id, 'pillar_id' => $b->pillar_id, 'name' => $b->name])->values()->all();
@@ -36,6 +36,7 @@
     <div class="grid items-start gap-6 lg:grid-cols-3">
         <form method="POST" novalidate enctype="multipart/form-data" class="contents"
               action="{{ $editing ? route('admin.projects.update', $project) : route('admin.projects.store') }}"
+              @media-chosen.window="chosen($event.detail)"
               x-data="{
                   lang: @js($startLang),
                   title: @js(old('title.id', $val('title', 'id'))),
@@ -58,6 +59,7 @@
                       this.removeImage = false;
                   },
                   clearImage() { this.$refs.file.value = ''; this.imageUrl = null; this.removeImage = true; },
+                  chosen(d) { if (d.name !== 'image_path') return; this.imageUrl = d.url; this.removeImage = false; if (this.$refs.file) this.$refs.file.value = ''; },
               }">
             @csrf
             @if ($editing) @method('PUT') @endif
@@ -145,6 +147,7 @@
                                 @error('image')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
                             </div>
                             <button type="button" x-show="imageUrl" @click="clearImage()" class="text-sm font-semibold text-[#E5352E] hover:underline">Hapus gambar</button>
+                            <x-admin.media-picker name="image_path" label="" :compact="true" />
                         </div>
                     </div>
 

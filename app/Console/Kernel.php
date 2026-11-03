@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        // K31: pesan Kontak disimpan 12 bulan (butuh cron `php artisan schedule:run` tiap menit di produksi)
+        $schedule->command('messages:prune')->dailyAt('02:00');
     }
 
     /**

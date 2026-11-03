@@ -1,0 +1,108 @@
+<?php
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
+use App\Models\PageContent;
+use App\Support\PageContentRepo;
+use App\Support\SystemSettings;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
+
+/**
+ * B3p: Pengaturan Sistem (hanya Super Admin): mode pemeliharaan + tautan rahasia, analitik (GA4/Plausible/Umami),
+ * kode verifikasi Search Console dan Bing. Alamat email pengirim tetap di .env (K31); noindex staging tetap di .env (QA17).
+ */
+class SystemSettingsController extends Controller
+{
+    public const PROVIDERS = [
+        'none'      => ['Tanpa analitik', 'Tidak ada skrip pelacak.'],
+        'ga4'       => ['Google Analytics 4', 'ID pengukuran, mis. G-ABC123XYZ.'],
+        'plausible' => ['Plausible', 'Nama domain, mis. decaa.id.'],
+        'umami'     => ['Umami', 'ID situs (UUID) dari dasbor Umami.'],
+    ];
+
+    public function edit(): View
+    {
+        return view('pages.admin.system.form', [
+            'data'      => SystemSettings::get(),
+            'row'       => PageContentRepo::available() ? PageContentRepo::row(SystemSettings::PAGE) : null,
+            'available' => PageContentRepo::available(),
+            'providers' => self::PROVIDERS,
+            'fromEmail' => (string) config('mail.from.address'),
+            'mailer'    => (string) config('mail.default'),
+            'production' => app()->environment('production'),
+        ]);
+    }
+
+    public function update(Request $request): RedirectResponse
+    {
+        if (! PageContentRepo::available()) {
+            throw ValidationException::withMessages(['maintenance_secret' => 'Tabel belum ada. Jalankan dulu: php artisan migrate']);
+        }
+
+        $provider = (string) $request->input('analytics_provider', 'none');
+
+        $idRule = match ($provider) {
+            'ga4'       => ['required', 'regex:/^G-[A-Z0-9]{4,15}$/'],
+            'plausible' => ['required', 'regex:/^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.[a-z]{2,}$/i'],
+            'umami'     => ['required', 'regex:/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i'],
+            default     => ['nullable'],
+        };
+
+        $d = $request->validate([
+            'maintenance_enabled' => ['required', 'in:0,1'],
+            'maintenance_secret'  => ['nullable', 'required_if:maintenance_enabled,1', 'regex:/^[A-Za-z0-9-]{8,60}$/'],
+            'analytics_provider'  => ['required', 'in:'.implode(',', array_keys(self::PROVIDERS))],
+            'analytics_id'        => $idRule,
+            'analytics_script_url' => ['nullable', 'string', 'max:255', 'url', 'regex:/^https:\/\//i'],
+            'verification_google' => ['nullable', 'regex:/^[A-Za-z0-9_-]{16,100}$/'],
+            'verification_bing'   => ['nullable', 'regex:/^[A-Za-z0-9_-]{16,100}$/'],
+        ], [
+            'maintenance_secret.required_if' => 'Isi kata rahasia sebelum menyalakan mode pemeliharaan (tombol Buat Otomatis).',
+            'maintenance_secret.regex'       => 'Kata rahasia 8-60 karakter: huruf, angka, dan tanda hubung saja.',
+            'analytics_id.required'          => 'Isi ID untuk penyedia analitik yang dipilih.',
+            'analytics_id.regex'             => 'Format ID tidak sesuai dengan penyedia yang dipilih.',
+            'analytics_script_url.url'       => 'Alamat skrip harus berupa URL lengkap.',
+            'analytics_script_url.regex'     => 'Alamat skrip harus diawali https://',
+            'verification_google.regex'      => 'Isi hanya nilai content dari tag meta (huruf, angka, - dan _), tanpa tag lengkap.',
+            'verification_bing.regex'        => 'Isi hanya nilai content dari tag meta (huruf, angka, - dan _), tanpa tag lengkap.',
+        ], [
+            'maintenance_secret' => 'kata rahasia',
+            'analytics_id'       => 'ID analitik',
+        ]);
+
+        $enabled = $d['maintenance_enabled'] === '1';
+        $before  = SystemSettings::get()['maintenance']['enabled'] ?? false;
+
+        $content = [
+            'maintenance'  => ['enabled' => $enabled, 'secret' => trim((string) ($d['maintenance_secret'] ?? ''))],
+            'analytics'    => [
+                'provider'   => $d['analytics_provider'],
+                'id'         => $d['analytics_provider'] === 'none' ? '' : trim((string) ($d['analytics_id'] ?? '')),
+                'script_url' => $d['analytics_provider'] === 'none' ? '' : trim((string) ($d['analytics_script_url'] ?? '')),
+            ],
+            'verification' => [
+                'google' => trim((string) ($d['verification_google'] ?? '')),
+                'bing'   => trim((string) ($d['verification_bing'] ?? '')),
+            ],
+        ];
+
+        PageContent::updateOrCreate(
+            ['page' => SystemSettings::PAGE],
+            ['content' => $content, 'updated_by' => $request->user()->id]
+        );
+        SystemSettings::forget();
+
+        ActivityLog::record(
+            'system.updated',
+            $enabled !== (bool) $before
+                ? ($enabled ? 'menyalakan mode pemeliharaan' : 'mematikan mode pemeliharaan')
+                : 'mengubah Pengaturan Sistem'
+        );
+
+        return redirect()->route('admin.system.edit')->with('status', 'Pengaturan sistem disimpan.');
+    }
+}

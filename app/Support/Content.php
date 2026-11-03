@@ -1,6 +1,8 @@
 <?php
 namespace App\Support;
 
+use Illuminate\Support\Str;
+
 /**
  * Lapisan konten TERPUSAT (sementara berisi data dummy).
  *
@@ -40,9 +42,67 @@ class Content
      | Perusahaan
      * ------------------------------------------------------------------- */
 
+    /** Kunci yang bisa diubah lewat admin Pengaturan Situs (B3a); sisanya tetap di kode. */
+    public const SITE_EDITABLE = ['tagline', 'phone', 'whatsapp_number', 'social', 'offices'];
+
+    public const SITE_SOCIALS = ['instagram', 'facebook', 'youtube', 'tiktok', 'linkedin'];
+
+    /** B3a: isi dari database (PageContentRepo, halaman 'site_settings') menimpa data contoh; tanpa data, data kode dipakai. */
     public static function company(): array
     {
-        return self::localize([
+        $raw    = self::companyRaw();
+        $stored = PageContentRepo::get('site_settings');
+
+        if ($stored) {
+            if (! empty($stored['tagline']['id'])) {
+                $raw['tagline'] = $stored['tagline'];
+            }
+
+            if (filled($stored['phone'] ?? null)) {
+                $raw['phone'] = $stored['phone'];
+            }
+
+            if (filled($stored['whatsapp_number'] ?? null)) {
+                $wa = self::whatsappUrl($stored['whatsapp_number']);
+                $raw['whatsapp'] = ['label' => $stored['whatsapp_number'], 'url' => $wa];
+                $raw['social']['whatsapp'] = $wa;
+            }
+
+            foreach (self::SITE_SOCIALS as $net) {
+                if (filled($stored['social'][$net] ?? null)) {
+                    $raw['social'][$net] = $stored['social'][$net];
+                }
+            }
+
+            if (! empty($stored['offices']) && is_array($stored['offices'])) {
+                $raw['offices'] = array_values(array_map(fn(array $o, int $i) => [
+                    'key'     => Str::slug($o['city'] ?? '') ?: 'kantor-'.($i + 1),
+                    'type'    => $o['type'],
+                    'city'    => $o['city'],
+                    'address' => $o['address'],
+                ], $stored['offices'], array_keys($stored['offices'])));
+            }
+        }
+
+        return self::localize($raw);
+    }
+
+    /** Nomor WhatsApp apa adanya (mis. 0812-0000-0000 atau +62 812...) menjadi tautan wa.me berkode negara 62. */
+    public static function whatsappUrl(string $number): string
+    {
+        $digits = preg_replace('/\D+/', '', $number);
+
+        if (str_starts_with($digits, '0')) {
+            $digits = '62'.substr($digits, 1);
+        }
+
+        return 'https://wa.me/'.$digits;
+    }
+
+    /** Data contoh perusahaan (DUMMY di sebagian), belum dilokalkan. Juga isi awal form Pengaturan Situs. */
+    public static function companyRaw(): array
+    {
+        return ([
             'name'     => 'DECAA.ID',
             'tagline'  => [
                 'id' => 'Mitra Solusi untuk Segala Akselerasi',
@@ -171,7 +231,55 @@ class Content
      |   params : parameter route (untuk halaman detail)
      * ------------------------------------------------------------------- */
 
-    public static function nav(): array
+    /**
+     * B3o: menu utama. Tanpa data tersimpan = menu bawaan kode. Dengan data tersimpan (halaman 'menu' di
+     * PageContentRepo): urutan tingkat atas, label ID/EN, dan sembunyikan mengikuti admin; anak menu tetap otomatis.
+     * $default = true mengabaikan pengaturan admin (dipakai tab "Tentang Kami" yang butuh item itu selalu ada).
+     */
+    public static function nav(bool $default = false): array
+    {
+        $items  = self::navRaw();
+        $stored = $default ? null : PageContentRepo::get('menu');
+
+        if ($stored && ! empty($stored['items']) && is_array($stored['items'])) {
+            $byKey = [];
+            foreach ($items as $item) {
+                $byKey[$item['route']] = $item;
+            }
+
+            $out = [];
+            foreach ($stored['items'] as $row) {
+                $key = $row['key'] ?? null;
+
+                if (! $key || ! isset($byKey[$key])) {
+                    continue;
+                }
+
+                $item = $byKey[$key];
+                unset($byKey[$key]);
+
+                if (! empty($row['hidden'])) {
+                    continue;
+                }
+
+                foreach (['id', 'en'] as $l) {
+                    if (filled($row['label_'.$l] ?? null)) {
+                        $item['label'][$l] = $row['label_'.$l];
+                    }
+                }
+
+                $out[] = $item;
+            }
+
+            // Item menu baru di kode yang belum ada di pengaturan tetap tampil di akhir.
+            $items = array_merge($out, array_values($byKey));
+        }
+
+        return self::localize($items);
+    }
+
+    /** Menu bawaan kode, belum dilokalkan (label pasangan id/en). Juga daftar item di admin Menu. */
+    public static function navRaw(): array
     {
         // Menu bertingkat: Pilar Bisnis > Pilar > Brand/perusahaan. 'logo' => true menandai anak unit
         // agar tidak ikut dihitung sebagai "halaman" di pencarian (hasilnya ada di grup Pilar Bisnis).
@@ -187,7 +295,7 @@ class Content
             ], $unit['brands']),
         ], self::units());
 
-        return self::localize([
+        return [
             [
                 'label'    => ['id' => 'Tentang Kami', 'en' => 'About Us'],
                 'route'    => 'about.profile',
@@ -227,16 +335,109 @@ class Content
                 'label' => ['id' => 'Kontak', 'en' => 'Contact'],
                 'route' => 'contact',
             ],
-        ]);
+        ];
     }
 
     /* ---------------------------------------------------------------------
      | Beranda: teks section (DUMMY, diganti setelah desain di-ACC)
      * ------------------------------------------------------------------- */
 
+    /** B3e: section Beranda yang bisa diurut dan disembunyikan (hero di atas dan ajakan di bawah selalu tampil). Urutan = urutan bawaan. */
+    public const HOME_SECTIONS = [
+        'about'     => 'Tentang DECAA.ID',
+        'units'     => 'Pilar Bisnis (kartu brand)',
+        'projects'  => 'Proyek Unggulan',
+        'clients'   => 'Klien & Mitra (strip logo)',
+        'values'    => 'Mengapa DECAA.ID (nilai)',
+        'community' => 'Keberlanjutan',
+        'awards'    => 'Penghargaan (carousel)',
+        'news'      => 'Berita Terbaru',
+    ];
+
+    /** B3e: isian teks pasangan ID/EN yang bisa diedit per section. Foto dan tombol tetap di kode. */
+    public const HOME_TEXTS = [
+        'hero'     => ['eyebrow', 'title', 'text'],
+        'about'    => ['eyebrow', 'title', 'text'],
+        'units'    => ['eyebrow', 'title', 'text'],
+        'projects' => ['eyebrow', 'title', 'text'],
+        'clients'  => ['eyebrow', 'title'],
+        'values'   => ['eyebrow', 'title'],
+        'news'     => ['eyebrow', 'title', 'text'],
+        'cta'      => ['title', 'text'],
+    ];
+
+    /** B3e: isi dari database (PageContentRepo) menimpa teks contoh; tanpa data, teks contoh kode dipakai. */
     public static function home(): array
     {
-        return self::localize([
+        $raw    = self::homeRaw();
+        $stored = PageContentRepo::get('home');
+
+        if ($stored) {
+            foreach (self::HOME_TEXTS as $section => $fields) {
+                foreach ($fields as $field) {
+                    if (isset($stored[$section][$field]) && is_array($stored[$section][$field])) {
+                        $raw[$section][$field] = $stored[$section][$field];
+                    }
+                }
+            }
+
+            if (! empty($stored['values']['items'])) {
+                $raw['values']['items'] = $stored['values']['items'];
+            }
+
+            if (! empty($stored['community']['points'])) {
+                $raw['community']['points'] = $stored['community']['points'];
+            }
+        }
+
+        return self::localize($raw);
+    }
+
+    /**
+     * B3e: kunci section Beranda yang tampil, berurutan. Tanpa data tersimpan = semua tampil menurut urutan bawaan.
+     * Section baru yang ditambahkan di kode otomatis muncul di akhir.
+     *
+     * @return array<int, string>
+     */
+    public static function homeSections(): array
+    {
+        $known  = array_keys(self::HOME_SECTIONS);
+        $stored = PageContentRepo::get('home')['sections'] ?? null;
+
+        if (! is_array($stored)) {
+            return $known;
+        }
+
+        $out  = [];
+        $seen = [];
+
+        foreach ($stored as $row) {
+            $key = is_array($row) ? ($row['key'] ?? null) : null;
+
+            if (! in_array($key, $known, true) || isset($seen[$key])) {
+                continue;
+            }
+
+            $seen[$key] = true;
+
+            if (! empty($row['visible'])) {
+                $out[] = $key;
+            }
+        }
+
+        foreach ($known as $key) {
+            if (! isset($seen[$key])) {
+                $out[] = $key;
+            }
+        }
+
+        return $out;
+    }
+
+    /** Teks contoh (DUMMY) Beranda, belum dilokalkan (pasangan id/en). Juga isi awal form admin. */
+    public static function homeRaw(): array
+    {
+        return ([
             'hero'      => [
                 // Slogan baru (Revisi_Website_decaaid.pdf butir 1). Label kecil di atas judul = DECAA.ID.
                 'eyebrow' => ['id' => 'DECAA.ID', 'en' => 'DECAA.ID'],
@@ -320,20 +521,6 @@ class Content
                     'en' => 'Our team is ready to help you find the right solution. Contact us for an initial consultation.',
                 ],
             ],
-        ]);
-    }
-
-    /* ---------------------------------------------------------------------
-     | Angka pencapaian (DUMMY: ganti dengan angka asli)
-     * ------------------------------------------------------------------- */
-
-    public static function stats(): array
-    {
-        return self::localize([
-            ['value' => 10, 'suffix' => '+', 'label' => ['id' => 'Tahun pengalaman', 'en' => 'Years of experience']],
-            ['value' => 150, 'suffix' => '+', 'label' => ['id' => 'Klien dan mitra', 'en' => 'Clients and partners']],
-            ['value' => 300, 'suffix' => '+', 'label' => ['id' => 'Proyek terselesaikan', 'en' => 'Completed projects']],
-            ['value' => count(self::rawUnits()), 'suffix' => '', 'label' => ['id' => 'Pilar bisnis', 'en' => 'Business pillars']],
         ]);
     }
 
@@ -517,13 +704,42 @@ class Content
     }
 
     /**
-     * Semua logo klien. Urutan selang-seling antar kategori (agar strip beranda beragam);
-     * di halaman Klien & Mitra urutan relatif per kategori tetap 1, 2, 3, ...
-     * $limit membatasi jumlah (dipakai strip beranda).
+     * Semua logo klien yang tampil. Urutan selang-seling antar kategori (agar strip beranda beragam);
+     * di halaman Klien & Mitra urutan relatif per kategori tetap. $limit membatasi jumlah.
+     * Sumber: database (B3h) bila sudah berisi; bila belum, logo bawaan di public/img/clients.
      */
     public static function clients(?int $limit = null): array
     {
-        $labels = self::clientCategories();
+        return ClientRepo::available() ? ClientRepo::all($limit) : self::fallbackClients($limit);
+    }
+
+    /** Strip logo beranda: klien bertanda "Tampil di beranda" (B3h). */
+    public static function homeClients(int $limit = 24): array
+    {
+        return ClientRepo::available() ? ClientRepo::home($limit) : self::fallbackClients($limit);
+    }
+
+    /** Data awal klien (dipakai `php artisan content:import-clients`): kategori mentah + logo berurutan. */
+    public static function clientSeed(): array
+    {
+        $items = [];
+        $max   = max(self::CLIENT_FOLDERS);
+
+        for ($n = 1; $n <= $max; $n++) {
+            foreach (self::CLIENT_FOLDERS as $category => $count) {
+                if ($n <= $count) {
+                    $items[] = ['category' => $category, 'n' => $n, 'logo' => self::clientLogo($category, $n)];
+                }
+            }
+        }
+
+        return ['categories' => self::rawClientCategories(), 'items' => $items];
+    }
+
+    /** Logo bawaan kode (cadangan sebelum impor ke database). */
+    protected static function fallbackClients(?int $limit = null): array
+    {
+        $labels = self::localize(self::rawClientCategories());
         $max    = max(self::CLIENT_FOLDERS);
         $items  = [];
 
@@ -823,9 +1039,65 @@ class Content
      | Tentang Kami (DUMMY: semua teks, nama, dan tahun adalah contoh)
      * ------------------------------------------------------------------- */
 
+    /**
+     * Kunci isi Tentang Kami yang bisa diedit di admin (B3f), per halaman.
+     * Foto (Chairman, Profil, Perjalanan), judul halaman, label, dan breadcrumb tetap di kode.
+     */
+    public const ABOUT_EDITABLE = [
+        'profile' => ['lead', 'story_title', 'story', 'chairman'],
+        'vision'  => ['lead', 'vision', 'missions', 'values_title', 'values'],
+        'journey' => ['lead', 'intro_title', 'intro_text', 'milestones', 'ahead_title', 'ahead_text'],
+    ];
+
+    /** Kunci di dalam 'chairman' yang bisa diedit (foto: path dari Media Library, B3b; kosong = foto bawaan di kode). */
+    public const ABOUT_CHAIRMAN_EDITABLE = ['title', 'name', 'role', 'headline', 'message', 'photo'];
+
+    /** B3f: isi dari database (PageContentRepo, halaman 'about') menimpa teks contoh; tanpa data, teks contoh kode dipakai. */
     public static function about(): array
     {
-        return self::localize([
+        $raw    = self::aboutRaw();
+        $stored = PageContentRepo::get('about');
+
+        if ($stored) {
+            foreach (self::ABOUT_EDITABLE as $page => $keys) {
+                foreach ($keys as $key) {
+                    $value = $stored[$page][$key] ?? null;
+
+                    if (empty($value)) {
+                        continue;
+                    }
+
+                    if ($key === 'chairman') {
+                        foreach (self::ABOUT_CHAIRMAN_EDITABLE as $ck) {
+                            if (! empty($value[$ck])) {
+                                $raw[$page]['chairman'][$ck] = $value[$ck];
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    if ($key === 'milestones') {
+                        // Foto mengikuti tahun: img/journey/{tahun}.jpg (placeholder rapi bila berkas belum ada)
+                        $value = array_map(function (array $m) {
+                            $m['image'] = 'img/journey/' . Str::slug((string) ($m['year'] ?? '')) . '.jpg';
+
+                            return $m;
+                        }, $value);
+                    }
+
+                    $raw[$page][$key] = $value;
+                }
+            }
+        }
+
+        return self::localize($raw);
+    }
+
+    /** Teks contoh (DUMMY) Tentang Kami, belum dilokalkan (pasangan id/en). Juga isi awal form admin. */
+    public static function aboutRaw(): array
+    {
+        return ([
             'profile' => [
                 'eyebrow'     => ['id' => 'Tentang Kami', 'en' => 'About Us'],
                 'title'       => ['id' => 'Profil Perusahaan', 'en' => 'Company Profile'],
@@ -998,14 +1270,15 @@ class Content
 
     /* ---------------------------------------------------------------------
      | Penghargaan (Portofolio > Penghargaan)
-     | DUMMY: semua entri di 'items' adalah CONTOH agar desain terlihat. Ganti dengan data asli
-     | (tambah / ubah / hapus baris). Entri dengan 'featured' => true tampil besar di atas.
-     | Foto/piagam: public/img/awards/{slug}.jpg (rasio 4:3). Bila belum ada tampil placeholder.
+     | B3i: data dari database lewat AwardRepo (kelola di admin, menu Penghargaan). Entri 'featured'
+     | tampil besar di atas. Bila tabel belum ada, dipakai 6 penghargaan CONTOH (awardSeed, DUMMY)
+     | yang juga menjadi bahan impor awal (php artisan content:import-awards).
+     | Foto/piagam contoh: public/img/awards/{slug}.jpg (rasio 4:3); bila belum ada tampil placeholder.
      * ------------------------------------------------------------------- */
 
     public static function awardsPage(): array
     {
-        return self::localize([
+        $page = self::localize([
             'eyebrow'        => ['id' => 'Portofolio', 'en' => 'Portfolio'],
             'title'          => ['id' => 'Penghargaan', 'en' => 'Awards'],
             'lead'           => [
@@ -1020,7 +1293,18 @@ class Content
             'slide_prev'     => ['id' => 'Penghargaan sebelumnya', 'en' => 'Previous award'],
             'slide_next'     => ['id' => 'Penghargaan berikutnya', 'en' => 'Next award'],
             'empty'          => ['id' => 'Penghargaan akan segera ditampilkan.', 'en' => 'Awards will be shown soon.'],
-            'items'          => [
+        ]);
+
+        // B3i: dari database; bila tabel belum ada memakai data contoh kode.
+        $page['items'] = AwardRepo::available() ? AwardRepo::all() : self::localize(self::awardSeed());
+
+        return $page;
+    }
+
+    /** Penghargaan contoh (DUMMY) untuk impor awal (content:import-awards) dan cadangan bila tabel belum ada. */
+    public static function awardSeed(): array
+    {
+        return [
                 [
                     'slug'     => 'penghargaan-contoh-1',
                     'year'     => '2026',
@@ -1069,8 +1353,8 @@ class Content
                     'text'     => ['id' => "Contoh teks singkat tentang penghargaan ini.", 'en' => "Short sample text about this award."],
                     'image'    => 'img/awards/penghargaan-contoh-6.jpg',
                 ],
-            ],
-        ]);
+            
+        ];
     }
 
     /* ---------------------------------------------------------------------
@@ -1149,9 +1433,16 @@ class Content
         ]);
     }
 
+    /** Kategori yang punya klien tampil (slug => nama), untuk tombol filter. */
     public static function clientCategories(): array
     {
-        return self::localize([
+        return ClientRepo::available() ? ClientRepo::categories() : self::localize(self::rawClientCategories());
+    }
+
+    /** Kategori bawaan kode, belum dilokalkan. */
+    protected static function rawClientCategories(): array
+    {
+        return [
             'kementerian' => ['id' => 'Kementerian', 'en' => 'Ministries'],
             'pemerintah'  => ['id' => 'Pemerintahan', 'en' => 'Government'],
             'lembaga'     => ['id' => 'Lembaga', 'en' => 'Institutions'],
@@ -1159,7 +1450,7 @@ class Content
             'organisasi'  => ['id' => 'Organisasi', 'en' => 'Organizations'],
             'perusahaan'  => ['id' => 'Perusahaan', 'en' => 'Corporations'],
             'swasta'      => ['id' => 'Swasta', 'en' => 'Private Sector'],
-        ]);
+        ];
     }
 
     public static function clientsPage(): array
@@ -1190,9 +1481,30 @@ class Content
      | Komunitas, Karir, Kontak (A8, DUMMY: teks contoh)
      * ------------------------------------------------------------------- */
 
+    /** Kunci isi yang bisa diedit di admin (B3j). Sisanya (label tombol) tetap di kode. */
+    public const SUSTAINABILITY_EDITABLE = ['about_title', 'about', 'pillars_title', 'pillars', 'programs_title', 'programs', 'join_title', 'join_text'];
+
+    /** B3j: isi dari database (App\Support\PageContentRepo) menimpa teks contoh; tanpa data, teks contoh kode dipakai. */
     public static function communityPage(): array
     {
-        return self::localize([
+        $raw    = self::communityRaw();
+        $stored = PageContentRepo::get('sustainability');
+
+        if ($stored) {
+            foreach (self::SUSTAINABILITY_EDITABLE as $key) {
+                if (! empty($stored[$key])) {
+                    $raw[$key] = $stored[$key];
+                }
+            }
+        }
+
+        return self::localize($raw);
+    }
+
+    /** Teks contoh (DUMMY) halaman Keberlanjutan, belum dilokalkan (pasangan id/en). Juga isi awal form admin. */
+    public static function communityRaw(): array
+    {
+        return ([
             'eyebrow'        => ['id' => 'Keberlanjutan', 'en' => 'Sustainability'],
             'about_title'    => ['id' => 'Tentang komunitas', 'en' => 'About the community'],
             'about'          => [
@@ -1220,9 +1532,34 @@ class Content
         ]);
     }
 
+    /** Kunci isi yang bisa diedit di admin (B3k). Label formulir CV dan tombol tetap di kode. */
+    public const CAREERS_EDITABLE = [
+        'title', 'lead', 'why_title', 'why_text', 'why', 'process_title', 'process_text', 'process',
+        'cv_title', 'cv_text', 'open_note', 'cv_email',
+    ];
+
+    /** B3k: isi dari database (PageContentRepo) menimpa teks contoh; tanpa data, teks contoh kode dipakai. */
     public static function careersPage(): array
     {
-        return self::localize([
+        $raw    = self::careersRaw();
+        $stored = PageContentRepo::get('careers');
+
+        if ($stored) {
+            foreach (self::CAREERS_EDITABLE as $key) {
+                if (! empty($stored[$key])) {
+                    $raw[$key] = $stored[$key];
+                }
+            }
+        }
+
+        return self::localize($raw);
+    }
+
+    /** Teks contoh (DUMMY) halaman Karir, belum dilokalkan (pasangan id/en). Juga isi awal form admin. */
+    public static function careersRaw(): array
+    {
+        return ([
+            'cv_email'       => '', // kosong = alamat karir dari company()['email']['career']
             'eyebrow'        => ['id' => 'Karir', 'en' => 'Careers'],
             'title'          => ['id' => 'Bangun karier bersama DECAA.ID', 'en' => 'Build your career with DECAA.ID'],
             'lead'           => [
@@ -1297,11 +1634,13 @@ class Content
                 'partnership' => ['id' => 'Kerja sama', 'en' => 'Partnership'],
                 'community'   => ['id' => 'Komunitas Peduli Digital', 'en' => 'Komunitas Peduli Digital'],
             ],
-            // DUMMY: hapus catatan ini saat form diaktifkan (Tahap B4)
-            'preview_note'   => [
-                'id' => 'Ini tampilan awal formulir. Pengiriman pesan akan diaktifkan pada tahap berikutnya; sementara itu silakan hubungi kami lewat email.',
-                'en' => 'This is a preview of the form. Message sending will be enabled in a later stage; in the meantime please contact us by email.',
+            'success_text'   => [
+                'id' => 'Terima kasih. Pesan Anda sudah kami terima dan salinannya dikirim ke email Anda. Tim kami akan menanggapi secepatnya.',
+                'en' => 'Thank you. We have received your message and sent a copy to your email. Our team will respond as soon as possible.',
             ],
+            'err_check'      => ['id' => 'Mohon periksa kembali isian Anda.', 'en' => 'Please check your entries.'],
+            'err_send'       => ['id' => 'Pesan belum terkirim. Silakan coba lagi sebentar lagi atau hubungi kami lewat email.', 'en' => 'Your message could not be sent. Please try again shortly or contact us by email.'],
+            'err_many'       => ['id' => 'Terlalu banyak percobaan. Silakan coba lagi beberapa menit lagi.', 'en' => 'Too many attempts. Please try again in a few minutes.'],
             'channels_title' => ['id' => 'Kanal resmi', 'en' => 'Official channels'],
             'offices_title'  => ['id' => 'Kantor kami', 'en' => 'Our offices'],
             'open_map'       => ['id' => 'Buka di Google Maps', 'en' => 'Open in Google Maps'],
@@ -1315,7 +1654,7 @@ class Content
             'err_email'      => ['id' => 'Format email belum benar.', 'en' => 'Please enter a valid email address.'],
             'sending'        => ['id' => 'Memproses', 'en' => 'Processing'],
             'consent'        => ['id' => 'Dengan mengirim pesan, Anda menyetujui', 'en' => 'By sending a message, you agree to our'],
-            'success_title'  => ['id' => 'Pesan Anda sudah siap', 'en' => 'Your message is ready'],
+            'success_title'  => ['id' => 'Pesan Anda terkirim', 'en' => 'Your message was sent'],
             'via_email'      => ['id' => 'Kirim lewat email', 'en' => 'Send via email'],
             'write_again'    => ['id' => 'Tulis pesan baru', 'en' => 'Write another message'],
             'channels_text'  => [
@@ -1354,7 +1693,9 @@ class Content
     }
 
     /**
-     * Pencarian sederhana di data dummy (diganti pencarian database di Tahap B4).
+     * B4: pencarian situs. Berita dan Halaman Kustom dicari langsung di database (judul, ringkasan, isi;
+     * dibatasi 20 hasil per grup); menu, pilar + brand, dan proyek dicocokkan dari data yang dibaca repositori
+     * (jumlahnya kecil). Bila tabel belum ada, berita memakai data contoh kode.
      * Mengembalikan grup hasil: [['label' => .., 'items' => [['title','excerpt','url'], ...]], ...]
      */
     public static function search(string $q): array
@@ -1388,8 +1729,15 @@ class Content
                 $pageHits[$item['route']] = ['title' => $item['label'], 'excerpt' => '', 'url' => lroute($item['route'], $item['params'] ?? [])];
             }
         }
+        $pageHits = array_values($pageHits);
+
+        // Halaman Kustom (B3m) ikut grup Halaman
+        foreach (CustomPageRepo::search($q) as $p) {
+            $pageHits[] = ['title' => $p['title'], 'excerpt' => $p['excerpt'], 'url' => lroute('custom', ['slug' => $p['slug']])];
+        }
+
         if ($pageHits) {
-            $groups[] = ['label' => $labels['pages'], 'items' => array_values($pageHits)];
+            $groups[] = ['label' => $labels['pages'], 'items' => $pageHits];
         }
 
         $units = [];
@@ -1418,9 +1766,15 @@ class Content
         }
 
         $news = [];
-        foreach (self::news() as $n) {
-            if ($hit([$n['title'], $n['excerpt'], $n['category']])) {
+        if (NewsRepo::available()) {
+            foreach (NewsRepo::search($q) as $n) {
                 $news[] = ['title' => $n['title'], 'excerpt' => $n['excerpt'], 'url' => lroute('news.show', ['slug' => $n['slug']])];
+            }
+        } else {
+            foreach (self::news() as $n) {
+                if ($hit([$n['title'], $n['excerpt'], $n['category']])) {
+                    $news[] = ['title' => $n['title'], 'excerpt' => $n['excerpt'], 'url' => lroute('news.show', ['slug' => $n['slug']])];
+                }
             }
         }
         if ($news) {
@@ -1431,9 +1785,30 @@ class Content
     }
 
     // DUMMY: draf awal, wajib ditinjau pihak hukum sebelum tayang
+    /** Kunci isi yang bisa diedit di admin (B3m). Judul halaman, label, dan "Daftar isi" tetap di kode. */
+    public const PRIVACY_EDITABLE = ['lead', 'updated', 'sections'];
+
+    /** B3m: isi dari database (PageContentRepo) menimpa draf kode; tanpa data, draf kode dipakai. */
     public static function privacyPage(): array
     {
-        return self::localize([
+        $raw    = self::privacyRaw();
+        $stored = PageContentRepo::get('privacy');
+
+        if ($stored) {
+            foreach (self::PRIVACY_EDITABLE as $key) {
+                if (! empty($stored[$key])) {
+                    $raw[$key] = $stored[$key];
+                }
+            }
+        }
+
+        return self::localize($raw);
+    }
+
+    /** Draf Kebijakan Privasi (DUMMY, wajib ditinjau pihak hukum), belum dilokalkan. Juga isi awal form admin. */
+    public static function privacyRaw(): array
+    {
+        return ([
             'eyebrow'       => ['id' => 'Legal', 'en' => 'Legal'],
             'title'         => ['id' => 'Kebijakan Privasi', 'en' => 'Privacy Policy'],
             'lead'          => [

@@ -33,6 +33,17 @@ class ActivityLog extends Model
         'pillar'   => 'Pilar Bisnis',
         'brand'    => 'Brand',
         'project'  => 'Proyek',
+        'client'   => 'Klien & Mitra',
+        'clientcat' => 'Kategori Klien',
+        'award'    => 'Penghargaan',
+        'media'    => 'Media Library',
+        'page'     => 'Halaman',
+        'settings' => 'Pengaturan Situs',
+        'menus'    => 'Menu',
+        'system'   => 'Pengaturan Sistem',
+        'custompage' => 'Halaman Kustom',
+        'message'  => 'Pesan Masuk',
+        'redirect' => 'Redirect',
     ];
 
     public function user()

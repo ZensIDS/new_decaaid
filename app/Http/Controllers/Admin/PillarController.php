@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Support\SlugRedirects;
 use App\Models\Pillar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -52,11 +53,29 @@ class PillarController extends Controller
 
     public function update(Request $request, Pillar $pillar): RedirectResponse
     {
+        $oldSlug = $pillar->slug;
+
         $pillar->update($this->validated($request, $pillar));
+
+        // B3n: slug pilar berubah -> alamat pilar dan semua brand di dalamnya berpindah; Redirect 301 otomatis.
+        $redirected = 0;
+
+        if ($oldSlug !== $pillar->slug && $pillar->is_visible) {
+            $redirected += SlugRedirects::changed('units.show', ['slug' => $oldSlug], ['slug' => $pillar->slug], 'slug pilar berubah');
+
+            foreach ($pillar->brands()->get(['slug']) as $brand) {
+                $redirected += SlugRedirects::changed(
+                    'units.brand',
+                    ['slug' => $oldSlug, 'brand' => $brand->slug],
+                    ['slug' => $pillar->slug, 'brand' => $brand->slug],
+                    'slug pilar berubah'
+                );
+            }
+        }
 
         ActivityLog::record('pillar.updated', "mengubah pilar bisnis \"{$pillar->name}\"", $pillar);
 
-        return redirect()->route('admin.pillars.index')->with('status', "Pilar \"{$pillar->name}\" disimpan.");
+        return redirect()->route('admin.pillars.index')->with('status', "Pilar \"{$pillar->name}\" disimpan." . SlugRedirects::note($redirected));
     }
 
     /** Tampilkan atau sembunyikan pilar di situs. */

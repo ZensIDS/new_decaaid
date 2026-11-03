@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  * dikonversi ke WebP bila GD mendukung. Disimpan di disk "public" dan dilayani lewat
  * tautan storage (php artisan storage:link). Path yang dikembalikan relatif ke public/,
  * mis. "storage/news/2026/11/abc.webp", sehingga <x-ui.img> bisa memakainya langsung.
- * Media Library lengkap (thumbnail, alt, pelacak pemakaian) menyusul di B3b.
+ * Setiap unggahan otomatis didaftarkan ke Media Library (MediaStore, B3b).
  */
 class ImageStore
 {
@@ -34,6 +34,8 @@ class ImageStore
             Storage::disk('public')->putFileAs($dir, $file, "{$name}.{$ext}");
         }
 
+        MediaStore::register('storage/' . $path, $file->getClientOriginalName()); // B3b: otomatis masuk Media Library
+
         return 'storage/' . $path;
     }
 
@@ -56,6 +58,8 @@ class ImageStore
         $path = $dir . '/' . Str::lower(Str::random(20)) . '.' . $ext;
 
         Storage::disk('public')->put($path, $data);
+
+        MediaStore::register('storage/' . $path, $file->getClientOriginalName()); // B3b
 
         return 'storage/' . $path;
     }
@@ -168,11 +172,30 @@ class ImageStore
         return $ok && $data ? [$data, $ext] : null;
     }
 
-    /** Hapus berkas hasil unggahan (path dari store()). Aset bawaan di public/img tidak disentuh. */
+    /**
+     * Hapus berkas hasil unggahan (path dari store()). Aset bawaan di public/img tidak disentuh.
+     * Berkas yang masih dipakai di modul mana pun dibiarkan (hapus lewat Media Library setelah dilepas).
+     * Panggil SETELAH rekaman pemakainya disimpan/dihapus, supaya pemindaian tidak menghitungnya.
+     */
     public static function delete(?string $path): void
     {
         if ($path && str_starts_with($path, 'storage/')) {
+            // B3b: gambar bisa dipakai bersama modul lain (dipilih dari Media Library); jangan hapus bila masih dipakai.
+            if (self::stillUsed($path)) {
+                return;
+            }
+
             Storage::disk('public')->delete(substr($path, strlen('storage/')));
+            MediaStore::forget($path); // B3b: hapus catatan di Media Library
+        }
+    }
+
+    protected static function stillUsed(string $path): bool
+    {
+        try {
+            return count(MediaUsage::find($path)) > 0;
+        } catch (\Throwable) {
+            return false;
         }
     }
 

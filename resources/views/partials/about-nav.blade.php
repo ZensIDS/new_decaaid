@@ -4,7 +4,7 @@
      Di layar sempit: tab bisa digeser, ada panah kiri/kanan (muncul hanya bila ada tab tersembunyi),
      dan tab aktif otomatis ditaruh di tengah saat halaman dibuka. --}}
 @php
-    $aboutMenu = \App\Support\Content::nav()[0];
+    $aboutMenu = collect(\App\Support\Content::nav(true))->firstWhere('route', 'about.profile');
     $en = app()->getLocale() === 'en';
     $labelLeft = $en ? 'Scroll tabs left' : 'Geser tab ke kiri';
     $labelRight = $en ? 'Scroll tabs right' : 'Geser tab ke kanan';

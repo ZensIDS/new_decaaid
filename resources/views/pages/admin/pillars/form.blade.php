@@ -28,7 +28,7 @@
                                    hint="Contoh: Hardware & Peripheral. Nama pilar sama untuk Indonesia dan Inggris." />
                     <x-admin.input name="slug" label="Slug (alamat halaman)" x-model="slug" :value="$slugVal" autocomplete="off"
                                    :hint="$editing
-                                       ? 'Mengubah slug mengubah alamat halaman pilar dan semua brand di dalamnya; tautan lama berhenti bekerja (redirect otomatis menyusul di B3n).'
+                                       ? 'Mengubah slug mengubah alamat halaman pilar dan semua brand di dalamnya; tautan lama otomatis dialihkan (301) ke alamat baru.'
                                        : 'Kosongkan agar dibuat otomatis dari nama. Hanya huruf kecil, angka, dan tanda hubung.'" />
                 </x-admin.form-section>
 

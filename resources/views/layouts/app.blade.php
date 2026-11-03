@@ -30,6 +30,8 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:locale" content="{{ $ogLocales[app()->getLocale()] ?? 'id_ID' }}">
 
+    @include('partials.analytics')
+
     @if (config('site.noindex'))
         <meta name="robots" content="noindex, nofollow">
     @endif

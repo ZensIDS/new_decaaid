@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\Content;
+use App\Support\CustomPageRepo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -57,6 +58,14 @@ class PageController extends Controller
         $category = Content::category($slug);
 
         return $this->render($this->key($request), compact('category'));
+    }
+
+    /** B3m (QA1): halaman kustom buatan admin; hanya yang Terbit, selain itu 404. */
+    public function custom(Request $request, string $slug): View
+    {
+        $customPage = CustomPageRepo::find($slug) ?? abort(404);
+
+        return view('pages.custom', ['customPage' => $customPage, 'pageKey' => 'custom']);
     }
 
     public function search(Request $request): View

@@ -172,6 +172,11 @@
         </header>
 
         <main id="isi" class="relative z-10 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            @if (\App\Support\SystemSettings::maintenanceOn())
+                <p class="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-800 ring-1 ring-inset ring-red-200">
+                    Mode pemeliharaan sedang <strong>menyala</strong>: pengunjung melihat halaman 503. Matikan di Pengaturan Sistem setelah selesai.
+                </p>
+            @endif
             @yield('content')
         </main>
     </div>

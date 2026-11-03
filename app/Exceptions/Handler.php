@@ -3,6 +3,9 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Support\RedirectRepo;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -45,6 +48,13 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // B3n: alamat tidak ditemukan -> cek aturan Redirect (mis. URL WordPress lama). Hanya jalan saat 404.
+        $this->renderable(function (NotFoundHttpException $e, Request $request) {
+            $rule = RedirectRepo::match($request);
+
+            return $rule ? redirect()->to($rule->to_path, $rule->status_code) : null;
         });
     }
 }

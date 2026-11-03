@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Support\SlugRedirects;
 use App\Models\Brand;
 use App\Models\Pillar;
 use App\Support\ImageStore;
@@ -72,8 +73,10 @@ class BrandController extends Controller
     {
         $data = $this->validated($request, $brand);
 
-        $oldLogo     = $brand->logo;
-        $oldPillarId = $brand->pillar_id;
+        $oldLogo       = $brand->logo;
+        $oldPillarId   = $brand->pillar_id;
+        $oldSlug       = $brand->slug;
+        $oldPillarSlug = $brand->pillar?->slug;
 
         $brand->fill($data);
         $brand->updated_by = $request->user()->id;
@@ -96,10 +99,23 @@ class BrandController extends Controller
             $this->discardLogo($oldLogo);
         }
 
+        // B3n: slug brand atau pilar induknya berubah -> Redirect 301 otomatis (ID dan EN).
+        $redirected  = 0;
+        $newPillarSlug = $brand->pillar()->value('slug');
+
+        if ($brand->is_visible && $oldPillarSlug && $newPillarSlug && ($oldSlug !== $brand->slug || $oldPillarSlug !== $newPillarSlug)) {
+            $redirected = SlugRedirects::changed(
+                'units.brand',
+                ['slug' => $oldPillarSlug, 'brand' => $oldSlug],
+                ['slug' => $newPillarSlug, 'brand' => $brand->slug],
+                'alamat brand berubah'
+            );
+        }
+
         ActivityLog::record('brand.updated', "mengubah brand \"{$brand->name}\"", $brand);
 
         return redirect()->route('admin.pillars.index')
-            ->with('status', "Brand \"{$brand->name}\" disimpan. " . $this->visibilityNote($brand));
+            ->with('status', "Brand \"{$brand->name}\" disimpan. " . $this->visibilityNote($brand) . SlugRedirects::note($redirected));
     }
 
     /** Tampilkan atau sembunyikan brand di situs. */
