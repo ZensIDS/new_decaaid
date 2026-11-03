@@ -36,7 +36,7 @@ class AdminMenu
                 self::item('Beranda', 'home', null, 'admin.home.*', $kelola),
                 self::item('Tentang Kami', 'book', null, 'admin.about.*', $kelola),
                 self::item('Pilar & Brand', 'cube', 'admin.pillars.index', 'admin.pillars.*', $kelola),
-                self::item('Proyek', 'briefcase', null, 'admin.projects.*', $semua),
+                self::item('Proyek', 'briefcase', 'admin.projects.index', 'admin.projects.*', $semua),
                 self::item('Klien & Mitra', 'users', null, 'admin.clients.*', $kelola),
                 self::item('Penghargaan', 'trophy', null, 'admin.awards.*', $semua),
                 self::item('Berita', 'newspaper', 'admin.news.index', 'admin.news.*', $semua),

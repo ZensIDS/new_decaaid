@@ -32,6 +32,7 @@ class ActivityLog extends Model
         'newscat'  => 'Kategori Berita',
         'pillar'   => 'Pilar Bisnis',
         'brand'    => 'Brand',
+        'project'  => 'Proyek',
     ];
 
     public function user()

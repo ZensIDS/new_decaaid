@@ -341,10 +341,13 @@ class Content
      | Portofolio (DUMMY: judul, klien, dan gambar contoh)
      * ------------------------------------------------------------------- */
 
-    /** Semua proyek (DUMMY: judul, klien, dan gambar contoh). */
-    public static function portfolio(): array
+    /**
+     * Data proyek contoh (DUMMY), dwibahasa mentah. Dipakai sebagai cadangan bila tabel `projects`
+     * belum ada, dan sebagai sumber impor ke database (php artisan content:import-projects).
+     */
+    public static function projectSeed(): array
     {
-        $projects = self::localize([
+        return [
             [
                 'slug'        => 'sistem-informasi-akademik',
                 'unit'        => 'software-robotics',
@@ -444,7 +447,17 @@ class Content
                 'description' => ['id' => 'Penyajian makanan dan minuman untuk seluruh sesi acara dengan pengaturan menu, jadwal saji, dan kebersihan yang terjaga.', 'en' => 'Serving food and beverages for all event sessions with managed menus, serving schedules, and maintained hygiene.'],
                 'scope'       => [['id' => 'Perencanaan menu', 'en' => 'Menu planning'], ['id' => 'Penyajian harian', 'en' => 'Daily service'], ['id' => 'Pengelolaan kebersihan', 'en' => 'Hygiene management']],
             ],
-        ]);
+        ];
+    }
+
+    /** Semua proyek yang tampil. B3g: dari database; bila tabel belum ada memakai data contoh kode. */
+    public static function portfolio(): array
+    {
+        if (ProjectRepo::available()) {
+            return ProjectRepo::all();
+        }
+
+        $projects = self::localize(self::projectSeed());
 
         foreach ($projects as &$project) {
             $project['unit_name'] = self::unit($project['unit'])['name'] ?? '';
@@ -453,9 +466,13 @@ class Content
         return $projects;
     }
 
-    /** Proyek unggulan untuk beranda (3 pertama). */
+    /** Proyek unggulan untuk beranda: yang dicentang di admin (maks. 3), dilengkapi proyek terbaru. */
     public static function projects(): array
     {
+        if (ProjectRepo::available()) {
+            return ProjectRepo::featured();
+        }
+
         return array_slice(self::portfolio(), 0, 3);
     }
 

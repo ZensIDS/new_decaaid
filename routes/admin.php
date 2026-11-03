@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\PasswordController;
 use App\Http\Controllers\Admin\PillarController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,21 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('berita/{news}/ubah', [NewsController::class, 'edit'])->name('news.edit');
                     Route::put('berita/{news}', [NewsController::class, 'update'])->name('news.update');
                     Route::post('berita/{news}/revisi/{revision}', [NewsController::class, 'restore'])->name('news.restore');
+                });
+
+                // Proyek / Portofolio (B3g): semua peran boleh menambah dan mengubah; hapus hanya Super Admin dan Admin
+                Route::middleware('admin.role:super_admin,admin,editor')->prefix('proyek')->name('projects.')->group(function () {
+                    Route::get('/', [ProjectController::class, 'index'])->name('index');
+                    Route::get('tambah', [ProjectController::class, 'create'])->name('create');
+                    Route::post('/', [ProjectController::class, 'store'])->name('store');
+                    Route::get('{project}/ubah', [ProjectController::class, 'edit'])->whereNumber('project')->name('edit');
+                    Route::put('{project}', [ProjectController::class, 'update'])->whereNumber('project')->name('update');
+                    Route::patch('{project}/status', [ProjectController::class, 'toggle'])->whereNumber('project')->name('toggle');
+                    Route::patch('{project}/unggulan', [ProjectController::class, 'feature'])->whereNumber('project')->name('feature');
+                });
+
+                Route::middleware('admin.role:super_admin,admin')->prefix('proyek')->name('projects.')->group(function () {
+                    Route::delete('{project}', [ProjectController::class, 'destroy'])->whereNumber('project')->name('destroy');
                 });
 
                 // Hapus berita dan kelola kategori: Super Admin dan Admin saja (Editor tidak bisa menghapus)

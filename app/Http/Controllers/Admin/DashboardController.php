@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Brand;
 use App\Models\News;
+use App\Models\Project;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 use Throwable;
@@ -79,6 +80,18 @@ class DashboardController extends Controller
     }
 
     /**
+     * B3g: selesai bila proyek sudah ada di database dan tidak ada lagi yang berstatus Dummy.
+     */
+    protected function projectsReady(): bool
+    {
+        try {
+            return Schema::hasTable('projects') && Project::exists() && ! Project::where('is_dummy', true)->exists();
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * Sumber: "Daftar DUMMY yang harus diganti lewat admin sebelum go-live" di todolist.
      * Status 'done' dihitung otomatis dari data asli setelah modulnya ada.
      *
@@ -95,7 +108,8 @@ class DashboardController extends Controller
             ['label' => 'Brand Commercial Technology dan 10 logo brand baru', 'done' => $this->brandsReady()],
             ['label' => 'Misi dan foto Perjalanan Kami per tahun', 'done' => false],
             ['label' => 'Foto dummy: hero, tentang, berita, proyek, penghargaan', 'done' => false],
-            ['label' => 'Proyek, klien, dan penghargaan contoh', 'done' => false],
+            ['label' => 'Proyek contoh (ganti dengan proyek asli)', 'done' => $this->projectsReady()],
+            ['label' => 'Klien dan penghargaan contoh', 'done' => false],
         ];
     }
 }

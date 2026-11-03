@@ -13,6 +13,9 @@
 # Symlink storage (dibuat dengan php artisan storage:link)
 /public/storage
 
+# Penyimpanan foto dari import web lama
+/public/wp-uploads
+
 # Environment dan rahasia (JANGAN PERNAH di-commit; .env.example tetap di-commit)
 .env
 .env.backup
