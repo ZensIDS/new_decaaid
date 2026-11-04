@@ -213,7 +213,7 @@ class ProjectController extends Controller
             'is_visible'         => ['required', 'boolean'],
             'is_featured'        => ['required', 'boolean'],
             'translation_status' => ['required', Rule::in(array_keys(Project::TRANSLATION))],
-            'image'              => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'image'              => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
             'image_alt.id'       => ['nullable', 'string', 'max:200'],
             'image_alt.en'       => ['nullable', 'string', 'max:200'],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],

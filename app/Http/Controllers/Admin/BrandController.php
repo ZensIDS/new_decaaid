@@ -218,7 +218,7 @@ class BrandController extends Controller
             'tiktok'         => ['nullable', 'string', 'max:120', $handle],
             'url'            => ['nullable', 'url', 'max:255'],
             'logo_path'      => ['nullable', 'string', 'max:255'],
-            'logo'           => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp', 'max:' . ImageStore::MAX_KB],
+            'logo'           => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
             'is_visible'     => ['nullable', 'boolean'],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],
             'seo_title.en'       => ['nullable', 'string', 'max:120'],

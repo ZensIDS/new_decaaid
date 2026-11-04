@@ -66,7 +66,7 @@ class MediaController extends Controller
     {
         $request->validate([
             'files'   => ['required', 'array', 'max:' . self::BULK_MAX],
-            'files.*' => ['file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'files.*' => ['file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
             'alt_id'  => ['nullable', 'string', 'max:200'],
             'alt_en'  => ['nullable', 'string', 'max:200'],
         ], [
@@ -173,7 +173,7 @@ class MediaController extends Controller
     public function pickerUpload(Request $request): JsonResponse
     {
         $request->validate([
-            'file'   => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'file'   => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
             'alt_id' => ['nullable', 'string', 'max:200'],
         ], ['file.max' => 'Gambar maksimal 5 MB.', 'file.mimes' => 'Gambar harus JPG, PNG, atau WebP.', 'file.required' => 'Pilih gambar dulu.']);
 

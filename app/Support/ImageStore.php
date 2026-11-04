@@ -18,6 +18,9 @@ class ImageStore
     public const MAX_WIDTH = 1920;
     public const MIMES     = ['image/jpeg', 'image/png', 'image/webp'];
 
+    /** Batas piksel unggahan (cegah "gambar bom" kecil di berkas tetapi sangat besar saat didekode GD). Dipakai di aturan validasi semua unggahan. */
+    public const DIMENSIONS = 'dimensions:max_width=8000,max_height=8000';
+
     /** Simpan dan kembalikan path relatif ke public/. */
     public static function store(UploadedFile $file, string $folder): string
     {

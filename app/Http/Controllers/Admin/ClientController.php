@@ -96,7 +96,7 @@ class ClientController extends Controller
         $request->validate([
             'client_category_id' => ['required', 'exists:client_categories,id'],
             'files'              => ['required', 'array', 'max:' . self::BULK_MAX],
-            'files.*'            => ['file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'files.*'            => ['file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
         ], [
             'files.required' => 'Tidak ada berkas yang terbaca. Bila memilih banyak berkas, total ukurannya mungkin melebihi batas server; kurangi jumlahnya.',
             'files.max'      => 'Maksimal ' . self::BULK_MAX . ' berkas sekali unggah.',
@@ -271,7 +271,7 @@ class ClientController extends Controller
             'client_category_id' => ['required', 'exists:client_categories,id'],
             'name'               => ['nullable', 'string', 'max:120'],
             'logo_path'          => ['nullable', 'string', 'max:255'],
-            'logo'               => [$client ? 'nullable' : 'required_without:logo_path', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'logo'               => [$client ? 'nullable' : 'required_without:logo_path', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
             'is_visible'         => ['required', 'boolean'],
             'show_on_home'       => ['required', 'boolean'],
             'permission_ok'      => ['required', 'boolean'],

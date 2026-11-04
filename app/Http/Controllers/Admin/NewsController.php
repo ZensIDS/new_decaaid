@@ -186,7 +186,7 @@ class NewsController extends Controller
     public function upload(Request $request): JsonResponse
     {
         $request->validate([
-            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'image' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
         ], [], ['image' => 'gambar']);
 
         return response()->json(['path' => ImageStore::store($request->file('image'), 'news/body')]);
@@ -235,7 +235,7 @@ class NewsController extends Controller
             'status'             => ['required', Rule::in(array_keys(News::STATUSES))],
             'published_at'       => ['nullable', 'date', 'required_if:status,' . News::STATUS_SCHEDULED],
             'translation_status' => ['required', Rule::in(array_keys(News::TRANSLATION))],
-            'image'              => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'image'              => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
             'image_alt.id'       => ['nullable', 'string', 'max:200'],
             'image_alt.en'       => ['nullable', 'string', 'max:200'],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],

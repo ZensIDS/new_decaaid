@@ -29,7 +29,7 @@ return [
     'different' => ':attribute dan :other harus berbeda.',
     'digits' => ':attribute harus terdiri dari :digits digit.',
     'digits_between' => ':attribute harus terdiri dari :min sampai :max digit.',
-    'dimensions' => 'Dimensi gambar :attribute tidak valid.',
+    'dimensions' => 'Ukuran piksel :attribute terlalu besar atau tidak valid (maksimal 8000 x 8000 piksel).',
     'distinct' => ':attribute memiliki nilai ganda.',
     'email' => ':attribute harus berupa alamat email yang valid.',
     'ends_with' => ':attribute harus diakhiri salah satu dari: :values.',
