@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
     {
         // K31: pesan Kontak disimpan 12 bulan (butuh cron `php artisan schedule:run` tiap menit di produksi)
         $schedule->command('messages:prune')->dailyAt('02:00');
+        // Tahap C: cadangan harian database + media ke storage/app/backups (14 terakhir disimpan)
+        $schedule->command('site:backup')->dailyAt('03:00');
     }
 
     /**
