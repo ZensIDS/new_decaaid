@@ -62,6 +62,8 @@ class RouteServiceProvider extends ServiceProvider
         foreach (['admin-news-upload' => 60, 'admin-picker-upload' => 30, 'admin-media-upload' => 20, 'admin-export' => 10, 'admin-import' => 10, 'admin-client-bulk' => 20, 'admin-sort' => 60] as $name => $max) {
             RateLimiter::for($name, fn(Request $request) => Limit::perMinute($max)->by($name.'|'.($request->user()?->id ?: $request->ip())));
         }
+        RateLimiter::for('admin-forgot', fn(Request $request) => Limit::perMinutes(10, 5)->by('forgot|'.$request->ip()));
+        RateLimiter::for('admin-reset', fn(Request $request) => Limit::perMinutes(10, 10)->by('reset|'.$request->ip()));
         RateLimiter::for('admin-2fa', fn(Request $request) => Limit::perMinute(10)->by('2fa|'.$request->ip()));
         RateLimiter::for('admin-password', fn(Request $request) => Limit::perMinute(6)->by('pw|'.($request->user()?->id ?: $request->ip())));
     }

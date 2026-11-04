@@ -38,10 +38,13 @@
                 @enderror
             </div>
 
-            <label class="flex items-center gap-2 text-sm text-slate-600">
-                <input type="checkbox" name="remember" value="1" class="h-4 w-4 rounded border-slate-300 text-[#1B3590] focus:ring-[#1B3590]">
-                Ingat saya di perangkat ini
-            </label>
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <label class="flex items-center gap-2 text-sm text-slate-600">
+                    <input type="checkbox" name="remember" value="1" class="h-4 w-4 rounded border-slate-300 text-[#1B3590] focus:ring-[#1B3590]">
+                    Ingat saya di perangkat ini
+                </label>
+                <a href="{{ route('admin.forgot.show') }}" class="text-sm font-semibold text-[#1B3590] hover:underline">Lupa password?</a>
+            </div>
 
             <button type="submit" :disabled="busy"
                     class="w-full rounded-xl bg-gradient-to-r from-[#1B3590] to-[#3558D6] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/25 transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1B3590] focus-visible:ring-offset-2 disabled:opacity-60">

@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ClientCategoryController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\CustomPageController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ForgotPasswordController;
 use App\Http\Controllers\Admin\HomePageController;
 use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\Admin\MediaController;
@@ -48,6 +49,12 @@ Route::middleware(['admin.locale', 'admin.noindex'])
         // Tamu
         Route::get('login', [LoginController::class, 'show'])->name('login');
         Route::post('login', [LoginController::class, 'store'])->name('login.store');
+
+        // Lupa password lewat email (K70)
+        Route::get('lupa-password', [ForgotPasswordController::class, 'show'])->name('forgot.show');
+        Route::post('lupa-password', [ForgotPasswordController::class, 'send'])->middleware('throttle:admin-forgot')->name('forgot.send');
+        Route::get('atur-ulang-password/{token}', [ForgotPasswordController::class, 'resetForm'])->name('reset.show');
+        Route::post('atur-ulang-password', [ForgotPasswordController::class, 'reset'])->middleware('throttle:admin-reset')->name('reset.store');
 
         // Langkah kedua masuk: kode verifikasi 2 langkah (K69)
         Route::get('verifikasi', [TwoFactorChallengeController::class, 'show'])->name('two-factor.challenge');

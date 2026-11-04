@@ -82,7 +82,7 @@ class SiteCheck extends Command
 
         if ($dbOk) {
             $this->check(true, 'terhubung ke '.config('database.connections.'.config('database.default').'.database'), '');
-            $tables = ['users', 'news', 'projects', 'page_contents', 'media', 'contact_messages', 'activity_logs', 'redirects'];
+            $tables = ['users', 'news', 'projects', 'page_contents', 'media', 'contact_messages', 'activity_logs', 'redirects', 'password_resets'];
             $missing = array_values(array_filter($tables, fn($t) => ! Schema::hasTable($t)));
             $this->check($missing === [], 'tabel inti lengkap', 'tabel belum ada: '.implode(', ', $missing).' (php artisan migrate)');
             try {
