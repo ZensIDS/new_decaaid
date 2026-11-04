@@ -44,6 +44,7 @@ class ActivityLog extends Model
         'custompage' => 'Halaman Kustom',
         'message'  => 'Pesan Masuk',
         'redirect' => 'Redirect',
+        'seo'      => 'SEO Halaman',
     ];
 
     public function user()

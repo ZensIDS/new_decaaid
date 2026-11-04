@@ -53,6 +53,7 @@ class AdminMenu
             ['title' => 'Situs', 'items' => [
                 self::item('Media Library', 'photo', 'admin.media.index', 'admin.media.*', $kelola),
                 self::item('Menu', 'menu', 'admin.menus.edit', 'admin.menus.*', $kelola),
+                self::item('SEO Halaman', 'search', 'admin.seo.edit', 'admin.seo.*', $kelola),
                 self::item('SEO & Redirect', 'link', 'admin.redirects.index', 'admin.redirects.*', $kelola),
                 self::item('Pengaturan Situs', 'sliders', 'admin.settings.edit', 'admin.settings.*', $kelola),
             ]],

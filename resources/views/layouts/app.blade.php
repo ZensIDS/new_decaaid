@@ -1,6 +1,11 @@
 @php
     $company = \App\Support\Content::company();
-    $metaDescription = trim($__env->yieldContent('description')) ?: $company['tagline'];
+    // B3n 2b: isian admin (SEO Halaman) > section view > bawaan situs. Section inline sudah ter-escape: dekode dulu agar {{ }} tidak meng-escape dua kali.
+    $seo             = \App\Support\SeoMeta::current();
+    $pageTitle       = $seo['title'] ?? (html_entity_decode(trim($__env->yieldContent('title')), ENT_QUOTES) ?: config('site.name'));
+    $metaDescription = $seo['description'] ?? (html_entity_decode(trim($__env->yieldContent('description')), ENT_QUOTES) ?: $company['tagline']);
+    $ogImage         = collect([$seo['image'] ?? null, html_entity_decode(trim($__env->yieldContent('og_image')), ENT_QUOTES), \App\Support\SeoMeta::defaultImage()])
+        ->map(fn ($p) => \App\Support\SeoMeta::imageUrl($p))->filter()->first();
     $ogLocales = ['id' => 'id_ID', 'en' => 'en_US'];
 @endphp
 <!DOCTYPE html>
@@ -8,7 +13,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', config('site.name'))</title>
+    <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="theme-color" content="#1B3590">
     <link rel="canonical" href="{{ url()->current() }}">
@@ -22,13 +27,22 @@
     @endforeach
     <link rel="alternate" hreflang="x-default" href="{{ switch_url(config('site.default_locale')) }}">
 
-    {{-- Open Graph dasar (gambar share otomatis menyusul di tahap C) --}}
+    {{-- Open Graph dan Twitter. Gambar share: halaman (admin) > gambar berita/proyek > bawaan situs (SEO Halaman) --}}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ config('site.name') }}">
-    <meta property="og:title" content="@yield('title', config('site.name'))">
+    <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:locale" content="{{ $ogLocales[app()->getLocale()] ?? 'id_ID' }}">
+    @if ($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+    @endif
+    <meta name="twitter:card" content="{{ $ogImage ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    @if ($ogImage)
+        <meta name="twitter:image" content="{{ $ogImage }}">
+    @endif
 
     @include('partials.analytics')
 

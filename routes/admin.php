@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\PasswordController;
 use App\Http\Controllers\Admin\PillarController;
 use App\Http\Controllers\Admin\PrivacyController;
 use App\Http\Controllers\Admin\RedirectController;
+use App\Http\Controllers\Admin\SeoPageController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SustainabilityController;
@@ -173,6 +174,13 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('{message}', [MessageController::class, 'show'])->whereNumber('message')->name('show');
                     Route::patch('{message}/dibaca', [MessageController::class, 'toggle'])->whereNumber('message')->name('toggle');
                     Route::delete('{message}', [MessageController::class, 'destroy'])->whereNumber('message')->name('destroy');
+                });
+
+                // SEO Halaman (B3n bagian 2b): Super Admin dan Admin
+                Route::middleware('admin.role:super_admin,admin')->prefix('seo-halaman')->name('seo.')->group(function () {
+                    Route::get('/', [SeoPageController::class, 'edit'])->name('edit');
+                    Route::put('/', [SeoPageController::class, 'update'])->name('update');
+                    Route::delete('/', [SeoPageController::class, 'reset'])->name('reset');
                 });
 
                 // Redirect 301 (B3n): Super Admin dan Admin

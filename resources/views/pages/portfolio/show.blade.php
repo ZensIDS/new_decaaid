@@ -12,6 +12,7 @@
 
 @section('title', $project['title'].' | '.$page['eyebrow'].' | '.config('site.name'))
 @section('description', $project['summary'])
+@section('og_image', (string) ($project['image'] ?? ''))
 
 @section('content')
     <x-ui.page-header :eyebrow="$project['unit_name']" :title="$project['title']" :text="$project['summary']"
