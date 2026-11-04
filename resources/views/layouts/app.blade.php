@@ -46,6 +46,9 @@
 
     @include('partials.analytics')
 
+    {{-- Data terstruktur (Organization, WebSite, LocalBusiness, BreadcrumbList, Article): App\Support\JsonLd --}}
+    {!! \App\Support\JsonLd::render($pageTitle, $metaDescription, $ogImage) !!}
+
     @if (config('site.noindex'))
         <meta name="robots" content="noindex, nofollow">
     @endif
