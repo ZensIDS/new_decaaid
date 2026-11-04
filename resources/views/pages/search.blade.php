@@ -10,6 +10,7 @@
 
 @section('title', $page['title'].' | '.config('site.name'))
 @section('description', $page['prompt'])
+@section('robots', 'noindex, follow')
 
 @section('content')
     <x-ui.page-header :eyebrow="$page['eyebrow']" :title="$page['title']"

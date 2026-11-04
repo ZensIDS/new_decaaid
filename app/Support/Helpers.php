@@ -19,10 +19,11 @@ if (! function_exists('lroute')) {
 if (! function_exists('switch_url')) {
     /**
      * URL halaman yang sedang dibuka, dalam bahasa lain (untuk tombol ID | EN).
+     * $withQuery = false untuk <link rel="alternate" hreflang>: alamat bahasa lain tanpa query string.
      */
-    function switch_url(string $locale): string
+    function switch_url(string $locale, bool $withQuery = true): string
     {
-        return Site::switchUrl($locale);
+        return Site::switchUrl($locale, $withQuery);
     }
 }
 

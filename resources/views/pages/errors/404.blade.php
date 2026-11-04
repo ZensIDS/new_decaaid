@@ -9,6 +9,7 @@
 @endphp
 
 @section('title', ($en ? 'Page not found' : 'Halaman tidak ditemukan').' | '.config('site.name'))
+@section('robots', 'noindex, follow')
 
 @section('content')
     <section class="section-y bg-white">

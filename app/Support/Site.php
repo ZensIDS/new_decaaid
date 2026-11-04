@@ -23,7 +23,7 @@ class Site
      * URL halaman saat ini dalam bahasa $target.
      * Jika padanan route tidak ada, kembali ke beranda bahasa tujuan.
      */
-    public static function switchUrl(string $target): string
+    public static function switchUrl(string $target, bool $withQuery = true): string
     {
         $current = app()->getLocale();
         $route = request()->route();
@@ -35,7 +35,7 @@ class Site
 
             if (Route::has($targetName)) {
                 $url = route($targetName, $route->parameters());
-                $query = request()->getQueryString();
+                $query = $withQuery ? request()->getQueryString() : null;
 
                 return $query ? $url.'?'.$query : $url;
             }

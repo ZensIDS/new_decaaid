@@ -7,6 +7,13 @@
     $ogImage         = collect([$seo['image'] ?? null, html_entity_decode(trim($__env->yieldContent('og_image')), ENT_QUOTES), \App\Support\SeoMeta::defaultImage()])
         ->map(fn ($p) => \App\Support\SeoMeta::imageUrl($p))->filter()->first();
     $ogLocales = ['id' => 'id_ID', 'en' => 'en_US'];
+    // Tahap C (v64): halaman yang tidak boleh diindeks (hasil pencarian, 404) mengisi section "robots" dengan nilai noindex, follow.
+    // Halaman seperti itu tidak punya alamat kanonis maupun padanan bahasa yang berarti, jadi canonical dan hreflang dilewati.
+    $robots = trim(html_entity_decode($__env->yieldContent('robots'), ENT_QUOTES));
+    // Alamat kanonis tanpa query string, kecuali nomor halaman daftar (?page=2 dst.) yang memang halaman berbeda.
+    $pageNo    = (int) request()->query('page', 1);
+    $pageQs    = $pageNo > 1 ? '?page=' . $pageNo : '';
+    $canonical = url()->current() . $pageQs;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}">
@@ -16,23 +23,27 @@
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="theme-color" content="#1B3590">
-    <link rel="canonical" href="{{ url()->current() }}">
+    @unless ($robots !== '')
+        <link rel="canonical" href="{{ $canonical }}">
+    @endunless
 
     {{-- Favicon: taruh file di public/favicon.ico --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
 
-    {{-- Bahasa alternatif --}}
-    @foreach (config('site.locales') as $loc)
-        <link rel="alternate" hreflang="{{ $loc }}" href="{{ switch_url($loc) }}">
-    @endforeach
-    <link rel="alternate" hreflang="x-default" href="{{ switch_url(config('site.default_locale')) }}">
+    {{-- Bahasa alternatif (tanpa query string, agar tiap bahasa menunjuk satu alamat bersih) --}}
+    @unless ($robots !== '')
+        @foreach (config('site.locales') as $loc)
+            <link rel="alternate" hreflang="{{ $loc }}" href="{{ switch_url($loc, false) . $pageQs }}">
+        @endforeach
+        <link rel="alternate" hreflang="x-default" href="{{ switch_url(config('site.default_locale'), false) . $pageQs }}">
+    @endunless
 
     {{-- Open Graph dan Twitter. Gambar share: halaman (admin) > gambar berita/proyek > bawaan situs (SEO Halaman) --}}
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="{{ config('site.name') }}">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="{{ $canonical }}">
     <meta property="og:locale" content="{{ $ogLocales[app()->getLocale()] ?? 'id_ID' }}">
     @if ($ogImage)
         <meta property="og:image" content="{{ $ogImage }}">
@@ -51,6 +62,8 @@
 
     @if (config('site.noindex'))
         <meta name="robots" content="noindex, nofollow">
+    @elseif ($robots !== '')
+        <meta name="robots" content="{{ $robots }}">
     @endif
 
     {{-- Tanpa JavaScript: tampilkan konten yang biasanya muncul bertahap saat scroll --}}
