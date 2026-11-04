@@ -1126,9 +1126,36 @@ class Content
                     $raw[$page][$key] = $value;
                 }
             }
+
+            // B3f (v78): foto per tahun dari Media Library menimpa img/journey/{tahun}.jpg (kunci = Str::slug(tahun)).
+            if (! empty($stored['journey_images']) && is_array($stored['journey_images']) && ! empty($raw['journey']['milestones'])) {
+                foreach ($raw['journey']['milestones'] as $i => $m) {
+                    $picked = trim((string) ($stored['journey_images'][Str::slug((string) ($m['year'] ?? ''))] ?? ''));
+
+                    if ($picked !== '' && ! str_contains($picked, '..') && is_file(\App\Models\Media::absolute($picked))) {
+                        $raw['journey']['milestones'][$i]['image'] = $picked;
+                    }
+                }
+            }
         }
 
         return self::localize($raw);
+    }
+
+    /** B3f (v78): slot foto halaman Profil dan berkas bawaannya ('' = tanpa bawaan; view memakai pencarian berkas sendiri). */
+    public const ABOUT_IMAGES = [
+        'profile_1' => 'img/dummy/about-1.jpg',
+        'profile_2' => 'img/dummy/about-2.jpg',
+        'hq'        => '',
+    ];
+
+    /** Path foto halaman Profil untuk satu slot: pilihan admin bila berkasnya ada, selain itu berkas bawaan (bisa kosong). */
+    public static function aboutImage(string $slot): string
+    {
+        $default = self::ABOUT_IMAGES[$slot] ?? '';
+        $picked  = trim((string) (PageContentRepo::get('about')['images'][$slot] ?? ''));
+
+        return $picked !== '' && ! str_contains($picked, '..') && is_file(\App\Models\Media::absolute($picked)) ? $picked : $default;
     }
 
     /** Teks contoh (DUMMY) Tentang Kami, belum dilokalkan (pasangan id/en). Juga isi awal form admin. */

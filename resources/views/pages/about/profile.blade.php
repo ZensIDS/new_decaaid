@@ -10,7 +10,8 @@
     $chair = $p['chairman'];
 
     // Foto kantor pusat: img/offices/jakarta.jpg, bila belum ada pakai foto kantor yang sama dengan hero (img/building.*)
-    $hqPhoto = collect(['img/offices/jakarta.jpg', 'img/offices/jakarta.webp', 'img/building.png', 'img/building.jpg', 'img/building.jpeg', 'img/building.webp'])
+    // B3f (v78): foto pilihan admin (Media Library) didahulukan.
+    $hqPhoto = \App\Support\Content::aboutImage('hq') ?: collect(['img/offices/jakarta.jpg', 'img/offices/jakarta.webp', 'img/building.png', 'img/building.jpg', 'img/building.jpeg', 'img/building.webp'])
         ->first(fn ($path) => file_exists(public_path($path)));
 @endphp
 
@@ -42,9 +43,9 @@
                     <div class="absolute -right-3 top-0 h-24 w-24 rounded-full border border-brand-200" aria-hidden="true"></div>
 
                     {{-- DUMMY: foto asli di public/img/dummy/about-1.jpg dan about-2.jpg --}}
-                    <x-ui.img src="img/dummy/about-1.jpg" :alt="$company['name']" label="Foto perusahaan (dummy)"
+                    <x-ui.img :src="\App\Support\Content::aboutImage('profile_1')" :alt="$company['name']" label="Foto perusahaan (dummy)"
                               class="relative aspect-[4/3] w-[88%] rounded-3xl object-cover shadow-card-hover" />
-                    <x-ui.img src="img/dummy/about-2.jpg" :alt="$company['name']" label="Foto kegiatan (dummy)"
+                    <x-ui.img :src="\App\Support\Content::aboutImage('profile_2')" :alt="$company['name']" label="Foto kegiatan (dummy)"
                               class="absolute -bottom-0 right-0 aspect-square w-[46%] rounded-3xl border-4 border-white object-cover shadow-card-hover" />
                 </div>
             </x-ui.reveal>

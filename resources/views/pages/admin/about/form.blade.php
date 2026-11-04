@@ -226,6 +226,35 @@
                         @endif
                     </x-admin.form-section>
                 @endforeach
+
+                {{-- Foto halaman Profil (Media Library) --}}
+                <x-admin.form-section icon="photo" title="Foto Halaman Profil" description="Pilih dari Media Library atau unggah baru. Yang dikosongkan memakai foto bawaan situs.">
+                    <div class="grid gap-6 sm:grid-cols-2">
+                        @foreach ($slots as $slot => [$slotTitle, $slotHint, $slotRatio])
+                            <x-admin.media-picker :name="'images['.$slot.']'" :value="$images[$slot] ?? ''" :label="$slotTitle" :hint="$slotHint" :ratio="$slotRatio" />
+                        @endforeach
+                    </div>
+                </x-admin.form-section>
+
+                {{-- Foto Perjalanan Kami per tahun (kunci = slug tahun, sama dengan nama berkas img/journey/{tahun}.jpg) --}}
+                @php
+                    $journeyYears = collect($state['journey']['milestones'] ?? [])
+                        ->map(fn ($m) => trim((string) ($m['year'] ?? '')))
+                        ->filter()
+                        ->mapWithKeys(fn ($y) => [\Illuminate\Support\Str::slug($y) => $y])
+                        ->filter(fn ($y, $slug) => $slug !== '');
+                @endphp
+                <x-admin.form-section icon="clock" title="Foto Perjalanan Kami" description="Satu foto untuk tiap tahun di lini waktu. Kosong = foto bawaan img/journey/{tahun}.jpg atau placeholder. Peristiwa yang baru ditambahkan di atas muncul di sini setelah disimpan.">
+                    @if ($journeyYears->isEmpty())
+                        <p class="text-sm text-slate-500">Belum ada peristiwa dengan tahun. Isi lini waktu di atas lalu simpan.</p>
+                    @else
+                        <div class="grid gap-6 sm:grid-cols-2">
+                            @foreach ($journeyYears as $slug => $year)
+                                <x-admin.media-picker :name="'journey_images['.$slug.']'" :value="$journeyImages[$slug] ?? ''" :label="'Foto tahun '.$year" ratio="aspect-[4/3]" />
+                            @endforeach
+                        </div>
+                    @endif
+                </x-admin.form-section>
             </div>
 
             <aside class="space-y-6 lg:sticky lg:top-24 lg:col-start-3 lg:row-span-3 lg:row-start-1">

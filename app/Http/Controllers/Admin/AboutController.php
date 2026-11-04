@@ -5,9 +5,11 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\PageContent;
 use App\Support\Content;
+use App\Support\MediaStore;
 use App\Support\PageContentRepo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -35,12 +37,22 @@ class AboutController extends Controller
         'journey.milestones' => 20,
     ];
 
+    /** Slot foto halaman Profil (v78): kunci => [nama, petunjuk, rasio pratinjau]. Berkas bawaan: Content::ABOUT_IMAGES. */
+    public const IMAGE_SLOTS = [
+        'profile_1' => ['Foto perusahaan', 'Foto pertama di bagian Siapa kami. Rasio 4:3.', 'aspect-[4/3]'],
+        'profile_2' => ['Foto kegiatan', 'Foto kedua di bagian Siapa kami. Rasio 4:3.', 'aspect-[4/3]'],
+        'hq'        => ['Foto kantor pusat', 'Latar kartu Kantor Pusat. Kosong = foto kantor bawaan (public/img/building.*). Lanskap lebar paling pas.', 'aspect-[16/9]'],
+    ];
+
     public function edit(): View
     {
         $row = PageContentRepo::available() ? PageContentRepo::row(self::PAGE) : null;
 
         return view('pages.admin.about.form', [
-            'form'      => $this->formData($row?->content ?? []),
+            'form'          => $this->formData($row?->content ?? []),
+            'images'        => (array) ($row?->content['images'] ?? []),
+            'slots'         => self::IMAGE_SLOTS,
+            'journeyImages' => (array) ($row?->content['journey_images'] ?? []),
             'row'       => $row,
             'available' => PageContentRepo::available(),
             'max'       => self::MAX,
@@ -82,6 +94,12 @@ class AboutController extends Controller
         $pair('profile.chairman.title', 'Judul Chairman Message', 120);
         $rules['profile.chairman.photo'] = ['nullable', 'string', 'max:255', 'regex:#^(storage|img|wp-uploads)/[A-Za-z0-9_./-]+$#', 'not_regex:#\.\.#'];
         $names['profile.chairman.photo'] = 'foto Chairman';
+        foreach (array_keys(self::IMAGE_SLOTS) as $slot) {
+            $rules["images.$slot"] = ['nullable', 'string', 'max:255'];
+        }
+        $rules['journey_images']   = ['nullable', 'array', 'max:' . self::MAX['journey.milestones']];
+        $rules['journey_images.*'] = ['nullable', 'string', 'max:255'];
+
         $rules['profile.chairman.name'] = ['required', 'string', 'max:80'];
         $names['profile.chairman.name'] = 'nama Chairman';
         $pair('profile.chairman.role', 'Jabatan Chairman', 80);
@@ -164,6 +182,21 @@ class AboutController extends Controller
                 'ahead_text'  => $p($d['journey']['ahead_text']),
             ],
         ];
+
+        // Foto dari Media Library: hanya path sah yang berkasnya ada. Foto per tahun hanya untuk tahun yang masih ada di lini waktu.
+        foreach (array_keys(self::IMAGE_SLOTS) as $slot) {
+            if ($picked = MediaStore::pick($d['images'][$slot] ?? null)) {
+                $content['images'][$slot] = $picked;
+            }
+        }
+
+        $years = collect($d['journey']['milestones'] ?? [])->map(fn($m) => Str::slug((string) ($m['year'] ?? '')))->filter()->unique()->all();
+
+        foreach ((array) ($d['journey_images'] ?? []) as $slug => $path) {
+            if (in_array((string) $slug, $years, true) && ($picked = MediaStore::pick($path))) {
+                $content['journey_images'][(string) $slug] = $picked;
+            }
+        }
 
         PageContent::updateOrCreate(
             ['page' => self::PAGE],
