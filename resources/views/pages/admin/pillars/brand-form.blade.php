@@ -204,6 +204,20 @@
                     </div>
                 </x-admin.form-section>
 
+                {{-- SEO (B3n 2c) --}}
+                <x-admin.form-section icon="search" title="SEO" description="Opsional. Bila kosong, situs memakai judul dan deskripsi bawaan halaman. Akhiran | {{ config('site.name') }} ditambahkan otomatis pada judul.">
+                    <div class="grid gap-5 sm:grid-cols-2">
+                        <div class="space-y-5">
+                            <x-admin.input name="seo_title[id]" label="Judul SEO (ID)" :value="$brand ? ($brand->seo_title['id'] ?? '') : ''" hint="Ideal sampai 60 karakter." />
+                            <x-admin.textarea name="seo_description[id]" label="Deskripsi SEO (ID)" rows="3" :value="$brand ? ($brand->seo_description['id'] ?? '') : ''" hint="Ideal sampai 160 karakter." />
+                        </div>
+                        <div class="space-y-5">
+                            <x-admin.input name="seo_title[en]" label="SEO title (EN)" :value="$brand ? ($brand->seo_title['en'] ?? '') : ''" hint="Kosong = memakai teks Indonesia." />
+                            <x-admin.textarea name="seo_description[en]" label="SEO description (EN)" rows="3" :value="$brand ? ($brand->seo_description['en'] ?? '') : ''" />
+                        </div>
+                    </div>
+                </x-admin.form-section>
+
                 {{-- Tampilan --}}
                 <x-admin.form-section icon="eye" title="Tampilan di Situs" description="Brand yang disembunyikan hilang dari menu, pencarian, dan halaman pilar.">
                     <div class="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">

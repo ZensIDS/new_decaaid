@@ -10,6 +10,7 @@ use App\Support\ImageStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -216,6 +217,10 @@ class BrandController extends Controller
             'url'            => ['nullable', 'url', 'max:255'],
             'logo'           => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp', 'max:' . ImageStore::MAX_KB],
             'is_visible'     => ['nullable', 'boolean'],
+            'seo_title.id'       => ['nullable', 'string', 'max:120'],
+            'seo_title.en'       => ['nullable', 'string', 'max:120'],
+            'seo_description.id' => ['nullable', 'string', 'max:300'],
+            'seo_description.en' => ['nullable', 'string', 'max:300'],
             'translation_status' => ['required', Rule::in(array_keys(Brand::TRANSLATION))],
 
             'services'                    => ['nullable', 'array'],
@@ -240,6 +245,10 @@ class BrandController extends Controller
             'name'               => 'nama brand',
             'description.id'     => 'deskripsi (ID)',
             'description.en'     => 'deskripsi (EN)',
+            'seo_title.id'       => 'judul SEO (ID)',
+            'seo_title.en'       => 'judul SEO (EN)',
+            'seo_description.id' => 'deskripsi SEO (ID)',
+            'seo_description.en' => 'deskripsi SEO (EN)',
             'url'                => 'tautan situs',
             'translation_status' => 'status terjemahan',
         ]);
@@ -247,7 +256,14 @@ class BrandController extends Controller
         $descId = trim((string) ($data['description']['id'] ?? ''));
         $descEn = trim((string) ($data['description']['en'] ?? ''));
 
-        return [
+        $seoPair = function (?array $v) {
+            $id = trim((string) ($v['id'] ?? ''));
+            $en = trim((string) ($v['en'] ?? ''));
+
+            return $id === '' && $en === '' ? null : ['id' => $id, 'en' => $en];
+        };
+
+        $row = [
             'pillar_id'   => (int) $data['pillar_id'],
             'name'        => trim($data['name']),
             'slug'        => $data['slug'],
@@ -256,9 +272,18 @@ class BrandController extends Controller
             'tiktok'      => $this->nullable($data['tiktok'] ?? null),
             'url'         => $this->nullable($data['url'] ?? null),
             'services'    => $this->packServices($data['services'] ?? []),
+            'seo_title'       => $seoPair($data['seo_title'] ?? null),
+            'seo_description' => $seoPair($data['seo_description'] ?? null),
             'is_visible'  => $request->boolean('is_visible'),
             'translation_status' => $data['translation_status'],
         ];
+
+        // Migration SEO (2026_11_04_100000) belum dijalankan: simpan tanpa kolom SEO agar admin tidak error.
+        if (! Schema::hasColumn('brands', 'seo_title')) {
+            unset($row['seo_title'], $row['seo_description']);
+        }
+
+        return $row;
     }
 
     protected function nullable(?string $value): ?string

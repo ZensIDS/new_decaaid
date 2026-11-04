@@ -18,13 +18,15 @@ class Brand extends Model
 
     protected $fillable = [
         'pillar_id', 'slug', 'name', 'logo', 'description', 'instagram', 'tiktok', 'url',
-        'services', 'sort_order', 'is_visible', 'translation_status', 'is_dummy',
+        'services', 'seo_title', 'seo_description', 'sort_order', 'is_visible', 'translation_status', 'is_dummy',
         'created_by', 'updated_by',
     ];
 
     protected $casts = [
         'description' => 'array',
         'services'    => 'array',
+        'seo_title'       => 'array',
+        'seo_description' => 'array',
         'sort_order'  => 'integer',
         'is_visible'  => 'boolean',
         'is_dummy'    => 'boolean',

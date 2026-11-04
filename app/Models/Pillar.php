@@ -30,11 +30,13 @@ class Pillar extends Model
         'paper-airplane' => 'Kirim',
     ];
 
-    protected $fillable = ['slug', 'name', 'icon', 'sort_order', 'is_visible'];
+    protected $fillable = ['slug', 'name', 'icon', 'seo_title', 'seo_description', 'sort_order', 'is_visible'];
 
     protected $casts = [
-        'sort_order' => 'integer',
-        'is_visible' => 'boolean',
+        'seo_title'       => 'array',
+        'seo_description' => 'array',
+        'sort_order'      => 'integer',
+        'is_visible'      => 'boolean',
     ];
 
     public function brands(): HasMany

@@ -8,6 +8,7 @@ use App\Models\Pillar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -155,17 +156,38 @@ class PillarController extends Controller
             ],
             'icon'       => ['required', Rule::in(array_keys(Pillar::ICONS))],
             'is_visible' => ['nullable', 'boolean'],
+            'seo_title.id'       => ['nullable', 'string', 'max:120'],
+            'seo_title.en'       => ['nullable', 'string', 'max:120'],
+            'seo_description.id' => ['nullable', 'string', 'max:300'],
+            'seo_description.en' => ['nullable', 'string', 'max:300'],
         ], [
             'slug.regex'  => 'Slug hanya boleh huruf kecil, angka, dan tanda hubung.',
             'slug.unique' => 'Slug ini sudah dipakai pilar lain.',
             'icon.in'     => 'Pilih ikon dari daftar yang tersedia.',
-        ], ['name' => 'nama pilar', 'icon' => 'ikon']);
+        ], ['name' => 'nama pilar', 'icon' => 'ikon', 'seo_title.id' => 'judul SEO (ID)', 'seo_title.en' => 'judul SEO (EN)',
+            'seo_description.id' => 'deskripsi SEO (ID)', 'seo_description.en' => 'deskripsi SEO (EN)']);
 
-        return [
+        $pair = function (?array $v) {
+            $id = trim((string) ($v['id'] ?? ''));
+            $en = trim((string) ($v['en'] ?? ''));
+
+            return $id === '' && $en === '' ? null : ['id' => $id, 'en' => $en];
+        };
+
+        $row = [
             'name'       => trim($data['name']),
             'slug'       => $data['slug'],
             'icon'       => $data['icon'],
+            'seo_title'       => $pair($data['seo_title'] ?? null),
+            'seo_description' => $pair($data['seo_description'] ?? null),
             'is_visible' => $request->boolean('is_visible'),
         ];
+
+        // Migration SEO (2026_11_04_100000) belum dijalankan: simpan tanpa kolom SEO agar admin tidak error.
+        if (! Schema::hasColumn('pillars', 'seo_title')) {
+            unset($row['seo_title'], $row['seo_description']);
+        }
+
+        return $row;
     }
 }

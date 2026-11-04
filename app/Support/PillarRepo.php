@@ -62,6 +62,8 @@ class PillarRepo
             'slug'   => $p->slug,
             'name'   => $p->name,
             'icon'   => $p->icon,
+            'seo_title'       => self::bilingual($p->seo_title),       // B3n 2c: kosong = null (judul bawaan halaman)
+            'seo_description' => self::bilingual($p->seo_description),
             'brands' => $p->brands->map(fn($b) => self::brand($b))->all(),
         ])->all();
     }
@@ -76,6 +78,8 @@ class PillarRepo
             'instagram'   => $b->instagram ?: null,
             'tiktok'      => $b->tiktok ?: null,
             'url'         => $b->url ?: null,
+            'seo_title'       => self::bilingual($b->seo_title),
+            'seo_description' => self::bilingual($b->seo_description),
         ];
 
         $items = [];

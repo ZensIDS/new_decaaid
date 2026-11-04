@@ -7,8 +7,8 @@
     $lead = $brand['description'] ? \Illuminate\Support\Str::limit($brand['description'], 160) : $unit['name'];
 @endphp
 
-@section('title', $brand['name'].' | '.$unit['name'].' | '.config('site.name'))
-@section('description', $lead)
+@section('title', (($brand['seo_title'] ?? '') !== '' ? $brand['seo_title'] : $brand['name'].' | '.$unit['name']).' | '.config('site.name'))
+@section('description', ($brand['seo_description'] ?? '') !== '' ? $brand['seo_description'] : $lead)
 
 @section('content')
     <x-ui.page-header :eyebrow="$unit['name']" :title="$brand['name']" :text="$lead"

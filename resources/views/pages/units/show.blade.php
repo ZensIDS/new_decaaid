@@ -14,8 +14,8 @@
     $next = $all[($index + 1) % count($all)];
 @endphp
 
-@section('title', $detail['name'].' | '.$page['eyebrow'].' | '.config('site.name'))
-@section('description', $detail['summary'])
+@section('title', (($detail['seo_title'] ?? '') !== '' ? $detail['seo_title'] : $detail['name'].' | '.$page['eyebrow']).' | '.config('site.name'))
+@section('description', ($detail['seo_description'] ?? '') !== '' ? $detail['seo_description'] : $detail['summary'])
 
 @section('content')
     <x-ui.page-header :eyebrow="$page['eyebrow']" :title="$detail['name']" :text="$detail['summary']"
