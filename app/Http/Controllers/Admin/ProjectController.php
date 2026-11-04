@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\AutoTranslatesOnSave;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Brand;
@@ -21,6 +22,8 @@ use Illuminate\View\View;
  */
 class ProjectController extends Controller
 {
+    use AutoTranslatesOnSave;
+
     protected const PER_PAGE = 10;
 
     public function index(Request $request): View
@@ -64,6 +67,7 @@ class ProjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->autoTranslateRequest($request, null, Project::AUTO_FIELDS, Project::class);
         $data = $this->validated($request, null);
 
         $project             = new Project($data);
@@ -81,7 +85,8 @@ class ProjectController extends Controller
         ActivityLog::record('project.created', "menambah proyek \"{$project->t('title', 'id')}\"", $project);
 
         return redirect()->route('admin.projects.edit', $project)
-            ->with('status', 'Proyek dibuat. ' . $this->visibilityNote($project));
+            ->with('status', 'Proyek dibuat. ' . $this->translationNote() . $this->visibilityNote($project))
+            ->with('error', $this->translateWarning);
     }
 
     public function edit(Project $project): View
@@ -91,6 +96,7 @@ class ProjectController extends Controller
 
     public function update(Request $request, Project $project): RedirectResponse
     {
+        $this->autoTranslateRequest($request, $project, Project::AUTO_FIELDS, Project::class);
         $data = $this->validated($request, $project);
 
         $oldSlug = $project->slug;
@@ -117,7 +123,8 @@ class ProjectController extends Controller
         ActivityLog::record('project.updated', "mengubah proyek \"{$project->t('title', 'id')}\"", $project);
 
         return redirect()->route('admin.projects.edit', $project)
-            ->with('status', 'Perubahan disimpan. ' . $this->visibilityNote($project) . SlugRedirects::note($redirected));
+            ->with('status', 'Perubahan disimpan. ' . $this->translationNote() . $this->visibilityNote($project) . SlugRedirects::note($redirected))
+            ->with('error', $this->translateWarning);
     }
 
     /** Tampilkan atau sembunyikan dari situs. */
@@ -240,7 +247,8 @@ class ProjectController extends Controller
 
         $clean = fn(array $pair) => ['id' => trim((string) ($pair['id'] ?? '')), 'en' => trim((string) ($pair['en'] ?? ''))];
 
-        return [
+        // Terjemahan otomatis terjadi pada simpanan ini: status menjadi Otomatis (belum ditinjau).
+        return $this->translationAttributes() + [
             'slug'               => $data['slug'],
             'pillar_id'          => $data['pillar_id'],
             'brand_id'           => $data['brand_id'] ?? null,

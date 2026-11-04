@@ -39,7 +39,8 @@ class NewsAutoTranslate
         $fields ??= self::FIELDS;
         $jobs = ['en' => [], 'id' => []]; // target => [kolom => teks sumber]
 
-        foreach ($fields as $field => [$max, $html]) {
+        foreach ($fields as $field => $spec) {
+            $html = $spec[1];
             $id = self::norm($input[$field]['id'] ?? '', $html);
             $en = self::norm($input[$field]['en'] ?? '', $html);
 
@@ -68,18 +69,38 @@ class NewsAutoTranslate
             }
 
             try {
+                // Kolom "per baris" (mis. lingkup kerja Proyek) diterjemahkan satu baris satu butir agar susunan baris terjaga.
                 $items = [];
                 foreach ($jobs[$to] as $field => $text) {
-                    $items[$field] = ['text' => $text, 'html' => $fields[$field][1]];
+                    if ($fields[$field][2] ?? false) {
+                        foreach (preg_split('/\R+/u', $text) as $n => $line) {
+                            if (trim($line) !== '') {
+                                $items[$field . '#' . $n] = ['text' => trim($line), 'html' => false];
+                            }
+                        }
+                    } else {
+                        $items[$field] = ['text' => $text, 'html' => $fields[$field][1]];
+                    }
                 }
 
-                $done = Translator::translate($items, $from, $to);
+                $done   = Translator::translate($items, $from, $to);
+                $merged = [];
 
-                foreach ($done as $field => $text) {
-                    $max = $fields[$field][0];
-                    if ($max && mb_strlen($text) > $max) {
+                foreach ($done as $key => $text) {
+                    if (str_contains($key, '#')) {
+                        $merged[explode('#', $key, 2)[0]][] = $text;
+                    } else {
+                        $merged[$key] = $text;
+                    }
+                }
+
+                foreach ($merged as $field => $text) {
+                    if (is_array($text)) {
+                        $text = implode("\n", $text);
+                    } elseif (($max = $fields[$field][0]) && mb_strlen($text) > $max) {
                         $text = rtrim(mb_substr($text, 0, $max - 1)) . '…';
                     }
+
                     $input[$field][$to] = $text;
                 }
 
@@ -98,9 +119,10 @@ class NewsAutoTranslate
         return [$input, $direction, $warning];
     }
 
-    protected static function norm(?string $value, bool $html): string
+    protected static function norm(mixed $value, bool $html): string
     {
-        $value = trim((string) $value);
+        // Nilai lama bisa berupa daftar (mis. lingkup kerja Proyek): satu butir satu baris.
+        $value = trim(is_array($value) ? implode("\n", $value) : (string) $value);
 
         return $html ? (Html::text(Html::clean($value)) === '' && ! str_contains($value, '<img') ? '' : Html::clean($value)) : $value;
     }

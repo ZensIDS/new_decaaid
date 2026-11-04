@@ -6,6 +6,10 @@
 
     $val = fn (string $field, string $lang) => $editing ? ($award->{$field}[$lang] ?? '') : '';
 
+    // B5: terjemahan otomatis (butuh penyedia di .env dan migration kolom translated_from).
+    $autoAvailable = \App\Support\Translator::enabled();
+    $transColumns  = \App\Models\Award::hasTranslatedFrom();
+
     $currentTrans = old('translation_status', $editing ? $award->translation_status : 'manual');
     $imageUrl = $editing && $award->image && file_exists(public_path($award->image)) ? asset($award->image) : null;
 
@@ -60,6 +64,18 @@
                             English (EN)
                         </button>
                     </div>
+
+                    @if ($transColumns)
+                        @if ($autoAvailable)
+                            <x-admin.toggle name="auto_translate" label="Terjemahkan otomatis bahasa yang kosong"
+                                            description="Saat disimpan, kolom ID atau EN yang kosong diisi hasil terjemahan mesin dan ditandai Otomatis (belum ditinjau). Isian yang sudah kamu tulis tidak ditimpa."
+                                            :checked="true" />
+                        @else
+                            <p class="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
+                                Terjemahan otomatis belum aktif (penyedia belum diatur di <code>.env</code>). Tab EN yang kosong akan tampil sebagai teks Indonesia.
+                            </p>
+                        @endif
+                    @endif
 
                     <div x-show="lang === 'id'" class="space-y-5" role="tabpanel">
                         <x-admin.input name="title[id]" label="Nama penghargaan" required x-model="title" :value="$val('title', 'id')" />

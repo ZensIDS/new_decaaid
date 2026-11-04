@@ -17,6 +17,16 @@
     <x-ui.page-header :eyebrow="$page['eyebrow']" :title="$page['title']" :text="$page['lead']"
         :crumbs="[[$ui['home'], lroute('home')], [$page['eyebrow'], lroute('portfolio.index')], [$page['title'], null]]" />
 
+    @if ($items->contains(fn ($a) => ! empty($a['machine_translated'])))
+        <div class="container pt-8">
+            <p class="rounded-xl bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600 ring-1 ring-inset ring-slate-200" role="note">
+                {{ app()->getLocale() === 'en'
+                    ? 'Some award descriptions on this page were translated automatically from Indonesian and have not been reviewed yet.'
+                    : 'Beberapa keterangan penghargaan di halaman ini diterjemahkan otomatis dari Bahasa Inggris dan belum ditinjau.' }}
+            </p>
+        </div>
+    @endif
+
     @if ($items->isEmpty())
         <section class="section-y bg-white">
             <div class="container">

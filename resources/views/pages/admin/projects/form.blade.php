@@ -8,6 +8,10 @@
     // Lingkup kerja disimpan sebagai daftar; di form ditulis satu butir per baris.
     $scopeVal = fn (string $lang) => $editing ? implode("\n", $project->scope[$lang] ?? []) : '';
 
+    // B5: terjemahan otomatis (butuh penyedia di .env dan migration kolom translated_from).
+    $autoAvailable = \App\Support\Translator::enabled();
+    $transColumns  = \App\Models\Project::hasTranslatedFrom();
+
     $currentTrans = old('translation_status', $editing ? $project->translation_status : 'manual');
     $currentPillar = old('pillar_id', $editing ? $project->pillar_id : null);
     $currentBrand = old('brand_id', $editing ? $project->brand_id : null);
@@ -78,6 +82,18 @@
                             English (EN)
                         </button>
                     </div>
+
+                    @if ($transColumns)
+                        @if ($autoAvailable)
+                            <x-admin.toggle name="auto_translate" label="Terjemahkan otomatis bahasa yang kosong"
+                                            description="Saat disimpan, kolom ID atau EN yang kosong diisi hasil terjemahan mesin dan ditandai Otomatis (belum ditinjau). Isian yang sudah kamu tulis tidak ditimpa."
+                                            :checked="true" />
+                        @else
+                            <p class="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
+                                Terjemahan otomatis belum aktif (penyedia belum diatur di <code>.env</code>). Tab EN yang kosong akan tampil sebagai teks Indonesia.
+                            </p>
+                        @endif
+                    @endif
 
                     <div x-show="lang === 'id'" class="space-y-5" role="tabpanel">
                         <x-admin.input name="title[id]" label="Judul proyek" required x-model="title" :value="$val('title', 'id')" />

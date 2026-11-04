@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Concerns\MachineTranslated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +12,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Award extends Model
 {
+    use MachineTranslated;
+
+    /** Kolom dwibahasa yang ikut terjemahan otomatis: kolom => [maks karakter, HTML?]. */
+    public const AUTO_FIELDS = [
+        'title'       => [200, false],
+        'description' => [600, false],
+        'image_alt'   => [200, false],
+    ];
+
     public const TRANSLATION = [
         'manual'   => 'Manual',
         'auto'     => 'Otomatis (belum ditinjau)',
@@ -19,7 +29,7 @@ class Award extends Model
 
     protected $fillable = [
         'title', 'description', 'year', 'image', 'image_alt', 'is_featured', 'is_visible',
-        'translation_status', 'is_dummy', 'created_by', 'updated_by',
+        'translation_status', 'translated_from', 'is_dummy', 'created_by', 'updated_by',
     ];
 
     protected $casts = [

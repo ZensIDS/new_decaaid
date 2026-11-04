@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\Concerns\MachineTranslated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,6 +12,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Project extends Model
 {
+    use MachineTranslated;
+
+    /** Kolom dwibahasa yang ikut terjemahan otomatis: kolom => [maks karakter, HTML?, per baris?]. */
+    public const AUTO_FIELDS = [
+        'title'           => [200, false],
+        'summary'         => [300, false],
+        'description'     => [5000, false],
+        'scope'           => [null, false, true],
+        'image_alt'       => [200, false],
+        'seo_title'       => [120, false],
+        'seo_description' => [300, false],
+    ];
+
     public const TRANSLATION = [
         'manual'   => 'Manual',
         'auto'     => 'Otomatis (belum ditinjau)',
@@ -28,7 +42,7 @@ class Project extends Model
 
     protected $fillable = [
         'slug', 'pillar_id', 'brand_id', 'title', 'client', 'year', 'summary', 'description', 'scope',
-        'image', 'image_alt', 'gallery', 'is_featured', 'is_visible', 'translation_status',
+        'image', 'image_alt', 'gallery', 'is_featured', 'is_visible', 'translation_status', 'translated_from',
         'seo_title', 'seo_description', 'is_dummy', 'created_by', 'updated_by',
     ];
 

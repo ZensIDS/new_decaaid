@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\AutoTranslatesOnSave;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Award;
@@ -19,6 +20,8 @@ use Illuminate\View\View;
  */
 class AwardController extends Controller
 {
+    use AutoTranslatesOnSave;
+
     protected const PER_PAGE = 10;
 
     public function index(Request $request): View
@@ -57,6 +60,7 @@ class AwardController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->autoTranslateRequest($request, null, Award::AUTO_FIELDS, Award::class);
         $data = $this->validated($request);
 
         $award             = new Award($data);
@@ -75,7 +79,8 @@ class AwardController extends Controller
         ActivityLog::record('award.created', "menambah penghargaan \"{$award->t('title', 'id')}\"", $award);
 
         return redirect()->route('admin.awards.edit', $award)
-            ->with('status', 'Penghargaan dibuat. ' . $this->visibilityNote($award));
+            ->with('status', 'Penghargaan dibuat. ' . $this->translationNote() . $this->visibilityNote($award))
+            ->with('error', $this->translateWarning);
     }
 
     public function edit(Award $award): View
@@ -85,6 +90,7 @@ class AwardController extends Controller
 
     public function update(Request $request, Award $award): RedirectResponse
     {
+        $this->autoTranslateRequest($request, $award, Award::AUTO_FIELDS, Award::class);
         $data = $this->validated($request);
 
         $award->fill($data);
@@ -108,7 +114,8 @@ class AwardController extends Controller
         ActivityLog::record('award.updated', "mengubah penghargaan \"{$award->t('title', 'id')}\"", $award);
 
         return redirect()->route('admin.awards.edit', $award)
-            ->with('status', 'Perubahan disimpan. ' . $this->visibilityNote($award));
+            ->with('status', 'Perubahan disimpan. ' . $this->translationNote() . $this->visibilityNote($award))
+            ->with('error', $this->translateWarning);
     }
 
     /** Tampilkan atau sembunyikan dari situs. */
@@ -177,7 +184,8 @@ class AwardController extends Controller
 
         $clean = fn(array $pair) => ['id' => trim((string) ($pair['id'] ?? '')), 'en' => trim((string) ($pair['en'] ?? ''))];
 
-        return [
+        // Terjemahan otomatis terjadi pada simpanan ini: status menjadi Otomatis (belum ditinjau).
+        return $this->translationAttributes() + [
             'title'              => $clean($data['title']),
             'description'        => $clean($data['description'] ?? []),
             'year'               => (int) $data['year'],

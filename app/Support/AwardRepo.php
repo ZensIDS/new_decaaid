@@ -46,6 +46,8 @@ class AwardRepo
 
         return [
             'slug'      => 'penghargaan-' . $a->id,
+            // B5: isi bahasa ini hasil mesin dan belum ditinjau.
+            'machine_translated' => $a->machineTranslated(app()->getLocale()),
             'year'      => (string) $a->year,
             'featured'  => $a->is_featured,
             'title'     => $title,

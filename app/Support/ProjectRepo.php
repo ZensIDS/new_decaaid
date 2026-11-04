@@ -66,6 +66,8 @@ class ProjectRepo
 
         return [
             'slug'        => $p->slug,
+            // B5: isi bahasa ini hasil mesin dan belum ditinjau.
+            'machine_translated' => $p->machineTranslated(app()->getLocale()),
             'unit'        => $p->pillar?->slug ?? '',
             'unit_name'   => $p->pillar?->name ?? '',
             'brand'       => $p->brand?->name,

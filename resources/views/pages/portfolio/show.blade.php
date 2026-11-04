@@ -29,6 +29,13 @@
 
                 <x-ui.reveal class="mt-10">
                     <h2 id="overview-title" class="text-2xl md:text-3xl">{{ $page['overview_title'] }}</h2>
+                    @if (! empty($project['machine_translated']))
+                        <p class="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600 ring-1 ring-inset ring-slate-200" role="note">
+                            {{ app()->getLocale() === 'en'
+                                ? 'This project page was translated automatically from Indonesian and has not been reviewed yet.'
+                                : 'Halaman proyek ini diterjemahkan otomatis dari Bahasa Inggris dan belum ditinjau.' }}
+                        </p>
+                    @endif
                     <p class="mt-4 text-base leading-relaxed md:text-lg">{{ $project['description'] }}</p>
 
                     <h2 class="mt-10 text-2xl md:text-3xl">{{ $page['scope_title'] }}</h2>
