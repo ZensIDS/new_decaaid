@@ -20,8 +20,8 @@ Route::redirect('/', '/'.config('site.default_locale'));
 
 // B3n: sitemap XML (ID + EN dengan hreflang) dan robots.txt dinamis (mengikuti SITE_NOINDEX).
 // Bila ada berkas statis public/robots.txt atau public/sitemap.xml, hapus agar rute ini yang dipakai.
-Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
-Route::get('/robots.txt', [SeoController::class, 'robots'])->name('seo.robots');
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->middleware('throttle:seo-files')->name('seo.sitemap');
+Route::get('/robots.txt', [SeoController::class, 'robots'])->middleware('throttle:seo-files')->name('seo.robots');
 
 // A1: halaman internal untuk memeriksa komponen. Hanya aktif di local.
 // Hapus blok ini sebelum deploy ke staging.
@@ -37,14 +37,19 @@ foreach (config('site.locales') as $locale) {
         ->name($locale.'.')
         ->group(function () use ($locale) {
             foreach (config('site.routes') as $key => $route) {
-                Route::get($route['slug'][$locale], [PageController::class, $route['action']])
+                $page = Route::get($route['slug'][$locale], [PageController::class, $route['action']])
                     ->where('slug', '[A-Za-z0-9\-]+')
                     ->name($key);
+
+                // Tahap C: pencarian membaca database, batasi 30 permintaan per menit per IP (pembatas bernama `site-search`).
+                if ($key === 'search') {
+                    $page->middleware('throttle:site-search');
+                }
             }
 
             // B4: kirim formulir Kontak (POST, lewat fetch). Batas kirim: 6 per 10 menit per IP.
             Route::post(config('site.routes.contact.slug.'.$locale), [ContactController::class, 'store'])
-                ->middleware('throttle:6,10')
+                ->middleware('throttle:contact-form')
                 ->name('contact.send');
 
             // B3m (QA1): Halaman Kustom. HARUS paling akhir agar tidak menangkap slug halaman bawaan.

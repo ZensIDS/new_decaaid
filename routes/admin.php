@@ -53,7 +53,7 @@ Route::middleware(['admin.locale', 'admin.noindex'])
 
             // Ganti password (juga dipakai untuk ganti password wajib)
             Route::get('password', [PasswordController::class, 'edit'])->name('password.edit');
-            Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+            Route::put('password', [PasswordController::class, 'update'])->middleware('throttle:admin-password')->name('password.update');
 
             // Halaman yang baru bisa dibuka setelah password wajib diganti
             Route::middleware('admin.password')->group(function () {
@@ -68,7 +68,7 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('berita', [NewsController::class, 'index'])->name('news.index');
                     Route::get('berita/tambah', [NewsController::class, 'create'])->name('news.create');
                     Route::post('berita', [NewsController::class, 'store'])->name('news.store');
-                    Route::post('berita/unggah', [NewsController::class, 'upload'])->middleware('throttle:60,1')->name('news.upload');
+                    Route::post('berita/unggah', [NewsController::class, 'upload'])->middleware('throttle:admin-news-upload')->name('news.upload');
                     Route::get('berita/{news}/ubah', [NewsController::class, 'edit'])->name('news.edit');
                     Route::put('berita/{news}', [NewsController::class, 'update'])->name('news.update');
                     Route::post('berita/{news}/revisi/{revision}', [NewsController::class, 'restore'])->name('news.restore');
@@ -92,12 +92,12 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                 // Media Library (B3b): pemilih (JSON) untuk semua peran admin; perpustakaan lengkap untuk Super Admin dan Admin
                 Route::middleware('admin.role:super_admin,admin,editor')->prefix('media')->name('media.')->group(function () {
                     Route::get('pilih', [MediaController::class, 'picker'])->name('picker');
-                    Route::post('pilih', [MediaController::class, 'pickerUpload'])->middleware('throttle:30,1')->name('picker.upload');
+                    Route::post('pilih', [MediaController::class, 'pickerUpload'])->middleware('throttle:admin-picker-upload')->name('picker.upload');
                 });
 
                 Route::middleware('admin.role:super_admin,admin')->prefix('media')->name('media.')->group(function () {
                     Route::get('/', [MediaController::class, 'index'])->name('index');
-                    Route::post('/', [MediaController::class, 'store'])->middleware('throttle:20,1')->name('store');
+                    Route::post('/', [MediaController::class, 'store'])->middleware('throttle:admin-media-upload')->name('store');
                     Route::get('{media}', [MediaController::class, 'show'])->whereNumber('media')->name('show');
                     Route::put('{media}', [MediaController::class, 'update'])->whereNumber('media')->name('update');
                     Route::delete('{media}', [MediaController::class, 'destroy'])->whereNumber('media')->name('destroy');
@@ -170,7 +170,7 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                 // Pesan Masuk (B3l): Super Admin dan Admin
                 Route::middleware('admin.role:super_admin,admin')->prefix('pesan')->name('messages.')->group(function () {
                     Route::get('/', [MessageController::class, 'index'])->name('index');
-                    Route::get('ekspor', [MessageController::class, 'export'])->middleware('throttle:10,1')->name('export');
+                    Route::get('ekspor', [MessageController::class, 'export'])->middleware('throttle:admin-export')->name('export');
                     Route::get('{message}', [MessageController::class, 'show'])->whereNumber('message')->name('show');
                     Route::patch('{message}/dibaca', [MessageController::class, 'toggle'])->whereNumber('message')->name('toggle');
                     Route::delete('{message}', [MessageController::class, 'destroy'])->whereNumber('message')->name('destroy');
@@ -189,7 +189,7 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('tambah', [RedirectController::class, 'create'])->name('create');
                     Route::post('/', [RedirectController::class, 'store'])->name('store');
                     Route::get('impor', [RedirectController::class, 'importForm'])->name('import');
-                    Route::post('impor', [RedirectController::class, 'importStore'])->middleware('throttle:10,1')->name('import.store');
+                    Route::post('impor', [RedirectController::class, 'importStore'])->middleware('throttle:admin-import')->name('import.store');
                     Route::get('{redirect}/ubah', [RedirectController::class, 'edit'])->whereNumber('redirect')->name('edit');
                     Route::put('{redirect}', [RedirectController::class, 'update'])->whereNumber('redirect')->name('update');
                     Route::patch('{redirect}/status', [RedirectController::class, 'toggle'])->whereNumber('redirect')->name('toggle');
@@ -225,8 +225,8 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                         Route::get('/', [ClientController::class, 'index'])->name('index');
                         Route::get('tambah', [ClientController::class, 'create'])->name('create');
                         Route::post('/', [ClientController::class, 'store'])->name('store');
-                        Route::post('unggah-massal', [ClientController::class, 'bulk'])->middleware('throttle:20,1')->name('bulk');
-                        Route::post('urutan', [ClientController::class, 'sort'])->middleware('throttle:60,1')->name('sort');
+                        Route::post('unggah-massal', [ClientController::class, 'bulk'])->middleware('throttle:admin-client-bulk')->name('bulk');
+                        Route::post('urutan', [ClientController::class, 'sort'])->middleware('throttle:admin-sort')->name('sort');
                         Route::get('{client}/ubah', [ClientController::class, 'edit'])->whereNumber('client')->name('edit');
                         Route::put('{client}', [ClientController::class, 'update'])->whereNumber('client')->name('update');
                         Route::patch('{client}/status', [ClientController::class, 'toggle'])->whereNumber('client')->name('toggle');
@@ -249,11 +249,11 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('/', [PillarController::class, 'index'])->name('index');
                     Route::get('tambah', [PillarController::class, 'create'])->name('create');
                     Route::post('/', [PillarController::class, 'store'])->name('store');
-                    Route::post('urutan', [PillarController::class, 'sort'])->middleware('throttle:60,1')->name('sort');
+                    Route::post('urutan', [PillarController::class, 'sort'])->middleware('throttle:admin-sort')->name('sort');
 
                     Route::get('brand/tambah', [BrandController::class, 'create'])->name('brands.create');
                     Route::post('brand', [BrandController::class, 'store'])->name('brands.store');
-                    Route::post('brand/urutan', [BrandController::class, 'sort'])->middleware('throttle:60,1')->name('brands.sort');
+                    Route::post('brand/urutan', [BrandController::class, 'sort'])->middleware('throttle:admin-sort')->name('brands.sort');
                     Route::get('brand/{brand}/ubah', [BrandController::class, 'edit'])->whereNumber('brand')->name('brands.edit');
                     Route::put('brand/{brand}', [BrandController::class, 'update'])->whereNumber('brand')->name('brands.update');
                     Route::patch('brand/{brand}/status', [BrandController::class, 'toggle'])->whereNumber('brand')->name('brands.toggle');

@@ -52,5 +52,16 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Tahap C: pembatas bernama, masing-masing punya hitungan sendiri. (Pembatas numerik `throttle:N,M`
+        // di Laravel 9 berbagi satu hitungan per IP/pengguna di semua rute, sehingga rute dengan batas kecil
+        // bisa terkunci oleh rute lain.)
+        RateLimiter::for('site-search', fn(Request $request) => Limit::perMinute(30)->by('search|'.$request->ip()));
+        RateLimiter::for('contact-form', fn(Request $request) => Limit::perMinutes(10, 6)->by('contact|'.$request->ip()));
+        RateLimiter::for('seo-files', fn(Request $request) => Limit::perMinute(30)->by('seo|'.$request->ip()));
+        foreach (['admin-news-upload' => 60, 'admin-picker-upload' => 30, 'admin-media-upload' => 20, 'admin-export' => 10, 'admin-import' => 10, 'admin-client-bulk' => 20, 'admin-sort' => 60] as $name => $max) {
+            RateLimiter::for($name, fn(Request $request) => Limit::perMinute($max)->by($name.'|'.($request->user()?->id ?: $request->ip())));
+        }
+        RateLimiter::for('admin-password', fn(Request $request) => Limit::perMinute(6)->by('pw|'.($request->user()?->id ?: $request->ip())));
     }
 }
