@@ -44,6 +44,7 @@ class SiteSettingsController extends Controller
 
         $data = [
             'tagline'         => ! empty($c['tagline']['id']) ? $pair($c['tagline']) : $pair($seed['tagline']),
+            'copyright'       => $pair($c['copyright'] ?? []),
             'phone'           => (string) ($c['phone'] ?? ''),
             'whatsapp_number' => (string) ($c['whatsapp_number'] ?? ''),
             'logo_light'      => (string) ($c['logo_light'] ?? ''),
@@ -54,6 +55,7 @@ class SiteSettingsController extends Controller
                 'type'    => $pair($o['type'] ?? []),
                 'city'    => (string) ($o['city'] ?? ''),
                 'address' => $pair($o['address'] ?? ''),
+                'map'     => (string) ($o['map'] ?? ''),
             ], $offices)),
         ];
 
@@ -94,6 +96,8 @@ class SiteSettingsController extends Controller
         $rules = [
             'tagline.id'        => ['required', 'string', 'max:160'],
             'tagline.en'        => ['nullable', 'string', 'max:160'],
+            'copyright.id'      => ['nullable', 'string', 'max:200'],
+            'copyright.en'      => ['nullable', 'string', 'max:200'],
             'phone'             => $phone,
             'whatsapp_number'   => $phone,
             'logo_light'        => ['nullable', 'string', 'max:255'],
@@ -105,6 +109,7 @@ class SiteSettingsController extends Controller
             'offices.*.city'    => ['required', 'string', 'max:80'],
             'offices.*.address.id' => ['required', 'string', 'max:250'],
             'offices.*.address.en' => ['nullable', 'string', 'max:250'],
+            'offices.*.map'     => ['nullable', 'string', 'max:500', 'url', 'regex:/^https:\/\//i'],
         ];
 
         foreach (array_keys(self::SOCIALS) as $net) {
@@ -117,6 +122,8 @@ class SiteSettingsController extends Controller
             'whatsapp_number.regex' => 'Nomor WhatsApp hanya boleh berisi angka, spasi, +, -, (, dan ).',
             'social.*.url'      => 'Tautan harus berupa alamat lengkap yang diawali https://',
             'social.*.regex'    => 'Tautan harus diawali http:// atau https://',
+            'offices.*.map.url'   => 'Tautan peta harus berupa alamat lengkap, mis. https://maps.app.goo.gl/...',
+            'offices.*.map.regex' => 'Tautan peta harus diawali https://',
         ], [
             'tagline.id'        => 'slogan (ID)',
             'phone'             => 'telepon',
@@ -124,12 +131,15 @@ class SiteSettingsController extends Controller
             'offices.*.type.id' => 'jenis kantor (ID)',
             'offices.*.city'    => 'kota',
             'offices.*.address.id' => 'alamat (ID)',
+            'copyright.id'      => 'hak cipta (ID)',
+            'copyright.en'      => 'hak cipta (EN)',
         ]);
 
         $pair = fn(array $p) => ['id' => trim((string) ($p['id'] ?? '')), 'en' => trim((string) ($p['en'] ?? ''))];
 
         $content = [
             'tagline'         => $pair($d['tagline']),
+            'copyright'       => $pair($d['copyright'] ?? []),
             'phone'           => trim((string) ($d['phone'] ?? '')),
             'whatsapp_number' => trim((string) ($d['whatsapp_number'] ?? '')),
             'social'          => [],
@@ -137,6 +147,7 @@ class SiteSettingsController extends Controller
                 'type'    => $pair($o['type']),
                 'city'    => trim((string) $o['city']),
                 'address' => $pair($o['address']),
+                'map'     => trim((string) ($o['map'] ?? '')),
             ], $d['offices'])),
         ];
 

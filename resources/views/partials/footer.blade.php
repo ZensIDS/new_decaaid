@@ -114,7 +114,11 @@
 
     <div class="border-t border-white/10">
         <div class="container flex flex-col gap-2 py-5 text-xs text-brand-300 sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; {{ now()->year }} {{ $company['name'] }}. {{ t('footer.rights') }}</p>
+            @if (filled($company['copyright'] ?? null))
+                <p>{{ str_replace('{year}', (string) now()->year, $company['copyright']) }}</p>
+            @else
+                <p>&copy; {{ now()->year }} {{ $company['name'] }}. {{ t('footer.rights') }}</p>
+            @endif
             <a href="{{ lroute('privacy') }}" class="transition hover:text-white">{{ t('footer.privacy') }}</a>
         </div>
     </div>

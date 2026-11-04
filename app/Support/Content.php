@@ -89,7 +89,16 @@ class Content
                     'type'    => $o['type'],
                     'city'    => $o['city'],
                     'address' => $o['address'],
+                    'map'     => (string) ($o['map'] ?? ''),
                 ], $stored['offices'], array_keys($stored['offices'])));
+            }
+
+            // B3a (v67): teks hak cipta footer (ID/EN); {year} diganti tahun berjalan di footer. Kosong = teks bawaan.
+            if (! empty($stored['copyright']['id'])) {
+                $raw['copyright'] = [
+                    'id' => (string) $stored['copyright']['id'],
+                    'en' => (string) (($stored['copyright']['en'] ?? '') !== '' ? $stored['copyright']['en'] : $stored['copyright']['id']),
+                ];
             }
         }
 

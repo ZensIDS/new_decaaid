@@ -208,7 +208,7 @@
                             </p>
 
                             <div class="mt-7">
-                                <x-ui.button :href="'https://www.google.com/maps/search/?api=1&query='.rawurlencode($office['address'])"
+                                <x-ui.button :href="filled($office['map'] ?? null) ? $office['map'] : 'https://www.google.com/maps/search/?api=1&query='.rawurlencode($office['address'])"
                                              :variant="$hq ? 'light' : 'outline'" size="sm" target="_blank" rel="noopener noreferrer" icon="arrow-up-right">
                                     {{ $page['open_map'] }}
                                 </x-ui.button>

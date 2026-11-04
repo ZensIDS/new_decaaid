@@ -7,6 +7,7 @@
 
     $state = [
         'tagline'         => $pair(old('tagline', $data['tagline'])),
+        'copyright'       => $pair(old('copyright', $data['copyright'])),
         'phone'           => (string) old('phone', $data['phone']),
         'whatsapp_number' => (string) old('whatsapp_number', $data['whatsapp_number']),
         'social'          => collect(array_keys($socials))->mapWithKeys(fn ($n) => [$n => (string) old("social.$n", $data['social'][$n] ?? '')])->all(),
@@ -14,6 +15,7 @@
             'type'    => $pair($o['type'] ?? []),
             'city'    => (string) ($o['city'] ?? ''),
             'address' => $pair($o['address'] ?? []),
+            'map'     => (string) ($o['map'] ?? ''),
         ])->values()->all(),
     ];
 
@@ -48,7 +50,7 @@
                   lang: @js($startLang),
                   f: @js($state),
                   max: {{ $maxOffices }},
-                  add() { if (this.f.offices.length < this.max) this.f.offices.push({ type: { id: '', en: '' }, city: '', address: { id: '', en: '' } }); },
+                  add() { if (this.f.offices.length < this.max) this.f.offices.push({ type: { id: '', en: '' }, city: '', address: { id: '', en: '' }, map: '' }); },
                   del(i) { this.f.offices.splice(i, 1); },
                   move(i, d) { const a = this.f.offices, j = i + d; if (j < 0 || j >= a.length) return; [a[i], a[j]] = [a[j], a[i]]; },
               }">
@@ -75,6 +77,17 @@
                                 @error('tagline.'.$l)<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
                             </div>
                         @endforeach
+                    </div>
+                    <div>
+                        <label class="{{ $label }}"><span>Teks hak cipta footer</span> <span x-text="lang === 'id' ? '(ID)' : '(EN)'"></span></label>
+                        @foreach (['id', 'en'] as $l)
+                            <div x-show="lang === '{{ $l }}'" @if ($l === 'en') x-cloak @endif>
+                                <input maxlength="200" name="copyright[{{ $l }}]" x-model="f.copyright.{{ $l }}" class="{{ $field }}"
+                                       placeholder="{{ $l === 'id' ? '© {year} DECAA.ID. Hak cipta dilindungi.' : '© {year} DECAA.ID. All rights reserved.' }}">
+                                @error('copyright.'.$l)<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                            </div>
+                        @endforeach
+                        <p class="mt-1 text-xs text-slate-500">Kosong = teks bawaan. Tulis <code>{year}</code> agar diganti tahun berjalan secara otomatis.</p>
                     </div>
                 </x-admin.form-section>
 
@@ -151,6 +164,11 @@
                                     <div>
                                         <label class="{{ $label }}" x-text="lang === 'id' ? 'Alamat (ID)' : 'Address (EN)'"></label>
                                         <textarea rows="2" maxlength="250" :name="'offices[' + i + '][address][' + lang + ']'" x-model="o.address[lang]" class="{{ $field }}"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="{{ $label }}">Tautan peta (opsional)</label>
+                                        <input maxlength="500" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/..." :name="'offices[' + i + '][map]'" x-model="o.map" class="{{ $field }}">
+                                        <p class="mt-1 text-xs text-slate-500">Dari Google Maps: Bagikan, Salin link. Kosong = tombol Buka Peta mencari lewat alamat.</p>
                                     </div>
                                     <input type="hidden" :name="'offices[' + i + '][type][' + (lang === 'id' ? 'en' : 'id') + ']'" :value="o.type[lang === 'id' ? 'en' : 'id']">
                                     <input type="hidden" :name="'offices[' + i + '][address][' + (lang === 'id' ? 'en' : 'id') + ']'" :value="o.address[lang === 'id' ? 'en' : 'id']">
