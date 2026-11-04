@@ -26,6 +26,8 @@ use App\Http\Controllers\Admin\SeoPageController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\ProjectController;
 use App\Http\Controllers\Admin\SustainabilityController;
+use App\Http\Controllers\Admin\SecurityController;
+use App\Http\Controllers\Admin\TwoFactorChallengeController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,8 +49,13 @@ Route::middleware(['admin.locale', 'admin.noindex'])
         Route::get('login', [LoginController::class, 'show'])->name('login');
         Route::post('login', [LoginController::class, 'store'])->name('login.store');
 
+        // Langkah kedua masuk: kode verifikasi 2 langkah (K69)
+        Route::get('verifikasi', [TwoFactorChallengeController::class, 'show'])->name('two-factor.challenge');
+        Route::post('verifikasi', [TwoFactorChallengeController::class, 'store'])->middleware('throttle:admin-2fa')->name('two-factor.store');
+        Route::post('verifikasi/batal', [TwoFactorChallengeController::class, 'cancel'])->name('two-factor.cancel');
+
         // Sudah login (akun harus aktif)
-        Route::middleware(['auth', 'admin.active'])->group(function () {
+        Route::middleware(['auth', 'admin.active', 'admin.2fa'])->group(function () {
             Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
             // Ganti password (juga dipakai untuk ganti password wajib)
@@ -58,6 +65,14 @@ Route::middleware(['admin.locale', 'admin.noindex'])
             // Halaman yang baru bisa dibuka setelah password wajib diganti
             Route::middleware('admin.password')->group(function () {
                 Route::get('/', DashboardController::class)->name('dashboard');
+
+                // Keamanan Akun / verifikasi 2 langkah (K69): semua peran; wajib untuk Super Admin dan Admin
+                Route::get('keamanan', [SecurityController::class, 'edit'])->name('security.edit');
+                Route::post('keamanan/mulai', [SecurityController::class, 'start'])->name('security.start');
+                Route::post('keamanan/batal', [SecurityController::class, 'cancel'])->name('security.cancel');
+                Route::post('keamanan/konfirmasi', [SecurityController::class, 'confirm'])->middleware('throttle:admin-password')->name('security.confirm');
+                Route::post('keamanan/kode-pemulihan', [SecurityController::class, 'recovery'])->middleware('throttle:admin-password')->name('security.recovery');
+                Route::delete('keamanan', [SecurityController::class, 'disable'])->middleware('throttle:admin-password')->name('security.disable');
 
                 // Profil sendiri (semua peran)
                 Route::get('profil', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -278,6 +293,7 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::put('pengguna/{user}', [UserController::class, 'update'])->name('users.update');
                     Route::patch('pengguna/{user}/status', [UserController::class, 'toggle'])->name('users.toggle');
                     Route::put('pengguna/{user}/password', [UserController::class, 'resetPassword'])->name('users.password');
+                    Route::delete('pengguna/{user}/2fa', [UserController::class, 'resetTwoFactor'])->name('users.2fa-reset');
                     Route::delete('pengguna/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
                     Route::get('log-aktivitas', [LogController::class, 'index'])->name('logs.index');

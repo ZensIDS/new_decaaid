@@ -45,6 +45,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -57,6 +59,8 @@ class User extends Authenticatable
         'is_active' => 'boolean',
         'must_change_password' => 'boolean',
         'last_login_at' => 'datetime',
+        'two_factor_secret' => 'encrypted',
+        'two_factor_confirmed_at' => 'datetime',
     ];
 
     public function isSuperAdmin(): bool
@@ -78,6 +82,27 @@ class User extends Authenticatable
     public function hasRole(string ...$roles): bool
     {
         return in_array($this->role, $roles, true);
+    }
+
+    /** Verifikasi 2 langkah sudah aktif (rahasia tersimpan dan sudah dikonfirmasi dengan satu kode). */
+    public function hasTwoFactor(): bool
+    {
+        // Memakai nilai mentah (tanpa dekripsi) agar akun tetap dikenali bila APP_KEY berubah; kegagalan dekripsi ditangani saat verifikasi.
+        return $this->two_factor_confirmed_at !== null && ! empty($this->getAttributes()['two_factor_secret'] ?? null);
+    }
+
+    /** Peran yang wajib memakai verifikasi 2 langkah (K29): Super Admin dan Admin. Editor opsional. */
+    public function requiresTwoFactor(): bool
+    {
+        return $this->hasRole(self::ROLE_SUPER_ADMIN, self::ROLE_ADMIN);
+    }
+
+    /** Sisa kode pemulihan yang belum dipakai. */
+    public function recoveryCodesLeft(): int
+    {
+        $codes = json_decode((string) $this->two_factor_recovery_codes, true);
+
+        return is_array($codes) ? count($codes) : 0;
     }
 
     /** Jumlah Super Admin yang akunnya aktif (dipakai untuk menjaga minimal satu tersisa). */

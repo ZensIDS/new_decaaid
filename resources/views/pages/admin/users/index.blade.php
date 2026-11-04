@@ -71,6 +71,11 @@
                             @if ($row->must_change_password)
                                 <x-admin.badge tone="warning">Password Sementara</x-admin.badge>
                             @endif
+                            @if ($row->hasTwoFactor())
+                                <x-admin.badge tone="brand">2FA Aktif</x-admin.badge>
+                            @elseif ($row->requiresTwoFactor())
+                                <x-admin.badge tone="warning">Belum 2FA</x-admin.badge>
+                            @endif
                         </div>
                     </td>
                     <td class="whitespace-nowrap px-5 py-4 text-slate-600">

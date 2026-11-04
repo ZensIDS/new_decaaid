@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,7 +44,11 @@ class LoginController extends Controller
             ]);
         }
 
-        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Password dicek dulu TANPA masuk: bila akun memakai 2FA, sesi baru dibuat setelah kode benar (K69).
+        $provider = Auth::guard()->getProvider();
+        $user     = $provider->retrieveByCredentials(['email' => $credentials['email']]);
+
+        if (! $user || ! $provider->validateCredentials($user, $credentials)) {
             RateLimiter::hit($key, 60);
 
             // Pesan sengaja generik: tidak membocorkan apakah email terdaftar.
@@ -52,24 +57,37 @@ class LoginController extends Controller
             ]);
         }
 
-        $user = Auth::user();
-
         if (! $user->is_active) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
             throw ValidationException::withMessages([
                 'email' => 'Akun Anda dinonaktifkan. Hubungi Super Admin.',
             ]);
         }
 
         RateLimiter::clear($key);
+
+        if ($user->hasTwoFactor()) {
+            $request->session()->regenerate();
+            $request->session()->put('admin_2fa', [
+                'id'       => $user->getKey(),
+                'remember' => $request->boolean('remember'),
+                'at'       => time(),
+            ]);
+
+            return redirect()->route('admin.two-factor.challenge');
+        }
+
+        return self::finish($request, $user, $request->boolean('remember'));
+    }
+
+    /** Menyelesaikan login (dipakai juga oleh tantangan 2FA): masuk, sesi baru, catat, lanjut ke tujuan. */
+    public static function finish(Request $request, User $user, bool $remember, bool $twoFactor = false): RedirectResponse
+    {
+        Auth::login($user, $remember);
         $request->session()->regenerate();
 
         $user->forceFill(['last_login_at' => now()])->saveQuietly();
 
-        ActivityLog::record('auth.login', 'masuk ke panel admin', $user, $user);
+        ActivityLog::record('auth.login', 'masuk ke panel admin'.($twoFactor ? ' (dengan verifikasi 2 langkah)' : ''), $user, $user);
 
         return redirect()->intended(route('admin.dashboard'));
     }

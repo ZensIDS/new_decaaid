@@ -97,6 +97,12 @@ class SiteCheck extends Command
             try {
                 $admins = Schema::hasTable('users') ? DB::table('users')->where('role', 'super_admin')->where('is_active', 1)->count() : 0;
                 $this->check($admins >= 1, "Super Admin aktif: {$admins}", 'belum ada Super Admin aktif');
+                if (Schema::hasColumn('users', 'two_factor_confirmed_at')) {
+                    $without = DB::table('users')->whereIn('role', ['super_admin', 'admin'])->where('is_active', 1)->whereNull('two_factor_confirmed_at')->count();
+                    $this->check($without === 0, 'Super Admin dan Admin aktif semuanya memakai verifikasi 2 langkah', "{$without} akun belum mengaktifkan 2FA (akan diminta saat masuk berikutnya)", $prod ? 'fail' : 'warn');
+                } else {
+                    $this->check(false, '', 'kolom 2FA belum ada (php artisan migrate)', 'warn');
+                }
             } catch (Throwable) {
                 $this->line('  (jumlah Super Admin tidak diperiksa: kolom role/is_active tidak ditemukan)');
             }

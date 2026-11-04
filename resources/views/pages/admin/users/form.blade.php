@@ -95,6 +95,8 @@
                                     <dd><x-admin.badge :tone="$user->is_active ? 'success' : 'danger'">{{ $user->is_active ? 'Aktif' : 'Nonaktif' }}</x-admin.badge></dd></div>
                                 <div class="flex items-center justify-between gap-3"><dt class="text-slate-500">Password</dt>
                                     <dd class="font-medium text-slate-700">{{ $user->must_change_password ? 'Sementara' : 'Sudah diganti' }}</dd></div>
+                                <div class="flex items-center justify-between gap-3"><dt class="text-slate-500">Verifikasi 2 langkah</dt>
+                                    <dd class="font-medium text-slate-700">{{ $user->hasTwoFactor() ? 'Aktif' : ($user->requiresTwoFactor() ? 'Belum (wajib)' : 'Tidak aktif') }}</dd></div>
                                 <div class="flex items-center justify-between gap-3"><dt class="text-slate-500">Login terakhir</dt>
                                     <dd class="text-right font-medium text-slate-700">{{ $user->last_login_at ? $user->last_login_at->translatedFormat('j M Y, H:i') : 'Belum pernah' }}</dd></div>
                                 <div class="flex items-center justify-between gap-3"><dt class="text-slate-500">Dibuat</dt>
@@ -119,6 +121,19 @@
                         <x-admin.password-field name="new_password" label="Password sementara baru" required hint="Minimal 10 karakter, huruf dan angka." />
                         <x-admin.button type="submit" variant="secondary">Simpan Password Sementara</x-admin.button>
                     </form>
+                </x-admin.form-section>
+
+                <x-admin.form-section icon="shield" title="Atur Ulang Verifikasi 2 Langkah" description="Untuk pengguna yang kehilangan ponsel dan kode pemulihannya. Verifikasi lama dihapus; pengguna menyiapkannya lagi saat masuk berikutnya.">
+                    @if ($user->hasTwoFactor())
+                        <form method="POST" action="{{ route('admin.users.2fa-reset', $user) }}" novalidate
+                              onsubmit="return confirm('Hapus verifikasi 2 langkah {{ e($user->name) }}? Ia wajib menyiapkannya lagi saat masuk berikutnya.')">
+                            @csrf
+                            @method('DELETE')
+                            <x-admin.button type="submit" variant="secondary">Hapus Verifikasi 2 Langkah</x-admin.button>
+                        </form>
+                    @else
+                        <p class="text-sm text-slate-500">Pengguna ini belum mengaktifkan verifikasi 2 langkah.</p>
+                    @endif
                 </x-admin.form-section>
             </div>
         @endif

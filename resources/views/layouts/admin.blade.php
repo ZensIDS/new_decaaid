@@ -158,6 +158,10 @@
                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
                                 <x-admin.icon name="user-circle" class="h-5 w-5 text-slate-400" /> Profil Saya
                             </a>
+                            <a href="{{ route('admin.security.edit') }}" role="menuitem"
+                               class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                                <x-admin.icon name="shield" class="h-5 w-5 text-slate-400" /> Keamanan Akun
+                            </a>
                             <a href="{{ route('admin.password.edit') }}" role="menuitem"
                                class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
                                 <x-admin.icon name="key" class="h-5 w-5 text-slate-400" /> Ganti Password

@@ -26,6 +26,7 @@ class ActivityLog extends Model
     public const GROUPS = [
         'auth'     => 'Masuk dan Keluar',
         'password' => 'Password',
+        '2fa'      => 'Verifikasi 2 Langkah',
         'profile'  => 'Profil',
         'user'     => 'Pengguna',
         'news'     => 'Berita',

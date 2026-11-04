@@ -72,5 +72,6 @@ class Kernel extends HttpKernel
         'admin.active' => \App\Http\Middleware\Admin\EnsureAdminActive::class,
         'admin.role' => \App\Http\Middleware\Admin\EnsureAdminRole::class,
         'admin.password' => \App\Http\Middleware\Admin\EnsurePasswordChanged::class,
+        'admin.2fa' => \App\Http\Middleware\Admin\EnsureTwoFactor::class,
     ];
 }

@@ -184,6 +184,34 @@ class UserController extends Controller
             ->with('status', 'Password sementara disimpan. Sampaikan kepada pengguna; ia wajib menggantinya saat masuk.');
     }
 
+    /** Super Admin menghapus 2FA pengguna lain yang kehilangan ponsel dan kode pemulihan; ia menyiapkan ulang saat masuk. */
+    public function resetTwoFactor(Request $request, User $user): RedirectResponse
+    {
+        if ($user->is($request->user())) {
+            return back()->with('error', 'Untuk akun Anda sendiri, kelola lewat menu Keamanan Akun.');
+        }
+
+        if (! $user->hasTwoFactor()) {
+            return back()->with('error', 'Pengguna ini belum memakai verifikasi 2 langkah.');
+        }
+
+        $user->forceFill([
+            'two_factor_secret' => null,
+            'two_factor_recovery_codes' => null,
+            'two_factor_confirmed_at' => null,
+            'two_factor_last_step' => null,
+            // Mencabut cookie "ingat saya" yang masih beredar.
+            'remember_token' => Str::random(60),
+        ])->save();
+
+        ActivityLog::record('2fa.reset', "mengatur ulang verifikasi 2 langkah {$user->name}", $user);
+
+        return redirect()->route('admin.users.edit', $user)
+            ->with('status', $user->requiresTwoFactor()
+                ? 'Verifikasi 2 langkah dihapus. Pengguna wajib menyiapkannya lagi saat masuk berikutnya.'
+                : 'Verifikasi 2 langkah dihapus.');
+    }
+
     public function destroy(Request $request, User $user): RedirectResponse
     {
         if ($user->is($request->user())) {
