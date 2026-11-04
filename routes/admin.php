@@ -226,6 +226,7 @@ Route::middleware(['admin.locale', 'admin.noindex'])
                     Route::get('{page}/ubah', [CustomPageController::class, 'edit'])->whereNumber('page')->name('edit');
                     Route::put('{page}', [CustomPageController::class, 'update'])->whereNumber('page')->name('update');
                     Route::patch('{page}/status', [CustomPageController::class, 'toggle'])->whereNumber('page')->name('toggle');
+                    Route::post('{page}/revisi/{revision}', [CustomPageController::class, 'restore'])->whereNumber(['page', 'revision'])->name('restore');
                     Route::delete('{page}', [CustomPageController::class, 'destroy'])->whereNumber('page')->name('destroy');
                 });
 

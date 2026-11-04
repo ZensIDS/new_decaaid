@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * B3m (QA1): halaman kustom. Judul, isi, dan SEO dwibahasa (JSON id/en); EN kosong jatuh ke ID.
@@ -31,6 +32,17 @@ class CustomPage extends Model
         'show_in_footer'  => 'boolean',
         'sort_order'      => 'integer',
     ];
+
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(CustomPageRevision::class)->latest('id');
+    }
+
+    /** Kondisi isi saat ini, disimpan ke Riwayat Revisi sebelum diubah. */
+    public function snapshot(): array
+    {
+        return $this->only(['slug', 'title', 'body', 'seo_title', 'seo_description']);
+    }
 
     public function author(): BelongsTo
     {

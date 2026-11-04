@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Support\SlugRedirects;
 use App\Models\CustomPage;
+use App\Models\CustomPageRevision;
 use App\Support\CustomPageRepo;
 use App\Support\Html;
 use Illuminate\Http\RedirectResponse;
@@ -75,14 +76,20 @@ class CustomPageController extends Controller
 
     public function edit(CustomPage $page): View
     {
-        return view('pages.admin.custom-pages.form', ['page' => $page->load(['author', 'editor'])]);
+        return view('pages.admin.custom-pages.form', [
+            'page'      => $page->load(['author', 'editor']),
+            'revisions' => CustomPageRevision::available() ? $page->revisions()->limit(CustomPageRevision::KEEP)->get() : collect(),
+        ]);
     }
 
     public function update(Request $request, CustomPage $page): RedirectResponse
     {
         $oldSlug = $page->slug;
+        $data    = $this->validated($request, $page);
 
-        $page->fill($this->validated($request, $page));
+        $this->remember($page, $request->user()->id, $request->user()->name);
+
+        $page->fill($data);
         $page->updated_by = $request->user()->id;
         $page->save();
 
@@ -119,6 +126,23 @@ class CustomPageController extends Controller
             : "Halaman \"{$page->t('title', 'id')}\" dikembalikan ke Draf dan tidak tampil di situs.");
     }
 
+    /** Kembalikan judul, isi, dan SEO ke salah satu revisi lama (slug, status, dan footer tidak diubah). */
+    public function restore(Request $request, CustomPage $page, CustomPageRevision $revision): RedirectResponse
+    {
+        abort_unless($revision->custom_page_id === $page->id, 404);
+
+        $this->remember($page, $request->user()->id, $request->user()->name);
+
+        $page->fill(collect($revision->snapshot)->only(CustomPageRevision::RESTORABLE)->all());
+        $page->updated_by = $request->user()->id;
+        $page->save();
+
+        ActivityLog::record('custompage.restored', "mengembalikan halaman kustom \"{$page->t('title', 'id')}\" ke versi {$revision->created_at->translatedFormat('j M Y, H:i')}", $page);
+
+        return redirect()->route('admin.custompages.edit', $page)
+            ->with('status', 'Isi dikembalikan ke versi yang dipilih. Versi sebelumnya tetap tersimpan di Riwayat Revisi.');
+    }
+
     public function destroy(CustomPage $page): RedirectResponse
     {
         $title = $page->t('title', 'id');
@@ -132,6 +156,26 @@ class CustomPageController extends Controller
     }
 
     /* ------------------------------------------------------------------ */
+
+    /** Simpan kondisi sekarang ke Riwayat Revisi sebelum diubah; simpan paling banyak KEEP terakhir. */
+    protected function remember(CustomPage $page, int $userId, string $userName): void
+    {
+        if (! CustomPageRevision::available()) {
+            return;
+        }
+
+        $page->revisions()->create([
+            'user_id'   => $userId,
+            'user_name' => $userName,
+            'snapshot'  => $page->snapshot(),
+        ]);
+
+        $old = $page->revisions()->skip(CustomPageRevision::KEEP)->take(100)->pluck('id');
+
+        if ($old->isNotEmpty()) {
+            CustomPageRevision::whereIn('id', $old)->delete();
+        }
+    }
 
     protected function ensureTable(): void
     {

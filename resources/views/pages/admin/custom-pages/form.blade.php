@@ -2,6 +2,7 @@
 
 @php
     $editing = (bool) $page;
+    $revisions = $revisions ?? collect();
 
     $val = fn (string $field, string $lang) => $editing ? ($page->{$field}[$lang] ?? '') : '';
 
@@ -174,10 +175,37 @@
                 @endif
             </aside>
         </form>
+
+        {{-- Riwayat revisi: form kembalikan ada di luar form utama --}}
+        @if ($editing)
+            <div class="lg:col-span-2 lg:col-start-1 lg:row-start-2">
+                <x-admin.form-section icon="clock" title="Riwayat Revisi" :description="'Salinan sebelum setiap perubahan; ' . \App\Models\CustomPageRevision::KEEP . ' terakhir disimpan. Slug, status, dan pilihan footer tidak ikut dikembalikan.'">
+                    @if ($revisions->isEmpty())
+                        <p class="text-sm text-slate-500">Belum ada revisi. Riwayat muncul setelah halaman ini disimpan ulang.</p>
+                    @else
+                        <ul class="divide-y divide-slate-100 rounded-xl ring-1 ring-slate-200">
+                            @foreach ($revisions as $rev)
+                                <li class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+                                    <div class="min-w-0">
+                                        <p class="truncate text-sm font-semibold text-slate-800">{{ \App\Models\News::pick($rev->snapshot['title'] ?? '', 'id') ?: '(tanpa judul)' }}</p>
+                                        <p class="text-xs text-slate-500">{{ $rev->created_at->translatedFormat('j M Y, H:i') }} &middot; {{ $rev->user_name ?: 'Sistem' }}</p>
+                                    </div>
+                                    <button type="button"
+                                            @click="$dispatch('open-modal', { name: 'kembalikan', action: '{{ route('admin.custompages.restore', [$page, $rev]) }}' })"
+                                            class="rounded-xl bg-white px-3.5 py-2 text-xs font-semibold capitalize text-slate-700 shadow-sm ring-1 ring-inset ring-slate-200 hover:bg-slate-50">Kembalikan</button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </x-admin.form-section>
+            </div>
+        @endif
     </div>
 
     @if ($editing)
+        <x-admin.confirm name="kembalikan" title="Kembalikan ke Versi Ini?" method="POST" button="Ya, Kembalikan" tone="primary"
+                         message="Judul, isi, dan SEO halaman diganti dengan versi yang dipilih. Versi saat ini tetap tersimpan di Riwayat Revisi, jadi bisa dikembalikan lagi." />
         <x-admin.confirm name="hapus" title="Hapus Halaman?" method="DELETE" button="Ya, Hapus"
-                         message="Halaman dihapus permanen dan alamatnya tidak bisa dibuka lagi. Bila hanya ingin menyembunyikan dari situs, ubah statusnya menjadi Draf." />
+                         message="Halaman dan seluruh riwayat revisinya dihapus permanen, dan alamatnya tidak bisa dibuka lagi. Bila hanya ingin menyembunyikan dari situs, ubah statusnya menjadi Draf." />
     @endif
 @endsection
