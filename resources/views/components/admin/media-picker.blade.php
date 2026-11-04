@@ -4,7 +4,7 @@
     Mode ringkas (:compact="true"): hanya tombol; pratinjau dikelola formulir induk lewat event `media-chosen` ({ name, path, url }).
     Di dalam jendela pilih: cari gambar, atau unggah gambar baru (langsung masuk Media Library dan terpilih).
 --}}
-@props(['name', 'value' => null, 'label' => 'Gambar', 'hint' => null, 'ratio' => 'aspect-[4/3]', 'logo' => false, 'compact' => false])
+@props(['name', 'value' => null, 'label' => 'Gambar', 'hint' => null, 'ratio' => 'aspect-[4/3]', 'logo' => false, 'compact' => false, 'dark' => false])
 
 @php
     $oldKey  = rtrim(str_replace(['[', ']'], ['.', ''], $name), '.');
@@ -19,8 +19,8 @@
 
     <div class="flex flex-wrap items-start gap-4">
         @unless ($compact)
-        <div class="{{ $ratio }} w-40 shrink-0 overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-slate-200">
-            <template x-if="url"><img :src="url" alt="" class="h-full w-full object-cover" x-on:error="url = ''"></template>
+        <div class="{{ $ratio }} w-40 shrink-0 overflow-hidden rounded-2xl {{ $dark ? 'bg-slate-800 ring-slate-700' : 'bg-slate-100 ring-slate-200' }} ring-1">
+            <template x-if="url"><img :src="url" alt="" class="h-full w-full {{ $logo ? 'object-contain p-3' : 'object-cover' }}" x-on:error="url = ''"></template>
             <div x-show="!url" class="flex h-full flex-col items-center justify-center gap-1 px-2 text-center text-slate-400">
                 <x-admin.icon name="photo" class="h-7 w-7" />
                 <span class="text-[11px] leading-tight">Belum dipilih</span>

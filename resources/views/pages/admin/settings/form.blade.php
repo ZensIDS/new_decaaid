@@ -78,6 +78,27 @@
                     </div>
                 </x-admin.form-section>
 
+                <x-admin.form-section icon="photo" title="Logo dan Favicon" description="Dipilih dari Media Library (bisa unggah gambar baru dari jendela pilih). Dikosongkan = memakai logo dan favicon bawaan.">
+                    <div class="grid gap-6 sm:grid-cols-2">
+                        <div>
+                            <x-admin.media-picker name="logo_light" :value="$data['logo_light']" label="Logo untuk latar terang" :logo="true" ratio="aspect-[16/10]"
+                                                  hint="Logo berwarna gelap. Tampil di header situs dan halaman masuk admin." />
+                            @error('logo_light')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <x-admin.media-picker name="logo_dark" :value="$data['logo_dark']" label="Logo untuk latar gelap" :logo="true" :dark="true" ratio="aspect-[16/10]"
+                                                  hint="Logo berwarna terang atau putih. Tampil di footer situs dan panel admin." />
+                            @error('logo_dark')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                    <div>
+                        <x-admin.media-picker name="favicon" :value="$data['favicon']" label="Favicon" ratio="aspect-square"
+                                              hint="Gambar persegi, disarankan PNG 512 x 512 px. Ikon di tab peramban; perubahan mungkin butuh beberapa saat untuk tampil di peramban." />
+                        @error('favicon')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                    </div>
+                    <p class="text-xs text-slate-500">Tip: unggah logo dengan saklar <strong>Ini logo</strong> agar ruang kosong di sekelilingnya dipangkas otomatis.</p>
+                </x-admin.form-section>
+
                 <x-admin.form-section icon="mail" title="Kontak" description="Nomor yang tampil di footer dan halaman Kontak. Email umum tetap info@decaa.id (tujuan formulir Kontak) dan tidak diatur di sini.">
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div>

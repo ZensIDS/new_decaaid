@@ -27,8 +27,13 @@
         <link rel="canonical" href="{{ $canonical }}">
     @endunless
 
-    {{-- Favicon: taruh file di public/favicon.ico --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    {{-- Favicon: pilihan admin (Pengaturan Situs), cadangan public/favicon.ico --}}
+    @if ($favicon = favicon_url())
+        <link rel="icon" href="{{ $favicon }}">
+        <link rel="apple-touch-icon" href="{{ $favicon }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    @endif
 
     {{-- Bahasa alternatif (tanpa query string, agar tiap bahasa menunjuk satu alamat bersih) --}}
     @unless ($robots !== '')

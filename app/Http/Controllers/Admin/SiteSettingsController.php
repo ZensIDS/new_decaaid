@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\PageContent;
 use App\Support\Content;
+use App\Support\MediaStore;
 use App\Support\PageContentRepo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -45,6 +46,9 @@ class SiteSettingsController extends Controller
             'tagline'         => ! empty($c['tagline']['id']) ? $pair($c['tagline']) : $pair($seed['tagline']),
             'phone'           => (string) ($c['phone'] ?? ''),
             'whatsapp_number' => (string) ($c['whatsapp_number'] ?? ''),
+            'logo_light'      => (string) ($c['logo_light'] ?? ''),
+            'logo_dark'       => (string) ($c['logo_dark'] ?? ''),
+            'favicon'         => (string) ($c['favicon'] ?? ''),
             'social'          => [],
             'offices'         => array_values(array_map(fn($o) => [
                 'type'    => $pair($o['type'] ?? []),
@@ -92,6 +96,9 @@ class SiteSettingsController extends Controller
             'tagline.en'        => ['nullable', 'string', 'max:160'],
             'phone'             => $phone,
             'whatsapp_number'   => $phone,
+            'logo_light'        => ['nullable', 'string', 'max:255'],
+            'logo_dark'         => ['nullable', 'string', 'max:255'],
+            'favicon'           => ['nullable', 'string', 'max:255'],
             'offices'           => ['required', 'array', 'min:1', 'max:'.self::MAX_OFFICES],
             'offices.*.type.id' => ['required', 'string', 'max:60'],
             'offices.*.type.en' => ['nullable', 'string', 'max:60'],
@@ -135,6 +142,24 @@ class SiteSettingsController extends Controller
 
         foreach (array_keys(self::SOCIALS) as $net) {
             $content['social'][$net] = trim((string) ($d['social'][$net] ?? ''));
+        }
+
+        // Logo dan favicon dari Media Library (B3b). Kosong = bawaan; path harus lolos MediaStore::pick.
+        foreach (['logo_light', 'logo_dark', 'favicon'] as $field) {
+            $raw = trim((string) ($d[$field] ?? ''));
+
+            if ($raw === '') {
+                $content[$field] = '';
+                continue;
+            }
+
+            $picked = MediaStore::pick($raw);
+
+            if (! $picked) {
+                throw ValidationException::withMessages([$field => 'Gambar dari Media Library tidak ditemukan. Pilih lagi, atau lepas untuk memakai bawaan.']);
+            }
+
+            $content[$field] = $picked;
         }
 
         PageContent::updateOrCreate(

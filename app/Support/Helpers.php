@@ -50,3 +50,20 @@ if (! function_exists('logo_url')) {
         return \App\Support\LogoTrim::url($path);
     }
 }
+
+if (! function_exists('favicon_url')) {
+    /**
+     * B3a (v66): favicon pilihan admin (Pengaturan Situs > Logo dan Favicon), atau null bila belum dipilih
+     * atau berkasnya hilang (layout memakai public/favicon.ico).
+     */
+    function favicon_url(): ?string
+    {
+        try {
+            $path = ltrim((string) (\App\Support\PageContentRepo::get('site_settings')['favicon'] ?? ''), '/');
+
+            return $path !== '' && is_file(public_path($path)) ? asset($path) : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+}

@@ -62,6 +62,15 @@ class Content
                 $raw['phone'] = $stored['phone'];
             }
 
+            // B3a (v66): logo terang/gelap dari Media Library; berkas yang hilang jatuh ke logo bawaan kode.
+            foreach (['logo_light' => 'on_light', 'logo_dark' => 'on_dark'] as $field => $slot) {
+                $logoPath = ltrim((string) ($stored[$field] ?? ''), '/');
+
+                if ($logoPath !== '' && is_file(public_path($logoPath))) {
+                    $raw['logo'][$slot] = $logoPath;
+                }
+            }
+
             if (filled($stored['whatsapp_number'] ?? null)) {
                 $wa = self::whatsappUrl($stored['whatsapp_number']);
                 $raw['whatsapp'] = ['label' => $stored['whatsapp_number'], 'url' => $wa];

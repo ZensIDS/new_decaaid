@@ -16,7 +16,11 @@
     <meta name="robots" content="noindex, nofollow, noarchive">
     <meta name="theme-color" content="#1B3590">
     <title>@yield('title', 'Admin') | {{ config('site.name') }}</title>
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    @if ($favicon = favicon_url())
+        <link rel="icon" href="{{ $favicon }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>.sidebar-scroll{scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}.sidebar-scroll::-webkit-scrollbar{width:6px}.sidebar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:9999px}</style>
 </head>

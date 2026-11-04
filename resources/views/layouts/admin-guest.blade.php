@@ -11,7 +11,11 @@
     <meta name="robots" content="noindex, nofollow, noarchive">
     <meta name="theme-color" content="#1B3590">
     <title>@yield('title', 'Admin') | {{ config('site.name') }}</title>
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    @if ($favicon = favicon_url())
+        <link rel="icon" href="{{ $favicon }}">
+    @else
+        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="h-full bg-[#F4F6FB] font-sans text-slate-700 antialiased">
