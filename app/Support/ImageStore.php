@@ -70,7 +70,7 @@ class ImageStore
     /** @return array{0: string, 1: string}|null [isi berkas, ekstensi] atau null bila GD tidak bisa memproses */
     protected static function trimmedLogo(UploadedFile $file): ?array
     {
-        if (! function_exists('imagecreatefromstring') || ! function_exists('imagecrop')) {
+        if (! function_exists('imagecreatefromstring') || ! function_exists('imagecrop') || ! self::ensureMemory($file)) {
             return null;
         }
 
@@ -202,10 +202,64 @@ class ImageStore
         }
     }
 
+    /**
+     * Penjaga memori (v70): GD mendekode gambar menjadi ~4 byte per piksel, jadi foto 24 MP butuh ~100 MB dan
+     * gambar 8000 x 8000 ~256 MB; melebihi memory_limit PHP berarti galat fatal (500) yang tidak bisa ditangkap.
+     * Bila memori tidak cukup, coba naikkan memory_limit untuk permintaan ini (maks. 1 GB); bila tetap tidak
+     * cukup, kembalikan false sehingga berkas disimpan apa adanya tanpa didekode.
+     */
+    protected static function ensureMemory(UploadedFile $file): bool
+    {
+        $size = @getimagesize($file->getRealPath());
+
+        if (! $size) {
+            return true; // bukan gambar yang bisa dibaca ukurannya; biarkan alur biasa yang memutuskan
+        }
+
+        $limit = self::bytes((string) ini_get('memory_limit'));
+
+        if ($limit < 0) {
+            return true; // tanpa batas
+        }
+
+        $need = ($size[0] * $size[1] * 5) + 32 * 1024 * 1024 + memory_get_usage(true);
+
+        if ($need <= $limit) {
+            return true;
+        }
+
+        $target = min((int) ceil($need / 1048576) + 16, 1024);
+        @ini_set('memory_limit', $target . 'M');
+
+        $now = self::bytes((string) ini_get('memory_limit'));
+
+        return $now < 0 || $need <= $now;
+    }
+
+    /** "128M", "1G", "512K", "-1" menjadi byte. */
+    public static function bytes(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '' || $value === '-1') {
+            return -1;
+        }
+
+        $unit = strtolower(substr($value, -1));
+        $num  = (float) $value;
+
+        return (int) match ($unit) {
+            'g'     => $num * 1073741824,
+            'm'     => $num * 1048576,
+            'k'     => $num * 1024,
+            default => $num,
+        };
+    }
+
     /** @return string|null isi WebP, atau null bila GD tidak tersedia / gagal */
     protected static function toWebp(UploadedFile $file): ?string
     {
-        if (! function_exists('imagewebp') || ! function_exists('imagecreatefromstring')) {
+        if (! function_exists('imagewebp') || ! function_exists('imagecreatefromstring') || ! self::ensureMemory($file)) {
             return null;
         }
 
