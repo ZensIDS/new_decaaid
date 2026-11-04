@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 /**
  * B3m (QA1): halaman kustom. Judul, isi, dan SEO dwibahasa (JSON id/en); EN kosong jatuh ke ID.
@@ -18,9 +20,26 @@ class CustomPage extends Model
         'page', 'halaman', 'search', 'cari', 'feed', 'sitemap', 'sitemap-xml', 'robots', 'kategori', 'category',
     ];
 
+    /** Pilihan status terjemahan (sama dengan Berita). */
+    public const TRANSLATION = [
+        'manual'   => 'Manual',
+        'auto'     => 'Otomatis (belum ditinjau)',
+        'reviewed' => 'Ditinjau',
+    ];
+
+    /** Kolom dwibahasa yang ikut terjemahan otomatis: kolom => [maks karakter (null = HTML), HTML?]. */
+    public const AUTO_FIELDS = [
+        'title'           => [150, false],
+        'body'            => [null, true],
+        'seo_title'       => [120, false],
+        'seo_description' => [300, false],
+    ];
+
+    protected static ?bool $translationColumns = null;
+
     protected $fillable = [
         'slug', 'title', 'body', 'seo_title', 'seo_description',
-        'is_published', 'show_in_footer', 'sort_order', 'created_by', 'updated_by',
+        'is_published', 'show_in_footer', 'sort_order', 'translation_status', 'translated_from', 'created_by', 'updated_by',
     ];
 
     protected $casts = [
@@ -32,6 +51,29 @@ class CustomPage extends Model
         'show_in_footer'  => 'boolean',
         'sort_order'      => 'integer',
     ];
+
+    /** Kolom status terjemahan sudah ada (setelah `php artisan migrate`)? Sebelum itu fitur dilewati tanpa galat. */
+    public static function hasTranslationColumns(): bool
+    {
+        if (self::$translationColumns === null) {
+            try {
+                self::$translationColumns = Schema::hasColumn('custom_pages', 'translation_status');
+            } catch (Throwable) {
+                self::$translationColumns = false;
+            }
+        }
+
+        return self::$translationColumns;
+    }
+
+    /** Isi bahasa $locale hasil mesin dan belum ditinjau (tampil sebagai catatan di halaman publik). */
+    public function machineTranslated(string $locale): bool
+    {
+        return $this->translation_status === 'auto'
+            && filled($this->translated_from)
+            && $this->translated_from !== $locale
+            && filled(trim(strip_tags((string) ($this->title[$locale] ?? ''))));
+    }
 
     public function revisions(): HasMany
     {

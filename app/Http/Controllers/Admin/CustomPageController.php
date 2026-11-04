@@ -8,6 +8,9 @@ use App\Models\CustomPage;
 use App\Models\CustomPageRevision;
 use App\Support\CustomPageRepo;
 use App\Support\Html;
+use App\Support\NewsAutoTranslate;
+use App\Support\Translator;
+use RuntimeException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -22,6 +25,9 @@ use Illuminate\View\View;
 class CustomPageController extends Controller
 {
     protected const PER_PAGE = 10;
+
+    protected ?string $translatedFrom = null;
+    protected ?string $translateWarning = null;
 
     public function index(Request $request): View
     {
@@ -63,6 +69,8 @@ class CustomPageController extends Controller
     {
         $this->ensureTable();
 
+        $this->autoTranslate($request, null);
+
         $page = new CustomPage($this->validated($request, null));
         $page->created_by = $request->user()->id;
         $page->updated_by = $request->user()->id;
@@ -71,7 +79,8 @@ class CustomPageController extends Controller
         ActivityLog::record('custompage.created', "menambah halaman kustom \"{$page->t('title', 'id')}\" (/{$page->slug})", $page);
 
         return redirect()->route('admin.custompages.edit', $page)
-            ->with('status', 'Halaman dibuat. ' . $this->visibilityNote($page));
+            ->with('status', 'Halaman dibuat. ' . $this->translationNote() . $this->visibilityNote($page))
+            ->with('error', $this->translateWarning);
     }
 
     public function edit(CustomPage $page): View
@@ -85,6 +94,7 @@ class CustomPageController extends Controller
     public function update(Request $request, CustomPage $page): RedirectResponse
     {
         $oldSlug = $page->slug;
+        $this->autoTranslate($request, $page);
         $data    = $this->validated($request, $page);
 
         $this->remember($page, $request->user()->id, $request->user()->name);
@@ -105,7 +115,8 @@ class CustomPageController extends Controller
             : '';
 
         return redirect()->route('admin.custompages.edit', $page)
-            ->with('status', 'Perubahan disimpan. ' . $this->visibilityNote($page) . $note);
+            ->with('status', 'Perubahan disimpan. ' . $this->translationNote() . $this->visibilityNote($page) . $note)
+            ->with('error', $this->translateWarning);
     }
 
     /** Tombol cepat Terbit / Draf dari daftar. */
@@ -177,6 +188,45 @@ class CustomPageController extends Controller
         }
     }
 
+    /**
+     * Isi bahasa yang kosong secara otomatis (ID <-> EN) sebelum validasi.
+     * Dilewati bila saklar dimatikan, penyedia terjemahan belum diatur, atau migration belum dijalankan.
+     */
+    protected function autoTranslate(Request $request, ?CustomPage $page): void
+    {
+        $this->translatedFrom   = null;
+        $this->translateWarning = null;
+
+        if (! $request->boolean('auto_translate') || ! Translator::enabled() || ! CustomPage::hasTranslationColumns()) {
+            return;
+        }
+
+        $input = [];
+        foreach (array_keys(CustomPage::AUTO_FIELDS) as $field) {
+            $input[$field] = ['id' => $request->input("{$field}.id"), 'en' => $request->input("{$field}.en")];
+        }
+
+        try {
+            [$filled, $direction, $warning] = NewsAutoTranslate::fill($input, $page, CustomPage::AUTO_FIELDS);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['title.id' => $e->getMessage()]);
+        }
+
+        foreach ($filled as $field => $pair) {
+            $request->merge([$field => ['id' => $pair['id'] ?? null, 'en' => $pair['en'] ?? null]]);
+        }
+
+        $this->translatedFrom   = $direction;
+        $this->translateWarning = $warning;
+    }
+
+    protected function translationNote(): string
+    {
+        return $this->translatedFrom
+            ? 'Terjemahan ' . ($this->translatedFrom === 'id' ? 'Inggris' : 'Indonesia') . ' diisi otomatis (status: belum ditinjau). '
+            : '';
+    }
+
     protected function ensureTable(): void
     {
         if (! CustomPageRepo::available()) {
@@ -217,6 +267,7 @@ class CustomPageController extends Controller
             'is_published'       => ['required', 'boolean'],
             'show_in_footer'     => ['required', 'boolean'],
             'sort_order'         => ['nullable', 'integer', 'between:0,999'],
+            'translation_status' => ['nullable', Rule::in(array_keys(CustomPage::TRANSLATION))],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],
             'seo_title.en'       => ['nullable', 'string', 'max:120'],
             'seo_description.id' => ['nullable', 'string', 'max:300'],
@@ -230,7 +281,7 @@ class CustomPageController extends Controller
         ], [
             'title.id' => 'judul (ID)', 'title.en' => 'judul (EN)',
             'body.id'  => 'isi halaman (ID)', 'body.en' => 'isi halaman (EN)',
-            'sort_order' => 'urutan footer',
+            'sort_order' => 'urutan footer', 'translation_status' => 'status terjemahan',
         ]);
 
         // Saring isi editor, lalu pastikan versi Indonesia tidak kosong.
@@ -242,7 +293,16 @@ class CustomPageController extends Controller
 
         $clean = fn(array $pair) => ['id' => trim((string) ($pair['id'] ?? '')), 'en' => trim((string) ($pair['en'] ?? ''))];
 
-        return [
+        // Terjemahan otomatis terjadi pada simpanan ini: tandai belum ditinjau. Selain itu pakai pilihan form.
+        $translation = [];
+
+        if (CustomPage::hasTranslationColumns()) {
+            $translation = $this->translatedFrom
+                ? ['translation_status' => 'auto', 'translated_from' => $this->translatedFrom]
+                : ['translation_status' => $data['translation_status'] ?? 'manual'];
+        }
+
+        return $translation + [
             'slug'            => $data['slug'],
             'title'           => $clean($data['title']),
             'body'            => $body,

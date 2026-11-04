@@ -1,13 +1,15 @@
 <?php
 namespace App\Support;
 
-use App\Models\News;
+use Illuminate\Database\Eloquent\Model;
 use RuntimeException;
 
 /**
- * B5: isi otomatis bahasa yang kosong pada berita (ID <-> EN).
+ * B5: isi otomatis bahasa yang kosong pada berita dan Halaman Kustom (ID <-> EN).
+ * Kolom yang diterjemahkan: FIELDS (berita) atau daftar $fields yang diberikan pemanggil (mis. CustomPageController).
+ * Model harus punya kolom translation_status dan translated_from.
  *
- * Aturan per kolom (judul, ringkasan, isi, alt gambar, judul SEO, deskripsi SEO):
+ * Aturan per kolom (berita: judul, ringkasan, isi, alt gambar, judul SEO, deskripsi SEO):
  *  - ID terisi, EN kosong  -> EN diterjemahkan dari ID
  *  - EN terisi, ID kosong  -> ID diterjemahkan dari EN
  *  - dua-duanya terisi     -> tidak diubah, KECUALI status terjemahan masih "Otomatis" dan admin
@@ -29,13 +31,15 @@ class NewsAutoTranslate
 
     /**
      * @param  array<string,array{id?:?string,en?:?string}>  $input  nilai kiriman form per kolom
+     * @param  array<string,array{0:?int,1:bool}>|null  $fields  kolom => [maks karakter, HTML?]; null = kolom berita
      * @return array{0:array,1:?string,2:?string}  [$input baru, arah ('id'|'en'|null), peringatan]
      */
-    public static function fill(array $input, ?News $news): array
+    public static function fill(array $input, ?Model $news, ?array $fields = null): array
     {
+        $fields ??= self::FIELDS;
         $jobs = ['en' => [], 'id' => []]; // target => [kolom => teks sumber]
 
-        foreach (self::FIELDS as $field => [$max, $html]) {
+        foreach ($fields as $field => [$max, $html]) {
             $id = self::norm($input[$field]['id'] ?? '', $html);
             $en = self::norm($input[$field]['en'] ?? '', $html);
 
@@ -66,13 +70,13 @@ class NewsAutoTranslate
             try {
                 $items = [];
                 foreach ($jobs[$to] as $field => $text) {
-                    $items[$field] = ['text' => $text, 'html' => self::FIELDS[$field][1]];
+                    $items[$field] = ['text' => $text, 'html' => $fields[$field][1]];
                 }
 
                 $done = Translator::translate($items, $from, $to);
 
                 foreach ($done as $field => $text) {
-                    $max = self::FIELDS[$field][0];
+                    $max = $fields[$field][0];
                     if ($max && mb_strlen($text) > $max) {
                         $text = rtrim(mb_substr($text, 0, $max - 1)) . '…';
                     }
@@ -85,7 +89,7 @@ class NewsAutoTranslate
                 $warning = "Terjemahan otomatis ke {$label} gagal: " . $e->getMessage();
 
                 if ($to === 'id') {
-                    // Isi ID wajib: tanpa terjemahan, berita tidak bisa disimpan.
+                    // Isi ID wajib: tanpa terjemahan, simpanan tidak bisa dilanjutkan.
                     throw new RuntimeException($warning . ' Isi Bahasa Indonesia secara manual, lalu simpan lagi.');
                 }
             }

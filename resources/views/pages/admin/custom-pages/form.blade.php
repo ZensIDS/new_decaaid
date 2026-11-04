@@ -4,6 +4,11 @@
     $editing = (bool) $page;
     $revisions = $revisions ?? collect();
 
+    // B5: terjemahan otomatis (butuh penyedia di .env dan migration kolom status terjemahan).
+    $autoAvailable = \App\Support\Translator::enabled();
+    $transColumns  = \App\Models\CustomPage::hasTranslationColumns();
+    $currentTrans  = old('translation_status', $editing ? ($page->translation_status ?: 'manual') : 'manual');
+
     $val = fn (string $field, string $lang) => $editing ? ($page->{$field}[$lang] ?? '') : '';
 
     $published = (bool) old('is_published', $editing ? $page->is_published : false);
@@ -55,6 +60,18 @@
                             <span class="h-2 w-2 rounded-full" :class="titleEn.trim() ? 'bg-emerald-500' : 'bg-slate-300'" aria-hidden="true"></span>
                         </button>
                     </div>
+
+                    @if ($transColumns)
+                        @if ($autoAvailable)
+                            <x-admin.toggle name="auto_translate" label="Terjemahkan otomatis bahasa yang kosong"
+                                            description="Saat disimpan, judul, isi, dan SEO yang kosong di ID atau EN diisi hasil terjemahan mesin dan ditandai Otomatis (belum ditinjau). Isian yang sudah kamu tulis tidak ditimpa."
+                                            :checked="true" />
+                        @else
+                            <p class="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
+                                Terjemahan otomatis belum aktif (penyedia belum diatur di <code>.env</code>). Tab EN yang kosong akan tampil sebagai teks Indonesia.
+                            </p>
+                        @endif
+                    @endif
 
                     <div x-show="lang === 'id'" class="space-y-5" role="tabpanel">
                         <x-admin.input name="title[id]" label="Judul" x-model="title" :value="$val('title', 'id')" required />
@@ -111,6 +128,13 @@
                             <x-admin.input name="sort_order" type="number" label="Urutan di footer" :value="$editing ? $page->sort_order : 0" hint="Angka kecil tampil lebih dulu (0-999)." />
                         </div>
                     </div>
+                    @if ($transColumns)
+                        <div class="max-w-xs">
+                            <x-admin.select name="translation_status" label="Status terjemahan" required
+                                            :options="\App\Models\CustomPage::TRANSLATION" :value="$currentTrans"
+                                            hint="Ubah ke Ditinjau setelah teks EN kamu periksa; catatan belum ditinjau di situs hilang." />
+                        </div>
+                    @endif
                 </x-admin.form-section>
 
                 {{-- SEO --}}
