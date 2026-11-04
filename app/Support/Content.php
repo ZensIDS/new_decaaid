@@ -385,6 +385,25 @@ class Content
     ];
 
     /** B3e: isi dari database (PageContentRepo) menimpa teks contoh; tanpa data, teks contoh kode dipakai. */
+    /** B3e: slot foto Beranda dan berkas bawaannya (dipakai bila admin belum memilih foto dari Media Library). */
+    public const HOME_IMAGES = [
+        'hero_1'    => 'img/dummy/hero.jpg',
+        'hero_2'    => 'img/dummy/hero-2.jpg',
+        'hero_3'    => 'img/dummy/hero-3.jpg',
+        'about_1'   => 'img/dummy/about-1.jpg',
+        'about_2'   => 'img/dummy/about-2.jpg',
+        'community' => 'img/dummy/community.jpg',
+    ];
+
+    /** Path foto Beranda untuk satu slot: pilihan admin bila berkasnya ada, selain itu berkas bawaan. */
+    public static function homeImage(string $slot): string
+    {
+        $default = self::HOME_IMAGES[$slot] ?? '';
+        $picked  = trim((string) (PageContentRepo::get('home')['images'][$slot] ?? ''));
+
+        return $picked !== '' && ! str_contains($picked, '..') && is_file(\App\Models\Media::absolute($picked)) ? $picked : $default;
+    }
+
     public static function home(): array
     {
         $raw    = self::homeRaw();

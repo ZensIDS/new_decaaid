@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\PageContent;
 use App\Support\Content;
+use App\Support\MediaStore;
 use App\Support\PageContentRepo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -64,6 +65,16 @@ class HomePageController extends Controller
         ]],
     ];
 
+    /** Slot foto Beranda (v77): kunci => [nama, petunjuk, rasio pratinjau]. Berkas bawaan: Content::HOME_IMAGES. */
+    public const IMAGE_SLOTS = [
+        'hero_1'    => ['Hero: foto utama', 'Foto besar di hero. Lanskap 4:3 paling pas.', 'aspect-[4/3]'],
+        'hero_2'    => ['Hero: foto kegiatan', 'Foto kecil kedua di kolase hero. Rasio 4:3.', 'aspect-[4/3]'],
+        'hero_3'    => ['Hero: foto tim', 'Foto kecil ketiga di kolase hero. Rasio 4:3.', 'aspect-[4/3]'],
+        'about_1'   => ['Tentang DECAA.ID: foto pertama', 'Foto kantor di section Tentang. Rasio 4:3.', 'aspect-[4/3]'],
+        'about_2'   => ['Tentang DECAA.ID: foto kedua', 'Foto tim di section Tentang. Rasio 4:3.', 'aspect-[4/3]'],
+        'community' => ['Keberlanjutan: foto kegiatan', 'Foto kegiatan komunitas. Lanskap 4:3 atau 3:2.', 'aspect-[4/3]'],
+    ];
+
     public const MAX_VALUES = 8;
     public const MAX_POINTS = 6;
 
@@ -86,6 +97,8 @@ class HomePageController extends Controller
         return view('pages.admin.home.form', [
             'data'      => $data,
             'sections'  => $this->sectionRows($has['sections'] ?? null),
+            'images'    => (array) ($has['images'] ?? []),
+            'slots'     => self::IMAGE_SLOTS,
             'row'       => $row,
             'available' => PageContentRepo::available(),
             'groups'    => self::GROUPS,
@@ -119,6 +132,10 @@ class HomePageController extends Controller
                 $rules["$section.$field.en"] = ['nullable', 'string', "max:$max"];
                 $names["$section.$field.id"] = strtolower($label).' (ID)';
             }
+        }
+
+        foreach (array_keys(self::IMAGE_SLOTS) as $slot) {
+            $rules["images.$slot"] = ['nullable', 'string', 'max:255'];
         }
 
         $rules['values.items']            = ['required', 'array', 'min:1', 'max:'.self::MAX_VALUES];
@@ -161,6 +178,13 @@ class HomePageController extends Controller
             $d['values']['items']
         ));
         $content['community']['points'] = array_values(array_map($pair, $d['community']['points']));
+
+        // Foto Beranda dari Media Library: hanya path sah dan berkasnya ada; yang kosong memakai berkas bawaan.
+        foreach (array_keys(self::IMAGE_SLOTS) as $slot) {
+            if ($picked = MediaStore::pick($d['images'][$slot] ?? null)) {
+                $content['images'][$slot] = $picked;
+            }
+        }
 
         PageContent::updateOrCreate(
             ['page' => self::PAGE],

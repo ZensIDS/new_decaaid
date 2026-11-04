@@ -19,12 +19,12 @@
                     <div class="absolute -right-1 bottom-6 h-24 w-24 text-brand-200 [background-image:radial-gradient(currentColor_1.5px,transparent_1.5px)] [background-size:14px_14px]"></div>
 
                     <div class="relative ml-auto aspect-[4/3] w-[86%] overflow-hidden rounded-[2rem] shadow-card-hover">
-                        <x-ui.img src="img/dummy/about-1.jpg" :alt="$company['name']" label="Foto kantor (dummy)"
+                        <x-ui.img :src="\App\Support\Content::homeImage('about_1')" :alt="$company['name']" label="Foto kantor (dummy)"
                                   class="h-full w-full object-cover" />
                     </div>
 
                     <div class="absolute bottom-0 left-0 aspect-square w-[42%] overflow-hidden rounded-3xl border-[6px] border-white shadow-card-hover">
-                        <x-ui.img src="img/dummy/about-2.jpg" alt="" label="Foto tim (dummy)"
+                        <x-ui.img :src="\App\Support\Content::homeImage('about_2')" alt="" label="Foto tim (dummy)"
                                   class="h-full w-full object-cover" />
                     </div>
                 </div>

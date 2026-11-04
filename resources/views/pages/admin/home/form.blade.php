@@ -151,6 +151,15 @@
                 @endforeach
 
                 {{-- Poin Keberlanjutan (daftar centang di section Keberlanjutan) --}}
+                {{-- Foto (Media Library) --}}
+                <x-admin.form-section icon="photo" title="Foto Beranda" description="Pilih dari Media Library atau unggah baru. Yang dikosongkan memakai foto bawaan situs (contoh).">
+                    <div class="grid gap-6 sm:grid-cols-2">
+                        @foreach ($slots as $slot => [$slotTitle, $slotHint, $slotRatio])
+                            <x-admin.media-picker :name="'images['.$slot.']'" :value="$images[$slot] ?? ''" :label="$slotTitle" :hint="$slotHint" :ratio="$slotRatio" />
+                        @endforeach
+                    </div>
+                </x-admin.form-section>
+
                 <x-admin.form-section icon="heart" title="Keberlanjutan: Poin Centang" description="Daftar poin (1 sampai 6) di section Keberlanjutan. Nama komunitas, ringkasan, dan logo diatur di modul Keberlanjutan; foto kegiatan tetap di kode.">
                     <div class="space-y-3">
                         <template x-for="(p, i) in f.community.points" :key="i">

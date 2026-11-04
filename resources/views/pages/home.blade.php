@@ -49,17 +49,17 @@
                 <div class="absolute bottom-16 right-0 h-3 w-3 rounded-full bg-accent-500"></div>
 
                 <div class="absolute right-0 top-0 h-[78%] w-[64%] overflow-hidden rounded-[2rem] shadow-card-hover ring-1 ring-white/20">
-                    <x-ui.img src="img/dummy/hero.jpg" :alt="$company['name']" label="Foto hero (dummy)" :lazy="false"
+                    <x-ui.img :src="\App\Support\Content::homeImage('hero_1')" :alt="$company['name']" label="Foto hero (dummy)" :lazy="false"
                               class="h-full w-full object-cover" />
                 </div>
 
                 <div class="animate-float absolute bottom-[6%] left-0 h-[50%] w-[44%] overflow-hidden rounded-[2rem] border-4 border-brand-950 shadow-card-hover">
-                    <x-ui.img src="img/dummy/hero-2.jpg" alt="" label="Foto kegiatan (dummy)"
+                    <x-ui.img :src="\App\Support\Content::homeImage('hero_2')" alt="" label="Foto kegiatan (dummy)"
                               class="h-full w-full object-cover" />
                 </div>
 
                 <div class="absolute bottom-0 right-[8%] h-[28%] w-[30%] overflow-hidden rounded-3xl border-4 border-brand-950 shadow-card-hover">
-                    <x-ui.img src="img/dummy/hero-3.jpg" alt="" label="Foto tim (dummy)"
+                    <x-ui.img :src="\App\Support\Content::homeImage('hero_3')" alt="" label="Foto tim (dummy)"
                               class="h-full w-full object-cover" />
                 </div>
             </div>

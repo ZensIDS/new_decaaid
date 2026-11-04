@@ -3,7 +3,7 @@
         <div class="container grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <x-ui.reveal>
                 {{-- DUMMY: ganti foto kegiatan di public/img/dummy/community.jpg --}}
-                <x-ui.img src="img/dummy/community.jpg" :alt="$community['name']" label="Foto kegiatan komunitas (dummy)"
+                <x-ui.img :src="\App\Support\Content::homeImage('community')" :alt="$community['name']" label="Foto kegiatan komunitas (dummy)"
                           class="aspect-[4/3] w-full rounded-2xl object-cover shadow-card" />
             </x-ui.reveal>
 
