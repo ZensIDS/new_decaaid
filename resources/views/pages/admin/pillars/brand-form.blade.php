@@ -51,7 +51,7 @@
                          :breadcrumbs="[['label' => 'Konten'], ['label' => 'Pilar & Brand', 'url' => route('admin.pillars.index')], ['label' => $editing ? 'Ubah Brand' : 'Tambah Brand']]" />
 
     <div class="grid items-start gap-6 lg:grid-cols-3">
-        <form method="POST" novalidate enctype="multipart/form-data" class="contents"
+        <form method="POST" novalidate enctype="multipart/form-data" class="contents" @media-chosen.window="chosen($event.detail)"
               action="{{ $editing ? route('admin.pillars.brands.update', $brand) : route('admin.pillars.brands.store') }}"
               x-data="brandForm(@js($cfg))">
             @csrf
@@ -90,6 +90,7 @@
                                        class="mt-1.5 block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-50 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-[#1B3590] hover:file:bg-blue-100">
                                 @error('logo')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
                             </div>
+                            <x-admin.media-picker name="logo_path" label="" :compact="true" :logo="true" />
                             <button type="button" x-show="logoUrl" @click="clearLogo()" class="text-sm font-semibold text-[#E5352E] hover:underline">Hapus logo</button>
                             <p class="text-xs text-slate-500">Pratinjau di sini belum dipangkas; hasil akhir tampil rapi di situs.</p>
                         </div>
@@ -300,6 +301,13 @@
                     this.$refs.file.value = '';
                     this.logoUrl = null;
                     this.removeLogo = true;
+                },
+                // Dipilih dari Media Library (pemilih mode ringkas): ganti pratinjau, kosongkan berkas unggahan.
+                chosen(d) {
+                    if (d.name !== 'logo_path') return;
+                    this.logoUrl = d.url;
+                    this.removeLogo = false;
+                    if (this.$refs.file) this.$refs.file.value = '';
                 },
 
                 addItem() {

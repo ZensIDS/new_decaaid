@@ -6,9 +6,11 @@ use App\Models\ActivityLog;
 use App\Models\Client;
 use App\Models\ClientCategory;
 use App\Support\ImageStore;
+use App\Support\MediaStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -76,7 +78,7 @@ class ClientController extends Controller
         $data = $this->validated($request, null);
 
         $client = new Client($data);
-        $client->logo       = ImageStore::storeLogo($request->file('logo'), 'clients');
+        $client->logo       = $this->chosenLogo($request);
         $client->sort_order = ((int) Client::where('client_category_id', $client->client_category_id)->max('sort_order')) + 1;
         $client->created_by = $request->user()->id;
         $client->updated_by = $request->user()->id;
@@ -152,15 +154,15 @@ class ClientController extends Controller
 
         $old = null;
 
-        if ($request->hasFile('logo')) {
+        if ($request->hasFile('logo') || filled($request->input('logo_path'))) {
             $old          = $client->getOriginal('logo');
-            $client->logo = ImageStore::storeLogo($request->file('logo'), 'clients');
+            $client->logo = $this->chosenLogo($request);
         }
 
         $client->updated_by = $request->user()->id;
         $client->save();
 
-        if ($old) {
+        if ($old && $old !== $client->logo) {
             ImageStore::delete($old); // hanya berkas unggahan (storage/) yang tak dipakai lagi; logo bawaan di public/img tidak disentuh
         }
 
@@ -234,6 +236,25 @@ class ClientController extends Controller
 
     /* ------------------------------------------------------------------ */
 
+    /**
+     * Logo dari unggahan berkas, atau dipilih dari Media Library (B3b). Jalur pilihan memakai berkas yang sudah ada
+     * (tidak dipangkas ulang); path divalidasi MediaStore::pick (hanya storage/, img/, wp-uploads/).
+     */
+    protected function chosenLogo(Request $request): string
+    {
+        if ($request->hasFile('logo')) {
+            return ImageStore::storeLogo($request->file('logo'), 'clients');
+        }
+
+        $picked = MediaStore::pick($request->input('logo_path'));
+
+        if (! $picked) {
+            throw ValidationException::withMessages(['logo' => 'Logo dari Media Library tidak ditemukan. Pilih lagi atau unggah berkas.']);
+        }
+
+        return $picked;
+    }
+
     protected function categories()
     {
         return ClientCategory::orderBy('sort_order')->orderBy('id')->get();
@@ -249,12 +270,13 @@ class ClientController extends Controller
         $data = $request->validate([
             'client_category_id' => ['required', 'exists:client_categories,id'],
             'name'               => ['nullable', 'string', 'max:120'],
-            'logo'               => [$client ? 'nullable' : 'required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
+            'logo_path'          => ['nullable', 'string', 'max:255'],
+            'logo'               => [$client ? 'nullable' : 'required_without:logo_path', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB],
             'is_visible'         => ['required', 'boolean'],
             'show_on_home'       => ['required', 'boolean'],
             'permission_ok'      => ['required', 'boolean'],
         ], [
-            'logo.required' => 'Pilih berkas logo.',
+            'logo.required_without' => 'Pilih berkas logo, atau pilih dari Media Library.',
             'logo.mimes'    => 'Logo harus berformat JPG, PNG, atau WebP.',
         ], ['client_category_id' => 'kategori', 'name' => 'nama', 'logo' => 'logo']);
 

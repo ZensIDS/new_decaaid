@@ -21,6 +21,7 @@
     <div class="grid items-start gap-6 lg:grid-cols-3">
         <form method="POST" novalidate enctype="multipart/form-data" class="contents"
               action="{{ $editing ? route('admin.clients.update', $client) : route('admin.clients.store') }}"
+              @media-chosen.window="chosen($event.detail)"
               x-data="{
                   name: @js((string) $nameVal),
                   category: @js((string) $currentCategory),
@@ -32,6 +33,7 @@
                       if (f.size > 5 * 1024 * 1024) { this.$dispatch('toast', { type: 'error', text: 'Logo terlalu besar (maksimal 5 MB).' }); e.target.value = ''; return; }
                       this.logoUrl = URL.createObjectURL(f);
                   },
+                  chosen(d) { if (d.name !== 'logo_path') return; this.logoUrl = d.url; if (this.$refs.file) this.$refs.file.value = ''; },
               }">
             @csrf
             @if ($editing) @method('PUT') @endif
@@ -51,9 +53,12 @@
                             <label for="logo" class="block text-sm font-medium text-slate-700">
                                 {{ $editing ? 'Ganti logo' : 'Pilih logo' }}@unless ($editing)<span class="text-[#E5352E]" aria-hidden="true"> *</span>@endunless
                             </label>
-                            <input id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp" @change="pick($event)"
+                            <input id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp" x-ref="file" @change="pick($event)"
                                    class="mt-1.5 block w-full text-sm text-slate-600 file:mr-4 file:rounded-xl file:border-0 file:bg-blue-50 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-[#1B3590] hover:file:bg-blue-100">
                             @error('logo')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                            <div class="mt-3">
+                                <x-admin.media-picker name="logo_path" label="" :compact="true" :logo="true" />
+                            </div>
                             @if ($editing && ! $logoUrl)
                                 <p class="mt-1.5 text-sm text-amber-700">Berkas logo lama tidak ditemukan di server. Unggah ulang logonya.</p>
                             @endif

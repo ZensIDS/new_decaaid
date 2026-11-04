@@ -7,12 +7,14 @@ use App\Support\SlugRedirects;
 use App\Models\Brand;
 use App\Models\Pillar;
 use App\Support\ImageStore;
+use App\Support\MediaStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -49,8 +51,8 @@ class BrandController extends Controller
         $brand->created_by = $request->user()->id;
         $brand->updated_by = $request->user()->id;
 
-        if ($request->hasFile('logo')) {
-            $brand->logo = ImageStore::storeLogo($request->file('logo'), 'brands');
+        if ($request->hasFile('logo') || filled($request->input('logo_path'))) {
+            $brand->logo = $this->chosenLogo($request);
         }
 
         $brand->save();
@@ -88,8 +90,8 @@ class BrandController extends Controller
             $brand->sort_order = (int) Brand::where('pillar_id', $brand->pillar_id)->max('sort_order') + 1;
         }
 
-        if ($request->hasFile('logo')) {
-            $brand->logo = ImageStore::storeLogo($request->file('logo'), 'brands');
+        if ($request->hasFile('logo') || filled($request->input('logo_path'))) {
+            $brand->logo = $this->chosenLogo($request);
         } elseif ($request->boolean('remove_logo')) {
             $brand->logo = null;
         }
@@ -215,6 +217,7 @@ class BrandController extends Controller
             'instagram'      => ['nullable', 'string', 'max:120', $handle],
             'tiktok'         => ['nullable', 'string', 'max:120', $handle],
             'url'            => ['nullable', 'url', 'max:255'],
+            'logo_path'      => ['nullable', 'string', 'max:255'],
             'logo'           => ['nullable', 'file', 'mimetypes:image/jpeg,image/png,image/webp', 'max:' . ImageStore::MAX_KB],
             'is_visible'     => ['nullable', 'boolean'],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],
@@ -284,6 +287,25 @@ class BrandController extends Controller
         }
 
         return $row;
+    }
+
+    /**
+     * Logo dari unggahan berkas, atau dipilih dari Media Library (B3b). Jalur pilihan memakai berkas yang sudah ada
+     * (tidak dipangkas ulang); path divalidasi MediaStore::pick (hanya storage/, img/, wp-uploads/).
+     */
+    protected function chosenLogo(Request $request): string
+    {
+        if ($request->hasFile('logo')) {
+            return ImageStore::storeLogo($request->file('logo'), 'brands');
+        }
+
+        $picked = MediaStore::pick($request->input('logo_path'));
+
+        if (! $picked) {
+            throw ValidationException::withMessages(['logo' => 'Logo dari Media Library tidak ditemukan. Pilih lagi atau unggah berkas.']);
+        }
+
+        return $picked;
     }
 
     protected function nullable(?string $value): ?string
