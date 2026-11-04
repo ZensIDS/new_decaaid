@@ -7,11 +7,17 @@
 
 @php
     $exists = $src && file_exists(public_path(ltrim($src, '/')));
+    // Tahap C: ukuran asli gambar (width/height) agar browser menyisihkan ruangnya sebelum gambar dimuat (CLS rendah).
+    // Hanya bila belum diberikan lewat atribut; gambar vektor (SVG) dilewati. Hasil di-cache menurut path + waktu ubah file.
+    $dims = $exists && ! $attributes->has('width') && ! $attributes->has('height')
+        ? \App\Support\ImageSize::of($src)
+        : null;
 @endphp
 
 @if ($exists)
     <img src="{{ str_starts_with(ltrim($src, '/'), 'img/logo/') ? logo_url($src) : asset($src) }}"
          alt="{{ $alt }}"
+         @if ($dims) width="{{ $dims[0] }}" height="{{ $dims[1] }}" @endif
          @if ($lazy) loading="lazy" decoding="async" @else fetchpriority="high" @endif
          {{ $attributes }}>
 @else
