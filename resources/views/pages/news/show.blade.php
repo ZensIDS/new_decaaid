@@ -124,6 +124,13 @@
                 <div x-ref="body" class="min-w-0">
                     {{-- Tipografi baca: lebar terbatas, baris longgar --}}
                     <div class="max-w-3xl space-y-6 text-lg leading-8 text-slate-700">
+                        @if (! empty($post['machine_translated']))
+                            <p class="rounded-xl bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600 ring-1 ring-inset ring-slate-200" role="note">
+                                {{ app()->getLocale() === 'en'
+                                    ? 'This article was translated automatically from Indonesian and has not been reviewed yet.'
+                                    : 'Artikel ini diterjemahkan otomatis dari Bahasa Inggris dan belum ditinjau.' }}
+                            </p>
+                        @endif
                         <p class="border-l-4 border-accent-500 pl-5 text-xl font-medium leading-9 text-ink md:text-2xl md:leading-10">{{ $post['excerpt'] }}</p>
 
                         {{-- Isi dari editor admin: HTML sudah disaring server (App\Support\Html::clean) --}}

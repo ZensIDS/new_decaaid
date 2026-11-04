@@ -89,8 +89,14 @@ class NewsRepo
     protected static function shape(News $n): array
     {
         $title = $n->t('title');
+        $locale = app()->getLocale();
 
         return [
+            // Tahap B5: isi bahasa ini hasil mesin dan belum ditinjau (tampil sebagai catatan di halaman berita).
+            'machine_translated' => $n->translation_status === 'auto'
+                && filled($n->translated_from)
+                && $n->translated_from !== $locale
+                && filled(trim(strip_tags((string) ($n->title[$locale] ?? '')))),
             'slug'            => $n->slug,
             'category_slug'   => $n->category?->slug ?? '',
             'category'        => $n->category?->label() ?? '',
