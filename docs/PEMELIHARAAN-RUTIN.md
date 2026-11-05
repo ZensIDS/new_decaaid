@@ -80,6 +80,26 @@ grep -h "\.ERROR" storage/logs/laravel-$(date +%F).log | tail -20
 
 ---
 
+### 3a. Terjemahan massal berita (sekali jalan setelah impor, atau bila ada berita lama tanpa EN)
+
+Berita hasil impor WordPress hanya berbahasa Indonesia; pengunjung EN melihat teks Indonesia. Perintah `translate:news` mengisi bahasa yang **kosong** memakai penyedia terjemahan (butuh `TRANSLATE_DRIVER` dan kuncinya di `.env`, lalu `php artisan config:clear`).
+
+```bash
+php artisan translate:news --dry-run            # daftar calon + perkiraan karakter, tidak memanggil penyedia
+php artisan translate:news --limit=10           # terjemahkan 10 berita terbaru yang membutuhkan
+php artisan translate:news --limit=0            # semua calon (hati-hati biaya)
+php artisan translate:news --id=12 --id=15      # berita tertentu
+php artisan translate:news --status=all         # termasuk Draf (bawaan: Terbit dan Terjadwal)
+php artisan translate:news --include-reviewed   # termasuk yang berstatus Ditinjau (bawaan: dilewati)
+```
+
+- **Mulai dengan `--dry-run`** untuk melihat jumlah calon dan perkiraan karakter (dasar perhitungan biaya/kuota penyedia), lalu coba `--limit=3` dan periksa hasilnya di admin sebelum menjalankan sisanya.
+- Hanya kolom **kosong** yang diisi; tulisan yang sudah ada tidak pernah ditimpa. Berita yang diterjemahkan ditandai **Otomatis (belum ditinjau)**, dan halaman publik menampilkan catatan "belum ditinjau" sampai Anda mengubahnya ke **Ditinjau**.
+- Berjalan serempak dalam kelompok kecil dengan jeda 1 detik (`--sleep`), tanpa queue. Bila 3 galat beruntun (kuota habis, kunci salah), perintah berhenti sendiri; ulangi setelah diperbaiki, berita yang sudah selesai tidak diproses lagi.
+- Setelah selesai, **tinjau berita terpenting dulu** (yang paling banyak dibaca) di admin Berita. Ringkasan satu baris masuk Log Aktivitas.
+
+---
+
 ## 4. Uji pemulihan cadangan (triwulan, di staging)
 
 Cadangan yang belum pernah dipulihkan belum bisa dipercaya. Lakukan di **staging**, bukan produksi.
