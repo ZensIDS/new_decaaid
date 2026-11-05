@@ -1709,6 +1709,7 @@ class Content
             ],
             'err_check'      => ['id' => 'Mohon periksa kembali isian Anda.', 'en' => 'Please check your entries.'],
             'err_send'       => ['id' => 'Pesan belum terkirim. Silakan coba lagi sebentar lagi atau hubungi kami lewat email.', 'en' => 'Your message could not be sent. Please try again shortly or contact us by email.'],
+            'err_captcha'    => ['id' => 'Verifikasi keamanan belum selesai atau kedaluwarsa. Tunggu sebentar sampai centang muncul, lalu kirim lagi.', 'en' => 'The security check has not finished or has expired. Please wait for the checkmark, then send again.'],
             'err_many'       => ['id' => 'Terlalu banyak percobaan. Silakan coba lagi beberapa menit lagi.', 'en' => 'Too many attempts. Please try again in a few minutes.'],
             'channels_title' => ['id' => 'Kanal resmi', 'en' => 'Official channels'],
             'offices_title'  => ['id' => 'Kantor kami', 'en' => 'Our offices'],

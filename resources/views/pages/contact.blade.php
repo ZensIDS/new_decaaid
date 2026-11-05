@@ -136,6 +136,13 @@
                                 </p>
                             </div>
 
+                            @if (\App\Support\Turnstile::enabled())
+                                {{-- Turnstile: widget menambah kolom cf-turnstile-response ke form; dicek server saat kirim --}}
+                                <div class="md:col-span-2">
+                                    <div class="cf-turnstile" data-sitekey="{{ \App\Support\Turnstile::siteKey() }}" data-language="{{ app()->getLocale() }}" data-theme="light"></div>
+                                </div>
+                            @endif
+
                             <div x-show="failed" x-cloak role="alert" class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-inset ring-red-200 md:col-span-2">
                                 <span x-text="failed"></span>
                                 <a :href="mailto" class="ml-1 font-semibold underline">{{ $page['via_email'] }}</a>
@@ -222,6 +229,9 @@
 @endsection
 
 @push('scripts')
+    @if (\App\Support\Turnstile::enabled())
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    @endif
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('contactForm', (cfg) => ({
@@ -274,6 +284,8 @@
                         this.failed = cfg.failed;
                     }
                     this.sending = false;
+                    // Token Turnstile hanya berlaku sekali: minta yang baru setelah kirim (berhasil atau tidak).
+                    if (window.turnstile) window.turnstile.reset();
                 },
 
                 // Cadangan sementara: buka aplikasi email dengan isi pesan terisi otomatis.

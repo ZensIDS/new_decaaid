@@ -50,15 +50,17 @@ class SecurityHeaders
         $dev = file_exists(public_path('hot')) ? ' http://localhost:5173 http://127.0.0.1:5173 http://[::1]:5173 ws://localhost:5173' : '';
         // Alpine.js memakai ekspresi inline: butuh 'unsafe-eval' (bawaan build standar) dan 'unsafe-inline' untuk skrip kecil di halaman.
         $analytics = ' https://www.googletagmanager.com https://www.google-analytics.com https://plausible.io https://cloud.umami.is';
+        // Turnstile (formulir Kontak) memuat skrip dan iframe dari Cloudflare, hanya bila diaktifkan di .env.
+        $turnstile = \App\Support\Turnstile::enabled() ? ' https://challenges.cloudflare.com' : '';
 
         return implode('; ', [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'" . $analytics . $dev,
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'" . $analytics . $turnstile . $dev,
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com" . $dev,
             "font-src 'self' data: https://fonts.gstatic.com",
             "img-src 'self' data: blob: https:",
             "connect-src 'self'" . $analytics . $dev,
-            "frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com",
+            "frame-src 'self' https://www.google.com https://maps.google.com https://www.youtube.com https://www.youtube-nocookie.com" . $turnstile,
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",

@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
 use App\Support\Content;
+use App\Support\Turnstile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -12,7 +13,7 @@ use Throwable;
 
 /**
  * B4: pengiriman formulir Kontak (POST, dipanggil lewat fetch). Anti-spam: honeypot + batas kirim
- * (throttle di rute). Pesan disimpan ke tabel contact_messages, lalu email notifikasi ke alamat umum
+ * (throttle di rute) + Turnstile opsional (App\Support\Turnstile). Pesan disimpan ke tabel contact_messages, lalu email notifikasi ke alamat umum
  * (info@decaa.id, K31) dan balasan otomatis ke pengirim. Kegagalan email TIDAK menggagalkan pengiriman:
  * pesan tetap tersimpan di kotak masuk admin.
  */
@@ -25,6 +26,11 @@ class ContactController extends Controller
         // Honeypot: bot mengisi kolom tersembunyi. Pura-pura sukses agar bot tidak belajar.
         if (filled($request->input('website'))) {
             return response()->json(['ok' => true]);
+        }
+
+        // Turnstile (opsional, aktif bila kunci diisi di .env): token dari widget di form diverifikasi ke Cloudflare.
+        if (Turnstile::enabled() && ! Turnstile::passes($request->input('cf-turnstile-response'), $request->ip())) {
+            return response()->json(['ok' => false, 'message' => $page['err_captcha'], 'captcha' => true], 422);
         }
 
         $validator = Validator::make($request->all(), [
