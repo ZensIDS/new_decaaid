@@ -37,10 +37,17 @@ class CustomPage extends Model
 
     protected static ?bool $translationColumns = null;
     protected static ?bool $seoImageColumn = null;
+    protected static ?bool $footerColumn = null;
+
+    /** Kolom footer tujuan tautan (kunci => label). */
+    public const FOOTER_COLUMNS = [
+        'company' => 'Perusahaan',
+        'units'   => 'Pilar Bisnis',
+    ];
 
     protected $fillable = [
         'slug', 'title', 'body', 'seo_title', 'seo_description', 'seo_image',
-        'is_published', 'show_in_footer', 'sort_order', 'translation_status', 'translated_from', 'created_by', 'updated_by',
+        'is_published', 'show_in_footer', 'footer_column', 'sort_order', 'translation_status', 'translated_from', 'created_by', 'updated_by',
     ];
 
     protected $casts = [
@@ -52,6 +59,20 @@ class CustomPage extends Model
         'show_in_footer'  => 'boolean',
         'sort_order'      => 'integer',
     ];
+
+    /** Kolom pilihan footer sudah ada (setelah `php artisan migrate`)? Sebelum itu semua tautan di kolom Perusahaan. */
+    public static function hasFooterColumn(): bool
+    {
+        if (self::$footerColumn === null) {
+            try {
+                self::$footerColumn = Schema::hasColumn('custom_pages', 'footer_column');
+            } catch (Throwable) {
+                self::$footerColumn = false;
+            }
+        }
+
+        return self::$footerColumn;
+    }
 
     /** Kolom gambar share sudah ada (setelah `php artisan migrate`)? Sebelum itu fitur dilewati tanpa galat. */
     public static function hasSeoImageColumn(): bool

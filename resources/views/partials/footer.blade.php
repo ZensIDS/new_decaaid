@@ -17,8 +17,15 @@
     $companyLinks[] = [t('footer.privacy'), lroute('privacy')];
 
     // B3m (QA1): halaman kustom yang dicentang "tampil di footer"
+    // B3o: admin memilih kolom footer (Perusahaan atau Pilar Bisnis).
+    $unitExtra = [];
     foreach (\App\Support\CustomPageRepo::footerLinks() as $custom) {
-        $companyLinks[] = [$custom['title'], lroute('custom', ['slug' => $custom['slug']])];
+        $row = [$custom['title'], lroute('custom', ['slug' => $custom['slug']])];
+        if (($custom['column'] ?? 'company') === 'units') {
+            $unitExtra[] = $row;
+        } else {
+            $companyLinks[] = $row;
+        }
     }
 
     $link = 'text-sm text-brand-200 transition hover:text-white';
@@ -70,6 +77,9 @@
                 <ul class="mt-4 space-y-2.5">
                     @foreach ($units as $unit)
                         <li><a href="{{ lroute('units.show', ['slug' => $unit['slug']]) }}" class="{{ $link }}">{{ $unit['name'] }}</a></li>
+                    @endforeach
+                    @foreach ($unitExtra as [$label, $url])
+                        <li><a href="{{ $url }}" class="{{ $link }}">{{ $label }}</a></li>
                     @endforeach
                 </ul>
             </div>

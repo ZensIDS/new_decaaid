@@ -72,7 +72,7 @@ class CustomPageRepo
     /**
      * Tautan footer (halaman terbit yang dicentang "tampil di footer"), judul sesuai bahasa aktif.
      *
-     * @return array<int, array{slug: string, title: string}>
+     * @return array<int, array{slug: string, title: string, column: string}>
      */
     public static function footerLinks(?string $locale = null): array
     {
@@ -88,7 +88,11 @@ class CustomPageRepo
             try {
                 $links = CustomPage::published()->where('show_in_footer', true)
                     ->orderBy('sort_order')->orderBy('id')->get()
-                    ->map(fn(CustomPage $p) => ['slug' => $p->slug, 'title' => $p->t('title', $locale)])
+                    ->map(fn(CustomPage $p) => [
+                        'slug'   => $p->slug,
+                        'title'  => $p->t('title', $locale),
+                        'column' => array_key_exists((string) ($p->footer_column ?? ''), CustomPage::FOOTER_COLUMNS) ? $p->footer_column : 'company',
+                    ])
                     ->all();
             } catch (Throwable) {
                 $links = [];

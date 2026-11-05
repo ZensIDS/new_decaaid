@@ -267,6 +267,7 @@ class CustomPageController extends Controller
             ],
             'is_published'       => ['required', 'boolean'],
             'show_in_footer'     => ['required', 'boolean'],
+            'footer_column'      => ['nullable', Rule::in(array_keys(CustomPage::FOOTER_COLUMNS))],
             'sort_order'         => ['nullable', 'integer', 'between:0,999'],
             'translation_status' => ['nullable', Rule::in(array_keys(CustomPage::TRANSLATION))],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],
@@ -309,7 +310,12 @@ class CustomPageController extends Controller
             ? ['seo_image' => MediaStore::pick($data['seo_image'] ?? null)]
             : [];
 
-        return $translation + $seoImage + [
+        // Kolom footer: kolom DB baru ada setelah migrate; bawaan Perusahaan.
+        $footerColumn = CustomPage::hasFooterColumn()
+            ? ['footer_column' => $data['footer_column'] ?? 'company']
+            : [];
+
+        return $translation + $seoImage + $footerColumn + [
             'slug'            => $data['slug'],
             'title'           => $clean($data['title']),
             'body'            => $body,

@@ -121,11 +121,19 @@
                             </button>
                             <div>
                                 <span id="footer-label" class="block text-sm font-medium text-slate-700">Tampilkan di footer</span>
-                                <span class="block text-xs text-slate-500">Tautan muncul di kolom Perusahaan pada footer situs. Hanya berlaku bila statusnya Terbit.</span>
+                                <span class="block text-xs text-slate-500">Tautan muncul di footer situs, di kolom yang kamu pilih di bawah. Hanya berlaku bila statusnya Terbit.</span>
                             </div>
                         </div>
-                        <div x-show="footer" x-cloak class="max-w-[12rem]">
-                            <x-admin.input name="sort_order" type="number" label="Urutan di footer" :value="$editing ? $page->sort_order : 0" hint="Angka kecil tampil lebih dulu (0-999)." />
+                        <div x-show="footer" x-cloak class="grid gap-4 sm:grid-cols-2">
+                            @if (\App\Models\CustomPage::hasFooterColumn())
+                                <x-admin.select name="footer_column" label="Kolom footer"
+                                                :options="\App\Models\CustomPage::FOOTER_COLUMNS"
+                                                :value="old('footer_column', $editing ? ($page->footer_column ?: 'company') : 'company')"
+                                                hint="Perusahaan atau Pilar Bisnis (di bawah daftar pilar)." />
+                            @endif
+                            <div class="max-w-[12rem]">
+                                <x-admin.input name="sort_order" type="number" label="Urutan di footer" :value="$editing ? $page->sort_order : 0" hint="Angka kecil tampil lebih dulu (0-999) di dalam kolomnya." />
+                            </div>
                         </div>
                     </div>
                     @if ($transColumns)
