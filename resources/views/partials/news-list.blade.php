@@ -57,7 +57,7 @@
             <x-ui.reveal :delay="($loop->index % 3) * 100" class="h-full">
                 <a href="{{ lroute('news.show', ['slug' => $post['slug']]) }}"
                    class="block h-full overflow-hidden rounded-xl bg-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
-                    <x-ui.img :src="$post['image']" :alt="$post['image_alt']" label="Foto berita" class="aspect-[16/10] w-full object-cover" />
+                    <x-ui.img :src="$post['image']" :alt="$post['image_alt']" label="Foto berita" class="aspect-[16/10] w-full object-cover" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" />
                     <div class="p-6">
                         <div class="flex items-center gap-3 text-xs">
                             <x-ui.badge tone="accent">{{ $post['category'] }}</x-ui.badge>

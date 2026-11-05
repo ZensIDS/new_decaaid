@@ -21,7 +21,7 @@
                            class="group block h-full overflow-hidden rounded-xl bg-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
                             <div class="overflow-hidden">
                                 <x-ui.img :src="$post['image']" :alt="$post['image_alt']" label="Foto berita"
-                                          class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105" />
+                                          class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105" sizes="(min-width: 768px) 33vw, 100vw" />
                             </div>
                             <div class="p-6">
                                 <div class="flex items-center gap-3 text-xs">

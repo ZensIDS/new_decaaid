@@ -204,7 +204,7 @@
                            class="group flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover">
                             <div class="relative overflow-hidden">
                                 <x-ui.img :src="$item['image']" :alt="$item['image_alt']" label="Foto berita"
-                                          class="aspect-[16/10] w-full object-cover transition duration-700 group-hover:scale-105" />
+                                          class="aspect-[16/10] w-full object-cover transition duration-700 group-hover:scale-105" sizes="(min-width: 768px) 33vw, 100vw" />
                                 <span class="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-brand-800 shadow-sm backdrop-blur">{{ $item['category'] }}</span>
                             </div>
                             <div class="flex flex-1 flex-col p-6">

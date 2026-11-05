@@ -189,6 +189,7 @@ class ImageStore
             }
 
             Storage::disk('public')->delete(substr($path, strlen('storage/')));
+            ImageVariants::forget($path); // v90: varian srcset ikut dihapus
             MediaStore::forget($path); // B3b: hapus catatan di Media Library
         }
     }

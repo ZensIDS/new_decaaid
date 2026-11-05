@@ -132,7 +132,7 @@
                     <x-ui.reveal :delay="$loop->index * 100" class="h-full">
                         <a href="{{ lroute('portfolio.show', ['slug' => $other['slug']]) }}"
                            class="block h-full overflow-hidden rounded-xl bg-white shadow-card transition hover:-translate-y-0.5 hover:shadow-card-hover">
-                            <x-ui.img :src="$other['image']" :alt="$other['title']" :label="$other['title']" class="aspect-[16/10] w-full object-cover" />
+                            <x-ui.img :src="$other['image']" :alt="$other['title']" :label="$other['title']" class="aspect-[16/10] w-full object-cover" sizes="(min-width: 768px) 33vw, 100vw" />
                             <div class="p-6">
                                 <p class="text-xs font-semibold text-slate-500">{{ $other['client'] }} · {{ $other['year'] }}</p>
                                 <h3 class="mt-2 text-lg">{{ $other['title'] }}</h3>

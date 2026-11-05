@@ -44,7 +44,7 @@ class SyncMedia extends Command
 
         if ($only !== 'bundled') {
             foreach (Storage::disk('public')->allFiles() as $file) {
-                if (str_starts_with($file, 'thumbs/') || ! in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), self::EXT, true)) {
+                if (str_starts_with($file, 'thumbs/') || str_starts_with($file, 'variants/') || ! in_array(strtolower(pathinfo($file, PATHINFO_EXTENSION)), self::EXT, true)) {
                     continue;
                 }
                 $register('storage/' . $file);

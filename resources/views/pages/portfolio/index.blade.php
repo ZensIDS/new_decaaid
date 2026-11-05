@@ -54,7 +54,7 @@
                          class="h-full">
                         <a href="{{ lroute('portfolio.show', ['slug' => $project['slug']]) }}"
                            class="block h-full overflow-hidden rounded-xl bg-white shadow-card transition duration-300 hover:-translate-y-0.5 hover:shadow-card-hover">
-                            <x-ui.img :src="$project['image']" :alt="$project['title']" :label="$project['title']" class="aspect-[16/10] w-full object-cover" />
+                            <x-ui.img :src="$project['image']" :alt="$project['title']" :label="$project['title']" class="aspect-[16/10] w-full object-cover" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" />
                             <div class="p-6">
                                 <x-ui.badge>{{ $project['unit_name'] }}</x-ui.badge>
                                 <h2 class="mt-3 text-lg">{{ $project['title'] }}</h2>
