@@ -40,6 +40,13 @@
                         <h2 id="brand-title" class="mt-4 text-3xl leading-tight md:text-4xl">{{ $page['brand_about'] }} {{ $brand['name'] }}</h2>
 
                         @if ($brand['description'])
+                            @if (! empty($brand['machine_translated']))
+                                <p class="mt-5 rounded-xl bg-slate-50 px-4 py-3 text-sm leading-6 text-slate-600 ring-1 ring-inset ring-slate-200" role="note">
+                                    {{ app()->getLocale() === 'en'
+                                        ? 'This page was translated automatically from Indonesian and has not been reviewed yet.'
+                                        : 'Halaman ini diterjemahkan otomatis dari Bahasa Inggris dan belum ditinjau.' }}
+                                </p>
+                            @endif
                             <p class="mt-5 text-base leading-relaxed md:text-lg">{{ $brand['description'] }}</p>
                         @else
                             <p class="mt-5 text-base leading-relaxed md:text-lg">{{ $page['brand_empty'] }}</p>

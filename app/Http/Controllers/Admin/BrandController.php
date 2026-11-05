@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\AutoTranslatesOnSave;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Support\SlugRedirects;
@@ -8,6 +9,8 @@ use App\Models\Brand;
 use App\Models\Pillar;
 use App\Support\ImageStore;
 use App\Support\MediaStore;
+use App\Support\NewsAutoTranslate;
+use App\Support\Translator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,6 +18,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 use Illuminate\View\View;
 
 /**
@@ -24,6 +28,8 @@ use Illuminate\View\View;
  */
 class BrandController extends Controller
 {
+    use AutoTranslatesOnSave;
+
     public function create(Request $request): View|RedirectResponse
     {
         $pillars = $this->pillars();
@@ -44,6 +50,7 @@ class BrandController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->autoTranslateBrand($request, null);
         $data = $this->validated($request, null);
 
         $brand             = new Brand($data);
@@ -60,7 +67,8 @@ class BrandController extends Controller
         ActivityLog::record('brand.created', "menambah brand \"{$brand->name}\"", $brand);
 
         return redirect()->route('admin.pillars.index')
-            ->with('status', "Brand \"{$brand->name}\" dibuat. " . $this->visibilityNote($brand));
+            ->with('status', "Brand \"{$brand->name}\" dibuat. " . $this->translationNote() . $this->visibilityNote($brand))
+            ->with('error', $this->translateWarning);
     }
 
     public function edit(Brand $brand): View
@@ -74,6 +82,7 @@ class BrandController extends Controller
 
     public function update(Request $request, Brand $brand): RedirectResponse
     {
+        $this->autoTranslateBrand($request, $brand);
         $data = $this->validated($request, $brand);
 
         $oldLogo       = $brand->logo;
@@ -266,7 +275,7 @@ class BrandController extends Controller
             return $id === '' && $en === '' ? null : ['id' => $id, 'en' => $en];
         };
 
-        $row = [
+        $row = $this->translationAttributes() + [
             'pillar_id'   => (int) $data['pillar_id'],
             'name'        => trim($data['name']),
             'slug'        => $data['slug'],
@@ -332,6 +341,69 @@ class BrandController extends Controller
     }
 
     /** Buang butir layanan yang seluruhnya kosong sebelum divalidasi. */
+    /**
+     * B5: isi otomatis bahasa yang kosong (ID <-> EN) untuk deskripsi, SEO, judul Layanan, dan tiap butir Layanan.
+     * Butir Layanan diperlakukan sebagai kolom maya (svc_title, svc_{n}_title, svc_{n}_text) agar memakai aturan
+     * NewsAutoTranslate yang sama; hasilnya dikembalikan ke struktur 'services' sebelum validasi. Dilewati bila
+     * saklar mati, penyedia belum diatur, atau migration kolom 'translated_from' belum dijalankan.
+     */
+    protected function autoTranslateBrand(Request $request, ?Brand $brand): void
+    {
+        $this->translatedFrom   = null;
+        $this->translateWarning = null;
+
+        if (! $request->boolean('auto_translate') || ! Translator::enabled() || ! Brand::hasTranslatedFrom()) {
+            return;
+        }
+
+        $fields = Brand::AUTO_FIELDS;
+        $input  = [];
+
+        foreach (array_keys($fields) as $field) {
+            $input[$field] = ['id' => $request->input("{$field}.id"), 'en' => $request->input("{$field}.en")];
+        }
+
+        $fields['svc_title'] = [120, false];
+        $input['svc_title']  = ['id' => $request->input('services.title.id'), 'en' => $request->input('services.title.en')];
+
+        $items = (array) $request->input('services.items', []);
+
+        foreach ($items as $i => $item) {
+            $item = (array) $item;
+
+            $fields["svc_{$i}_title"] = [150, false];
+            $input["svc_{$i}_title"]  = ['id' => $item['title']['id'] ?? null, 'en' => $item['title']['en'] ?? null];
+            $fields["svc_{$i}_text"]  = [1500, false];
+            $input["svc_{$i}_text"]   = ['id' => $item['text']['id'] ?? null, 'en' => $item['text']['en'] ?? null];
+        }
+
+        try {
+            [$filled, $direction, $warning] = NewsAutoTranslate::fill($input, $brand, $fields);
+        } catch (RuntimeException $e) {
+            throw ValidationException::withMessages(['description.id' => $e->getMessage()]);
+        }
+
+        foreach (array_keys(Brand::AUTO_FIELDS) as $field) {
+            $request->merge([$field => ['id' => $filled[$field]['id'] ?? null, 'en' => $filled[$field]['en'] ?? null]]);
+        }
+
+        foreach ($items as $i => $item) {
+            $item = (array) $item;
+
+            $item['title'] = ['id' => $filled["svc_{$i}_title"]['id'] ?? null, 'en' => $filled["svc_{$i}_title"]['en'] ?? null];
+            $item['text']  = ['id' => $filled["svc_{$i}_text"]['id'] ?? null, 'en' => $filled["svc_{$i}_text"]['en'] ?? null];
+            $items[$i]     = $item;
+        }
+
+        $request->merge(['services' => [
+            'title' => ['id' => $filled['svc_title']['id'] ?? null, 'en' => $filled['svc_title']['en'] ?? null],
+            'items' => $items,
+        ]]);
+
+        $this->translatedFrom   = $direction;
+        $this->translateWarning = $warning;
+    }
+
     protected function cleanServices(Request $request): array
     {
         $items = [];

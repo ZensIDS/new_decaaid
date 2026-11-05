@@ -8,6 +8,10 @@
     $visible = $editing ? $brand->is_visible : true;
     $currentTrans = old('translation_status', $editing ? $brand->translation_status : 'manual');
 
+    // B5: terjemahan otomatis (butuh penyedia di .env dan migration kolom translated_from).
+    $autoAvailable = \App\Support\Translator::enabled();
+    $transColumns  = \App\Models\Brand::hasTranslatedFrom();
+
     // Logo saat ini (logo bawaan di img/logo dipangkas otomatis seperti di situs).
     $logoOk = $editing && $brand->logo && file_exists(public_path($brand->logo));
     $logoUrl = $logoOk ? (str_starts_with($brand->logo, 'img/logo/') ? logo_url($brand->logo) : asset($brand->logo)) : null;
@@ -110,6 +114,18 @@
                             <span class="h-2 w-2 rounded-full" :class="descEn.trim() ? 'bg-emerald-500' : 'bg-slate-300'" aria-hidden="true"></span>
                         </button>
                     </div>
+
+                    @if ($transColumns)
+                        @if ($autoAvailable)
+                            <x-admin.toggle name="auto_translate" label="Terjemahkan otomatis bahasa yang kosong"
+                                            description="Saat disimpan, kolom ID atau EN yang kosong (deskripsi, Layanan, SEO) diisi hasil terjemahan mesin dan ditandai Otomatis (belum ditinjau). Isian yang sudah kamu tulis tidak ditimpa."
+                                            :checked="true" />
+                        @else
+                            <p class="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
+                                Terjemahan otomatis belum aktif (penyedia belum diatur di <code>.env</code>). Tab EN yang kosong akan tampil sebagai teks Indonesia.
+                            </p>
+                        @endif
+                    @endif
 
                     <div x-show="lang === 'id'" class="space-y-5" role="tabpanel">
                         <x-admin.textarea name="description[id]" label="Deskripsi" rows="7" :value="$descId" hint="Maksimal 4.000 karakter. Kosongkan bila belum ada bahannya; jangan diisi karangan." />

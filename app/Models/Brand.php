@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Models\Concerns\MachineTranslated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -10,6 +11,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Brand extends Model
 {
+    use MachineTranslated;
+
+    /**
+     * Kolom dwibahasa yang ikut terjemahan otomatis: kolom => [maks karakter, HTML?].
+     * Judul dan butir Layanan (di kolom JSON 'services') ditangani terpisah oleh BrandController.
+     */
+    public const AUTO_FIELDS = [
+        'description'     => [4000, false],
+        'seo_title'       => [120, false],
+        'seo_description' => [300, false],
+    ];
+
     public const TRANSLATION = [
         'manual'   => 'Manual',
         'auto'     => 'Otomatis (belum ditinjau)',
@@ -18,7 +31,7 @@ class Brand extends Model
 
     protected $fillable = [
         'pillar_id', 'slug', 'name', 'logo', 'description', 'instagram', 'tiktok', 'url',
-        'services', 'seo_title', 'seo_description', 'sort_order', 'is_visible', 'translation_status', 'is_dummy',
+        'services', 'seo_title', 'seo_description', 'sort_order', 'is_visible', 'translation_status', 'translated_from', 'is_dummy',
         'created_by', 'updated_by',
     ];
 
@@ -46,6 +59,15 @@ class Brand extends Model
     public function hasDescription(): bool
     {
         return filled(trim((string) ($this->description['id'] ?? '')));
+    }
+
+    /** Isi bahasa $locale hasil mesin dan belum ditinjau (tampil sebagai catatan di halaman brand). Brand tidak punya 'title': deskripsi yang jadi patokan. */
+    public function machineTranslated(string $locale): bool
+    {
+        return $this->translation_status === 'auto'
+            && filled($this->translated_from)
+            && $this->translated_from !== $locale
+            && filled(trim(strip_tags((string) ($this->description[$locale] ?? ''))));
     }
 
     public function hasEnglish(): bool

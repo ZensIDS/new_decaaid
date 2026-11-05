@@ -75,6 +75,7 @@ class PillarRepo
             'name'        => $b->name,
             'logo'        => $b->logo ?: null,
             'description' => self::bilingual($b->description),
+            'machine_translated' => $b->machineTranslated(app()->getLocale()),
             'instagram'   => $b->instagram ?: null,
             'tiktok'      => $b->tiktok ?: null,
             'url'         => $b->url ?: null,
