@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\NewsCategory;
+use App\Support\SlugRedirects;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -44,11 +45,19 @@ class NewsCategoryController extends Controller
 
     public function update(Request $request, NewsCategory $category): RedirectResponse
     {
+        $oldSlug = $category->slug;
+
         $category->update($this->validated($request, $category));
+
+        // B3n: slug berubah -> Redirect 301 otomatis (ID dan EN) dari halaman kategori lama ke yang baru.
+        $redirected = $oldSlug !== $category->slug
+            ? SlugRedirects::changed('news.category', ['slug' => $oldSlug], ['slug' => $category->slug], 'slug kategori berita berubah')
+            : 0;
 
         ActivityLog::record('newscat.updated', "mengubah kategori berita \"{$category->label('id')}\"", $category);
 
-        return redirect()->route('admin.newscat.index')->with('status', "Kategori \"{$category->label('id')}\" disimpan.");
+        return redirect()->route('admin.newscat.index')
+            ->with('status', "Kategori \"{$category->label('id')}\" disimpan." . SlugRedirects::note($redirected));
     }
 
     public function destroy(NewsCategory $category): RedirectResponse
