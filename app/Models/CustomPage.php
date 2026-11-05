@@ -36,9 +36,10 @@ class CustomPage extends Model
     ];
 
     protected static ?bool $translationColumns = null;
+    protected static ?bool $seoImageColumn = null;
 
     protected $fillable = [
-        'slug', 'title', 'body', 'seo_title', 'seo_description',
+        'slug', 'title', 'body', 'seo_title', 'seo_description', 'seo_image',
         'is_published', 'show_in_footer', 'sort_order', 'translation_status', 'translated_from', 'created_by', 'updated_by',
     ];
 
@@ -51,6 +52,20 @@ class CustomPage extends Model
         'show_in_footer'  => 'boolean',
         'sort_order'      => 'integer',
     ];
+
+    /** Kolom gambar share sudah ada (setelah `php artisan migrate`)? Sebelum itu fitur dilewati tanpa galat. */
+    public static function hasSeoImageColumn(): bool
+    {
+        if (self::$seoImageColumn === null) {
+            try {
+                self::$seoImageColumn = Schema::hasColumn('custom_pages', 'seo_image');
+            } catch (Throwable) {
+                self::$seoImageColumn = false;
+            }
+        }
+
+        return self::$seoImageColumn;
+    }
 
     /** Kolom status terjemahan sudah ada (setelah `php artisan migrate`)? Sebelum itu fitur dilewati tanpa galat. */
     public static function hasTranslationColumns(): bool

@@ -149,7 +149,12 @@
                             <x-admin.textarea name="seo_description[en]" label="SEO description (EN)" rows="3" :value="$val('seo_description', 'en')" />
                         </div>
                     </div>
-                    <x-admin.seo-preview title-field="title"   :path="$editing ? $page->slug : null" />
+                    @if (\App\Models\CustomPage::hasSeoImageColumn())
+                        <x-admin.media-picker name="seo_image" :value="old('seo_image', $editing ? ($page->seo_image ?? '') : '')" label="Gambar share halaman ini (opsional)" ratio="aspect-[1200/630]"
+                                              hint="Tampil saat tautan dibagikan (WhatsApp, Facebook, LinkedIn, X). Ukuran ideal 1200 x 630 px. Kosong = gambar share bawaan situs." />
+                        @error('seo_image')<p class="text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                    @endif
+                    <x-admin.seo-preview title-field="title" :image="$editing ? ($page->seo_image ?? null) : null" :path="$editing ? $page->slug : null" />
                 </x-admin.form-section>
             </div>
 

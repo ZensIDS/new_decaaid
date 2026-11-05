@@ -16,6 +16,7 @@
 @if ($seoDesc !== '')
     @section('description', $seoDesc)
 @endif
+@section('og_image', (string) ($customPage->seo_image ?? ''))
 
 @section('content')
     <x-ui.page-header :title="$title" :crumbs="[[$ui['home'], lroute('home')], [$title, null]]" />

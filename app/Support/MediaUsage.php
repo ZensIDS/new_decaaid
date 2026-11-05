@@ -85,8 +85,12 @@ class MediaUsage
             }
 
             if (Schema::hasTable('custom_pages')) {
-                foreach (CustomPage::query()->select(['id', 'title', 'body'])->cursor() as $cp) {
-                    if ($has($cp->body)) {
+                $cpCols = ['id', 'title', 'body'];
+                if (CustomPage::hasSeoImageColumn()) {
+                    $cpCols[] = 'seo_image';
+                }
+                foreach (CustomPage::query()->select($cpCols)->cursor() as $cp) {
+                    if ($has($cp->body) || $has($cp->seo_image ?? null)) {
                         $add('Halaman kustom: ' . News::pick($cp->title ?? [], 'id'), $url('admin.custompages.edit', $cp));
                     }
                 }

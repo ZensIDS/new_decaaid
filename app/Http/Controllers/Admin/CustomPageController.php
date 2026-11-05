@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
+use App\Support\MediaStore;
 use App\Support\SlugRedirects;
 use App\Models\CustomPage;
 use App\Models\CustomPageRevision;
@@ -272,6 +273,7 @@ class CustomPageController extends Controller
             'seo_title.en'       => ['nullable', 'string', 'max:120'],
             'seo_description.id' => ['nullable', 'string', 'max:300'],
             'seo_description.en' => ['nullable', 'string', 'max:300'],
+            'seo_image'          => ['nullable', 'string', 'max:255'],
         ], [
             'slug.required'   => 'Slug wajib diisi (atau kosongkan agar dibuat dari judul, dengan judul yang berisi huruf atau angka).',
             'slug.regex'      => 'Slug hanya boleh huruf kecil, angka, dan tanda hubung (contoh: syarat-ketentuan).',
@@ -302,7 +304,12 @@ class CustomPageController extends Controller
                 : ['translation_status' => $data['translation_status'] ?? 'manual'];
         }
 
-        return $translation + [
+        // Gambar share dari Media Library (hanya path sah yang berkasnya ada); kolom baru ada setelah migrate.
+        $seoImage = CustomPage::hasSeoImageColumn()
+            ? ['seo_image' => MediaStore::pick($data['seo_image'] ?? null)]
+            : [];
+
+        return $translation + $seoImage + [
             'slug'            => $data['slug'],
             'title'           => $clean($data['title']),
             'body'            => $body,
