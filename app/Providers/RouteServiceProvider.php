@@ -58,6 +58,7 @@ class RouteServiceProvider extends ServiceProvider
         // bisa terkunci oleh rute lain.)
         RateLimiter::for('site-search', fn(Request $request) => Limit::perMinute(30)->by('search|'.$request->ip()));
         RateLimiter::for('contact-form', fn(Request $request) => Limit::perMinutes(10, 6)->by('contact|'.$request->ip()));
+        RateLimiter::for('health', fn(Request $request) => Limit::perMinute(60)->by('health|'.$request->ip()));
         RateLimiter::for('seo-files', fn(Request $request) => Limit::perMinute(30)->by('seo|'.$request->ip()));
         foreach (['admin-news-upload' => 60, 'admin-picker-upload' => 30, 'admin-media-upload' => 20, 'admin-export' => 10, 'admin-import' => 10, 'admin-client-bulk' => 20, 'admin-sort' => 60] as $name => $max) {
             RateLimiter::for($name, fn(Request $request) => Limit::perMinute($max)->by($name.'|'.($request->user()?->id ?: $request->ip())));

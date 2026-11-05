@@ -29,7 +29,8 @@ class SiteMaintenance
             return redirect('/')->withCookie(cookie(self::COOKIE, $token, 60 * 12));
         }
 
-        if ($path === 'admin' || str_starts_with($path, 'admin/')) {
+        // /health selalu menjawab (isinya memuat penanda maintenance) agar monitor uptime tidak salah mengira situs mati.
+        if ($path === 'admin' || str_starts_with($path, 'admin/') || $path === 'health') {
             return $next($request);
         }
 

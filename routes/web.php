@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SeoController;
 use App\Http\Middleware\SetLocale;
@@ -22,6 +23,9 @@ Route::redirect('/', '/'.config('site.default_locale'));
 // Bila ada berkas statis public/robots.txt atau public/sitemap.xml, hapus agar rute ini yang dipakai.
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->middleware('throttle:seo-files')->name('seo.sitemap');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->middleware('throttle:seo-files')->name('seo.robots');
+
+// Tahap E: titik pemeriksaan untuk monitoring uptime (JSON, tanpa detail internal, tetap menjawab saat pemeliharaan).
+Route::get('/health', HealthController::class)->middleware('throttle:health')->name('health');
 
 // A1: halaman internal untuk memeriksa komponen. Hanya aktif di local.
 // Hapus blok ini sebelum deploy ke staging.
