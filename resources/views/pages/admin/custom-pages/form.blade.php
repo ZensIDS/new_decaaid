@@ -149,6 +149,7 @@
                             <x-admin.textarea name="seo_description[en]" label="SEO description (EN)" rows="3" :value="$val('seo_description', 'en')" />
                         </div>
                     </div>
+                    <x-admin.seo-preview title-field="title"   :path="$editing ? $page->slug : null" />
                 </x-admin.form-section>
             </div>
 

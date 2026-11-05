@@ -210,6 +210,7 @@
                             <x-admin.textarea name="seo_description[en]" label="SEO description (EN)" rows="3" :value="$val('seo_description', 'en')" />
                         </div>
                     </div>
+                    <x-admin.seo-preview title-field="title" desc-field="summary" :image="$editing ? $project->image : null"  />
                 </x-admin.form-section>
             </div>
 
