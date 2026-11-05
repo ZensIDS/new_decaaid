@@ -121,6 +121,12 @@ class SiteCheck extends Command
         $this->check(! file_exists(public_path('hot')), 'tidak ada public/hot (Vite dev)', 'hapus public/hot; situs akan mencari server Vite', $prod ? 'fail' : 'warn');
         $this->check(file_exists(public_path('build/manifest.json')), 'public/build ada (npm run build)', 'jalankan npm run build', $prod ? 'fail' : 'warn');
 
+        // 5b. Tag komponen Blade: atribut harus dipisah spasi. `class="a"sizes="b"` membuat <x-...> tidak
+        // dikompilasi dan komponennya hilang diam-diam dari halaman (kasus thumbnail Beranda, v90).
+        $this->section('Tag komponen Blade');
+        $broken = $this->findGluedAttributes();
+        $this->check($broken === [], 'atribut tag komponen semuanya dipisah spasi', 'atribut tanpa spasi (komponen tidak tampil): '.implode('; ', array_slice($broken, 0, 8)));
+
         // 6. Jadwal dan cadangan
         $this->section('Jadwal dan cadangan');
         $this->line('  cron: `* * * * * php /path/artisan schedule:run` harus aktif (messages:prune 02:00, site:backup 03:00)');
@@ -145,6 +151,31 @@ class SiteCheck extends Command
             : "<error> {$this->fails} FAIL </error>, {$this->warns} peringatan.");
 
         return $this->fails === 0 ? self::SUCCESS : self::FAILURE;
+    }
+
+    /** @return string[] "berkas:baris" yang punya atribut menempel pada tanda kutip penutup atribut sebelumnya. */
+    protected function findGluedAttributes(): array
+    {
+        $found = [];
+        $dir   = resource_path('views');
+
+        if (! is_dir($dir)) {
+            return $found;
+        }
+
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS)) as $file) {
+            if (! str_ends_with($file->getFilename(), '.blade.php')) {
+                continue;
+            }
+
+            foreach (file($file->getPathname()) ?: [] as $i => $line) {
+                if (preg_match('/="[^"]*"(?=[A-Za-z:@][\w:.@-]*=)/', $line)) {
+                    $found[] = str_replace(resource_path('views').DIRECTORY_SEPARATOR, '', $file->getPathname()).':'.($i + 1);
+                }
+            }
+        }
+
+        return $found;
     }
 
     protected function section(string $title): void
