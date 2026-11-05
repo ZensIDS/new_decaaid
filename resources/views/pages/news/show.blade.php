@@ -34,6 +34,8 @@
 
 @section('title', ($post['seo_title'] ?: $post['title']).' | '.$page['eyebrow'].' | '.config('site.name'))
 @section('description', $post['seo_description'] ?: $post['excerpt'])
+@section('og_type', 'article')
+@section('article_published', $post['date'] ?? '')
 @section('og_image', (string) ($post['image'] ?? ''))
 
 @section('content')

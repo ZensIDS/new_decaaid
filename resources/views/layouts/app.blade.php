@@ -7,6 +7,11 @@
     $ogImage         = collect([$seo['image'] ?? null, html_entity_decode(trim($__env->yieldContent('og_image')), ENT_QUOTES), \App\Support\SeoMeta::defaultImage()])
         ->map(fn ($p) => \App\Support\SeoMeta::imageUrl($p))->filter()->first();
     $ogLocales = ['id' => 'id_ID', 'en' => 'en_US'];
+    // v91: deskripsi meta dirapikan (tanpa tag/baris baru/spasi ganda, maks. 300 karakter agar tidak dipotong tak rapi).
+    $metaDescription = \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags((string) $metaDescription))), 300, '...');
+    // v91: jenis Open Graph (bawaan website; detail Berita mengisi section og_type = article + article_published).
+    $ogType           = html_entity_decode(trim($__env->yieldContent('og_type')), ENT_QUOTES) ?: 'website';
+    $articlePublished = trim($__env->yieldContent('article_published'));
     // Tahap C (v64): halaman yang tidak boleh diindeks (hasil pencarian, 404) mengisi section "robots" dengan nilai noindex, follow.
     // Halaman seperti itu tidak punya alamat kanonis maupun padanan bahasa yang berarti, jadi canonical dan hreflang dilewati.
     $robots = trim(html_entity_decode($__env->yieldContent('robots'), ENT_QUOTES));
@@ -44,12 +49,20 @@
     @endunless
 
     {{-- Open Graph dan Twitter. Gambar share: halaman (admin) > gambar berita/proyek > bawaan situs (SEO Halaman) --}}
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{ $ogType }}">
     <meta property="og:site_name" content="{{ config('site.name') }}">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:url" content="{{ $canonical }}">
     <meta property="og:locale" content="{{ $ogLocales[app()->getLocale()] ?? 'id_ID' }}">
+    @foreach ($ogLocales as $loc => $ogLocale)
+        @if ($loc !== app()->getLocale())
+            <meta property="og:locale:alternate" content="{{ $ogLocale }}">
+        @endif
+    @endforeach
+    @if ($ogType === 'article' && $articlePublished !== '')
+        <meta property="article:published_time" content="{{ $articlePublished }}">
+    @endif
     @if ($ogImage)
         <meta property="og:image" content="{{ $ogImage }}">
     @endif
