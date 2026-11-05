@@ -84,24 +84,59 @@
 
                                 <div class="space-y-5 border-t border-slate-100 px-5 py-5">
                                     @foreach (['id', 'en'] as $l)
-                                        <div x-show="lang === '{{ $l }}'" @if ($l === 'en') x-cloak @endif class="space-y-5">
-                                            <div x-data="{ v: @js((string) old('pages.'.$f.'.title.'.$l, $p['title'][$l])) }">
+                                        <div x-show="lang === '{{ $l }}'" @if ($l === 'en') x-cloak @endif class="space-y-5"
+                                             x-data="{ t: @js((string) old('pages.'.$f.'.title.'.$l, $p['title'][$l])), d: @js((string) old('pages.'.$f.'.description.'.$l, $p['description'][$l])) }">
+                                            <div>
                                                 <div class="flex items-end justify-between gap-3">
                                                     <label for="t-{{ $f }}-{{ $l }}" class="{{ $label }}">Judul {{ $l === 'id' ? '(ID)' : '(EN)' }}</label>
-                                                    <span class="text-xs tabular-nums" :class="v.length > 60 ? 'text-amber-600' : 'text-slate-400'" x-text="v.length + '/60'"></span>
+                                                    <span class="text-xs tabular-nums" :class="t.length > 60 ? 'text-amber-600' : 'text-slate-400'" x-text="t.length + '/60'"></span>
                                                 </div>
-                                                <input id="t-{{ $f }}-{{ $l }}" name="pages[{{ $f }}][title][{{ $l }}]" x-model="v" maxlength="{{ $titleMax }}"
+                                                <input id="t-{{ $f }}-{{ $l }}" name="pages[{{ $f }}][title][{{ $l }}]" x-model="t" maxlength="{{ $titleMax }}"
                                                        placeholder="Kosong = judul bawaan halaman" class="mt-1.5 {{ $field }}">
                                                 @error('pages.'.$f.'.title.'.$l)<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
                                             </div>
-                                            <div x-data="{ v: @js((string) old('pages.'.$f.'.description.'.$l, $p['description'][$l])) }">
+                                            <div>
                                                 <div class="flex items-end justify-between gap-3">
                                                     <label for="d-{{ $f }}-{{ $l }}" class="{{ $label }}">Deskripsi {{ $l === 'id' ? '(ID)' : '(EN)' }}</label>
-                                                    <span class="text-xs tabular-nums" :class="v.length > 160 ? 'text-amber-600' : 'text-slate-400'" x-text="v.length + '/160'"></span>
+                                                    <span class="text-xs tabular-nums" :class="d.length > 160 ? 'text-amber-600' : 'text-slate-400'" x-text="d.length + '/160'"></span>
                                                 </div>
-                                                <textarea id="d-{{ $f }}-{{ $l }}" name="pages[{{ $f }}][description][{{ $l }}]" x-model="v" rows="3" maxlength="{{ $descMax }}"
+                                                <textarea id="d-{{ $f }}-{{ $l }}" name="pages[{{ $f }}][description][{{ $l }}]" x-model="d" rows="3" maxlength="{{ $descMax }}"
                                                           placeholder="Kosong = deskripsi bawaan halaman" class="mt-1.5 {{ $field }}"></textarea>
                                                 @error('pages.'.$f.'.description.'.$l)<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                                            </div>
+
+                                            {{-- Pratinjau: hasil pencarian dan kartu share. Kosong = tanda bawaan halaman (tidak ditampilkan di sini). --}}
+                                            <div class="grid gap-4 rounded-xl bg-slate-50 p-4 ring-1 ring-inset ring-slate-200 xl:grid-cols-2" aria-label="Pratinjau">
+                                                <div class="min-w-0">
+                                                    <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Hasil pencarian</p>
+                                                    <div class="mt-2 rounded-lg bg-white p-3 ring-1 ring-slate-200">
+                                                        <p class="truncate text-xs text-slate-600">{{ parse_url(config('app.url'), PHP_URL_HOST) ?: config('site.name') }}</p>
+                                                        <p class="mt-0.5 line-clamp-2 text-[17px] leading-snug text-[#1a0dab]"
+                                                           x-text="t.trim() ? (t.trim() + ' | {{ addslashes(config('site.name')) }}').slice(0, 60) + ((t.trim() + ' | {{ addslashes(config('site.name')) }}').length > 60 ? '…' : '') : 'Judul bawaan halaman'"></p>
+                                                        <p class="mt-1 line-clamp-2 text-[13px] leading-snug text-slate-600"
+                                                           x-text="d.trim() ? (d.trim().length > 160 ? d.trim().slice(0, 157) + '…' : d.trim()) : 'Deskripsi bawaan halaman'"></p>
+                                                    </div>
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Kartu share (WhatsApp, Facebook, LinkedIn)</p>
+                                                    <div class="mt-2 overflow-hidden rounded-lg bg-white ring-1 ring-slate-200">
+                                                        @php
+                                                            $shareImg = $p['image'] ?: $defaultImage;
+                                                            $shareSrc = $shareImg && file_exists(public_path($shareImg)) ? asset($shareImg) : null;
+                                                        @endphp
+                                                        @if ($shareSrc)
+                                                            <img src="{{ $shareSrc }}" alt="" loading="lazy" class="aspect-[1200/630] w-full object-cover">
+                                                        @else
+                                                            <div class="flex aspect-[1200/630] w-full items-center justify-center bg-slate-100 text-xs text-slate-400">Belum ada gambar share</div>
+                                                        @endif
+                                                        <div class="space-y-0.5 border-t border-slate-200 px-3 py-2">
+                                                            <p class="truncate text-[11px] uppercase text-slate-500">{{ parse_url(config('app.url'), PHP_URL_HOST) ?: config('site.name') }}</p>
+                                                            <p class="line-clamp-2 text-sm font-semibold leading-snug text-slate-900" x-text="t.trim() ? t.trim() + ' | {{ addslashes(config('site.name')) }}' : 'Judul bawaan halaman'"></p>
+                                                            <p class="line-clamp-2 text-xs leading-snug text-slate-500" x-text="d.trim() ? d.trim() : 'Deskripsi bawaan halaman'"></p>
+                                                        </div>
+                                                    </div>
+                                                    <p class="mt-1.5 text-[11px] text-slate-400">Gambar sesuai yang sudah tersimpan; pilihan gambar baru tampil setelah Simpan.</p>
+                                                </div>
                                             </div>
                                         </div>
                                     @endforeach
