@@ -46,6 +46,7 @@ class Html
 
         self::walk($doc, $body);
         self::wrapLooseText($doc, $body);
+        self::fixHeadingOrder($doc, $body);
 
         $out = '';
         foreach (iterator_to_array($body->childNodes) as $child) {
@@ -57,6 +58,34 @@ class Html
         $out = preg_replace('#<(h2|h3|li|blockquote)>(\s|&nbsp;|<br\s*/?>)*</\1>#iu', '', $out);
 
         return trim(preg_replace('/\n{2,}/', "\n", $out));
+    }
+
+    /**
+     * Isi tidak boleh diawali subjudul kecil (H3) tanpa subjudul besar (H2) di atasnya: itu melompati level heading
+     * (halaman sudah punya satu H1 dari judul). H3 yang muncul sebelum H2 pertama dinaikkan menjadi H2.
+     */
+    protected static function fixHeadingOrder(DOMDocument $doc, DOMNode $body): void
+    {
+        $xpath  = new \DOMXPath($doc);
+        $seenH2 = false;
+
+        foreach (iterator_to_array($xpath->query('.//h2 | .//h3', $body)) as $heading) {
+            if (strtolower($heading->nodeName) === 'h2') {
+                $seenH2 = true;
+                continue;
+            }
+
+            if ($seenH2) {
+                continue;
+            }
+
+            $promoted = $doc->createElement('h2');
+            while ($heading->firstChild) {
+                $promoted->appendChild($heading->firstChild);
+            }
+            $heading->parentNode->replaceChild($promoted, $heading);
+            $seenH2 = true;
+        }
     }
 
     /** Teks polos (untuk hitung kata, ringkasan, dan pencarian). */
