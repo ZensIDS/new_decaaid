@@ -19,7 +19,7 @@ class SystemSettings
     public static function defaults(): array
     {
         return [
-            'maintenance'  => ['enabled' => false, 'secret' => ''],
+            'maintenance'  => ['enabled' => false, 'secret' => '', 'title' => ['id' => '', 'en' => ''], 'message' => ['id' => '', 'en' => '']],
             'analytics'    => ['provider' => 'none', 'id' => '', 'script_url' => ''],
             'verification' => ['google' => '', 'bing' => ''],
         ];
@@ -53,6 +53,14 @@ class SystemSettings
         $m = self::get()['maintenance'];
 
         return ! empty($m['enabled']) && filled($m['secret'] ?? null);
+    }
+
+    /** Judul dan pesan halaman pemeliharaan sesuai bahasa; kosong = teks bawaan di tampilan (tiap bahasa punya bawaannya sendiri). */
+    public static function maintenanceText(string $field, string $locale): string
+    {
+        $v = (array) (self::get()['maintenance'][$field] ?? []);
+
+        return trim((string) ($v[$locale] ?? ''));
     }
 
     /** Nilai cookie tamu yang membuka situs saat pemeliharaan (diturunkan dari tautan rahasia dan APP_KEY). */

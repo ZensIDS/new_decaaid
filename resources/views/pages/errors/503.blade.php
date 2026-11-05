@@ -1,12 +1,27 @@
 {{-- Halaman mandiri (tanpa layout/Vite/database) agar tetap tampil saat aplikasi bermasalah. --}}
-@php $en = request()->segment(1) === 'en'; @endphp
+@php
+    $en = request()->segment(1) === 'en';
+    $loc = $en ? 'en' : 'id';
+    // Teks buatan admin (Pengaturan Sistem > Mode Pemeliharaan); kosong = teks bawaan. Gagal baca = bawaan.
+    $mtTitle = $mtMsg = '';
+    try {
+        if (\App\Support\SystemSettings::maintenanceOn()) { // hanya saat mode pemeliharaan menyala (bukan 503 lain)
+            $mtTitle = \App\Support\SystemSettings::maintenanceText('title', $loc);
+            $mtMsg   = \App\Support\SystemSettings::maintenanceText('message', $loc);
+        }
+    } catch (\Throwable) {
+        $mtTitle = $mtMsg = '';
+    }
+    $mtTitle = $mtTitle !== '' ? $mtTitle : ($en ? 'Under maintenance' : 'Sedang dalam pemeliharaan');
+    $mtMsg   = $mtMsg !== '' ? $mtMsg : ($en ? 'We are improving the site for you. Please check back shortly.' : 'Kami sedang meningkatkan situs untuk Anda. Silakan kembali beberapa saat lagi.');
+@endphp
 <!DOCTYPE html>
 <html lang="{{ $en ? 'en' : 'id' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
-    <title>{{ $en ? 'Under maintenance' : 'Sedang dalam pemeliharaan' }} | DECAA.ID</title>
+    <title>{{ $mtTitle }} | DECAA.ID</title>
     <style>
         *{box-sizing:border-box}
         body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
@@ -26,8 +41,8 @@
     <main class="box">
         <img src="{{ logo_url('img/logo/decaaid-white.png') }}" alt="DECAA.ID" onerror="this.style.display='none'">
         <div class="code">503</div>
-        <h1>{{ $en ? 'Under maintenance' : 'Sedang dalam pemeliharaan' }}</h1>
-        <p>{{ $en ? 'We are improving the site for you. Please check back shortly.' : 'Kami sedang meningkatkan situs untuk Anda. Silakan kembali beberapa saat lagi.' }}</p>
+        <h1>{{ $mtTitle }}</h1>
+        <p>{!! nl2br(e($mtMsg)) !!}</p>
         <div class="btns">
             <button type="button" class="primary" onclick="location.reload()">{{ $en ? 'Reload' : 'Muat ulang' }}</button>
             <a class="ghost" href="/{{ $en ? 'en' : 'id' }}">{{ $en ? 'Home' : 'Beranda' }}</a>

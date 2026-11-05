@@ -57,6 +57,25 @@
 
                 <x-admin.form-section icon="warning" title="Mode Pemeliharaan" description="Saat menyala, pengunjung melihat halaman 503 (sedang dalam pemeliharaan). Admin yang sudah masuk dan alamat /admin tetap bisa membuka situs.">
                     <x-admin.toggle name="maintenance_enabled" label="Nyalakan mode pemeliharaan" description="Matikan lagi setelah selesai; situs tidak bisa diakses pengunjung selama menyala." :checked="$state['enabled']" />
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        @foreach (['id' => 'Indonesia (ID)', 'en' => 'Inggris (EN)'] as $loc => $locName)
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="mt-{{ $loc }}" class="{{ $label }}">Judul halaman, {{ $locName }}</label>
+                                    <input id="mt-{{ $loc }}" name="maintenance_title[{{ $loc }}]" maxlength="80" value="{{ old('maintenance_title.'.$loc, $m['title'][$loc] ?? '') }}"
+                                           placeholder="{{ $loc === 'id' ? 'Sedang dalam pemeliharaan' : 'Under maintenance' }}" class="{{ $field }}">
+                                    @error('maintenance_title.'.$loc)<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                                </div>
+                                <div>
+                                    <label for="mm-{{ $loc }}" class="{{ $label }}">Pesan, {{ $locName }}</label>
+                                    <textarea id="mm-{{ $loc }}" name="maintenance_message[{{ $loc }}]" rows="3" maxlength="400"
+                                              placeholder="{{ $loc === 'id' ? 'Kami sedang meningkatkan situs. Kembali sekitar pukul 14.00 WIB.' : 'We are improving the site. Back around 14:00 WIB.' }}" class="{{ $field }}">{{ old('maintenance_message.'.$loc, $m['message'][$loc] ?? '') }}</textarea>
+                                    @error('maintenance_message.'.$loc)<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                                </div>
+                            </div>
+                        @endforeach
+                        <p class="text-xs text-slate-500 sm:col-span-2">Kosongkan untuk memakai teks bawaan. Bila EN kosong, versi Inggris memakai teks bawaan Inggris (bukan teks ID).</p>
+                    </div>
                     <div class="space-y-3">
                         <div>
                             <label for="secret" class="{{ $label }}">Kata rahasia tautan akses</label>

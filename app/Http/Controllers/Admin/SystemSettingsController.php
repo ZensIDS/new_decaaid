@@ -55,6 +55,10 @@ class SystemSettingsController extends Controller
         $d = $request->validate([
             'maintenance_enabled' => ['required', 'in:0,1'],
             'maintenance_secret'  => ['nullable', 'required_if:maintenance_enabled,1', 'regex:/^[A-Za-z0-9-]{8,60}$/'],
+            'maintenance_title.id'   => ['nullable', 'string', 'max:80'],
+            'maintenance_title.en'   => ['nullable', 'string', 'max:80'],
+            'maintenance_message.id' => ['nullable', 'string', 'max:400'],
+            'maintenance_message.en' => ['nullable', 'string', 'max:400'],
             'analytics_provider'  => ['required', 'in:'.implode(',', array_keys(self::PROVIDERS))],
             'analytics_id'        => $idRule,
             'analytics_script_url' => ['nullable', 'string', 'max:255', 'url', 'regex:/^https:\/\//i'],
@@ -71,6 +75,8 @@ class SystemSettingsController extends Controller
             'verification_bing.regex'        => 'Isi hanya nilai content dari tag meta (huruf, angka, - dan _), tanpa tag lengkap.',
         ], [
             'maintenance_secret' => 'kata rahasia',
+            'maintenance_title.id' => 'judul pemeliharaan (ID)', 'maintenance_title.en' => 'judul pemeliharaan (EN)',
+            'maintenance_message.id' => 'pesan pemeliharaan (ID)', 'maintenance_message.en' => 'pesan pemeliharaan (EN)',
             'analytics_id'       => 'ID analitik',
         ]);
 
@@ -78,7 +84,12 @@ class SystemSettingsController extends Controller
         $before  = SystemSettings::get()['maintenance']['enabled'] ?? false;
 
         $content = [
-            'maintenance'  => ['enabled' => $enabled, 'secret' => trim((string) ($d['maintenance_secret'] ?? ''))],
+            'maintenance'  => [
+                'enabled' => $enabled,
+                'secret'  => trim((string) ($d['maintenance_secret'] ?? '')),
+                'title'   => ['id' => trim((string) ($d['maintenance_title']['id'] ?? '')), 'en' => trim((string) ($d['maintenance_title']['en'] ?? ''))],
+                'message' => ['id' => trim((string) ($d['maintenance_message']['id'] ?? '')), 'en' => trim((string) ($d['maintenance_message']['en'] ?? ''))],
+            ],
             'analytics'    => [
                 'provider'   => $d['analytics_provider'],
                 'id'         => $d['analytics_provider'] === 'none' ? '' : trim((string) ($d['analytics_id'] ?? '')),
