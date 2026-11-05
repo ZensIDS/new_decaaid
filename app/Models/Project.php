@@ -87,6 +87,14 @@ class Project extends Model
         return News::pick($this->{$field}, $locale);
     }
 
+    /** Foto galeri (path dari Media Library) yang berkasnya masih ada di server, berurutan. Kosong bila galeri belum diisi. */
+    public function galleryImages(): array
+    {
+        return collect(is_array($this->gallery) ? $this->gallery : [])
+            ->filter(fn($p) => is_string($p) && $p !== '' && ! str_contains($p, '..') && is_file(Media::absolute($p)))
+            ->values()->all();
+    }
+
     /** Daftar lingkup kerja sesuai bahasa; EN kosong memakai daftar Indonesia. */
     public function workItems(?string $locale = null): array
     {

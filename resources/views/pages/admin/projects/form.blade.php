@@ -174,6 +174,13 @@
                 </x-admin.form-section>
 
                 {{-- Publikasi --}}
+                {{-- Galeri foto (Media Library, v79) --}}
+                <x-admin.form-section icon="photo" title="Galeri Foto" description="Foto tambahan yang tampil sebagai galeri di halaman detail proyek (klik untuk memperbesar). Opsional, maksimal 12 foto.">
+                    <x-admin.media-gallery name="gallery" :value="$editing ? $project->galleryImages() : []" :max="12" label="Foto galeri"
+                                           hint="Urutan di sini = urutan di situs. Rasio 4:3 atau 3:2 paling pas." />
+                    @error('gallery')<p class="text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                </x-admin.form-section>
+
                 <x-admin.form-section icon="eye" title="Tampilan di Situs" description="Atur apakah proyek tampil, dan apakah dipajang di beranda.">
                     <div class="space-y-4 rounded-xl bg-slate-50 p-4 ring-1 ring-inset ring-slate-200">
                         <x-admin.toggle name="is_visible" label="Tampilkan di situs"

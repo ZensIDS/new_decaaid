@@ -6,6 +6,7 @@
 
     $ui = \App\Support\Content::ui();
     $page = \App\Support\Content::portfolioPage();
+    $gallery = collect($project['gallery'] ?? [])->map(fn ($p) => asset($p))->values()->all();
     $others = collect(\App\Support\Content::portfolio())->where('slug', '!=', $project['slug'])
         ->sortByDesc(fn ($p) => $p['unit'] === $project['unit'])->take(3)->values();
 @endphp
@@ -48,6 +49,50 @@
                         @endforeach
                     </ul>
                 </x-ui.reveal>
+
+                {{-- Galeri foto (B3g v79): thumbnail + lightbox sederhana --}}
+                @if (! empty($gallery))
+                    <section class="mt-12" aria-labelledby="gallery-title"
+                                 x-data="{ open: false, i: 0, imgs: @js($gallery),
+                                           show(n) { this.i = n; this.open = true; this.$nextTick(() => this.$refs.close && this.$refs.close.focus()); },
+                                           step(d) { this.i = (this.i + d + this.imgs.length) % this.imgs.length; } }"
+                                 @keydown.escape.window="open = false"
+                                 @keydown.arrow-left.window="open && step(-1)"
+                                 @keydown.arrow-right.window="open && step(1)">
+                            <x-ui.reveal>
+                            <h2 id="gallery-title" class="text-2xl md:text-3xl">{{ $page['gallery_title'] }}</h2>
+                            <ul class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                @foreach ($gallery as $n => $photo)
+                                    <li>
+                                        <button type="button" @click="show({{ $n }})" aria-label="{{ $page['gallery_open'] }} {{ $n + 1 }}"
+                                                class="block w-full overflow-hidden rounded-xl bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-700">
+                                            <x-ui.img :src="$photo" :alt="$project['title'].' '.($n + 1)" :label="$project['title']"
+                                                      class="aspect-[4/3] w-full object-cover transition duration-300 hover:scale-[1.03]" />
+                                        </button>
+                                    </li>
+                                @endforeach
+                            </ul>
+                            </x-ui.reveal>
+
+                            {{-- Lightbox di luar reveal: transform pada reveal akan membuat posisi fixed salah --}}
+                            <div x-show="open" x-cloak x-transition.opacity class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/90 p-4"
+                                 role="dialog" aria-modal="true" aria-label="{{ $page['gallery_title'] }}" @click.self="open = false">
+                                <button type="button" x-ref="close" @click="open = false" aria-label="{{ $page['gallery_close'] }}"
+                                        class="absolute right-4 top-4 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                                    <x-ui.icon name="close" class="h-6 w-6" />
+                                </button>
+                                <button type="button" x-show="imgs.length > 1" @click="step(-1)" aria-label="{{ $page['gallery_prev'] }}"
+                                        class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                                    <x-ui.icon name="arrow-right" class="h-6 w-6 rotate-180" />
+                                </button>
+                                <img :src="imgs[i]" alt="" class="max-h-[85vh] max-w-full rounded-xl object-contain shadow-2xl">
+                                <button type="button" x-show="imgs.length > 1" @click="step(1)" aria-label="{{ $page['gallery_next'] }}"
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                                    <x-ui.icon name="arrow-right" class="h-6 w-6" />
+                                </button>
+                            </div>
+                    </section>
+                @endif
             </div>
 
             <aside class="lg:col-span-4">

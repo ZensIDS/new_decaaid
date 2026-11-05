@@ -26,6 +26,9 @@ class ProjectController extends Controller
 
     protected const PER_PAGE = 10;
 
+    /** Maksimal foto di galeri proyek (v79). */
+    protected const GALLERY_MAX = 12;
+
     public function index(Request $request): View
     {
         $q      = trim((string) $request->query('q'));
@@ -221,6 +224,8 @@ class ProjectController extends Controller
             'is_featured'        => ['required', 'boolean'],
             'translation_status' => ['required', Rule::in(array_keys(Project::TRANSLATION))],
             'image'              => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:' . ImageStore::MAX_KB, ImageStore::DIMENSIONS],
+            'gallery'            => ['nullable', 'array', 'max:' . self::GALLERY_MAX],
+            'gallery.*'          => ['nullable', 'string', 'max:255'],
             'image_alt.id'       => ['nullable', 'string', 'max:200'],
             'image_alt.en'       => ['nullable', 'string', 'max:200'],
             'seo_title.id'       => ['nullable', 'string', 'max:120'],
@@ -259,6 +264,8 @@ class ProjectController extends Controller
             'description'        => $clean($data['description']),
             'scope'              => ['id' => $this->lines($data['scope']['id'] ?? ''), 'en' => $this->lines($data['scope']['en'] ?? '')],
             'image_alt'          => $clean($data['image_alt'] ?? []),
+            // Galeri: hanya path Media Library yang sah dan berkasnya ada; urutan input dipertahankan, tanpa duplikat.
+            'gallery'            => collect((array) ($data['gallery'] ?? []))->map(fn($p) => MediaStore::pick($p))->filter()->unique()->take(self::GALLERY_MAX)->values()->all(),
             'is_visible'         => (bool) $data['is_visible'],
             'is_featured'        => (bool) $data['is_featured'],
             'translation_status' => $data['translation_status'],

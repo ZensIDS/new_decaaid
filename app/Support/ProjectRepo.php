@@ -76,6 +76,7 @@ class ProjectRepo
             'year'        => $p->year,
             'image'       => $p->image,
             'image_alt'   => $p->t('image_alt') ?: $title,
+            'gallery'     => $p->galleryImages(), // B3g v79: foto galeri dari Media Library
             'summary'     => $p->t('summary'),
             'description' => $p->t('description'),
             'scope'       => $p->workItems(),
