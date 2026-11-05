@@ -141,6 +141,13 @@
                 @endforeach
 
                 {{-- Ajakan --}}
+                {{-- Foto halaman (Media Library, v102) --}}
+                <x-admin.form-section icon="photo" title="Foto Halaman" description="Foto kegiatan komunitas di halaman Keberlanjutan (di samping logo Komunitas Peduli Digital). Pilih dari Media Library atau unggah baru.">
+                    <x-admin.media-picker name="images[photo]" :value="$photo" label="Foto kegiatan komunitas" ratio="aspect-[4/3]"
+                                          hint="Rasio 4:3 atau 3:2 paling pas. Kosong = memakai foto Keberlanjutan yang dipilih di Beranda, bila belum ada memakai foto bawaan (contoh)." />
+                    @error('images.photo')<p class="text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                </x-admin.form-section>
+
                 <x-admin.form-section icon="mail" title="Ajakan Bergabung" description="Bagian penutup di bawah halaman. Tombol (Hubungi Komunitas, Lihat Kabar Komunitas) tetap dari sistem.">
                     @foreach (['id' => ['Judul', 'Teks'], 'en' => ['Title', 'Text']] as $l => [$t1, $t2])
                         <div x-show="lang === '{{ $l }}'" @if ($l === 'en') x-cloak @endif class="space-y-5">

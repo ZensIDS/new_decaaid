@@ -39,14 +39,14 @@
                 </div>
             </x-ui.reveal>
 
-            {{-- Komposisi foto + logo. DUMMY: ganti foto di public/img/dummy/community-1.jpg dan community-2.jpg --}}
+            {{-- Komposisi foto + logo. Foto dipilih di admin Keberlanjutan (Media Library); bila belum, berkas bawaan public/img/dummy/community-1.jpg --}}
             <x-ui.reveal :delay="150" class="lg:col-span-6">
                 <div class="relative mx-auto w-full max-w-xl pb-16 pl-4 pt-4 sm:pl-8 lg:max-w-none">
                     <div class="absolute left-0 top-0 h-[88%] w-[82%] rounded-[2rem] bg-brand-50 ring-1 ring-brand-100"></div>
                     <div class="absolute -left-1 bottom-10 h-24 w-24 text-brand-200 [background-image:radial-gradient(currentColor_1.5px,transparent_1.5px)] [background-size:14px_14px]"></div>
 
                     <div class="relative ml-auto aspect-[4/3] w-[88%] overflow-hidden rounded-[2rem] shadow-card-hover">
-                        <x-ui.img src="img/dummy/community-1.jpg" :alt="$comm['name']" label="Foto kegiatan komunitas (dummy)"
+                        <x-ui.img :src="\App\Support\Content::communityImage()" :alt="$comm['name']" label="Foto kegiatan komunitas (dummy)"
                                   class="h-full w-full object-cover" />
                         <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-brand-950/40 via-transparent to-transparent"></div>
                     </div>

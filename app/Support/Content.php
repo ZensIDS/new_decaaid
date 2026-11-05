@@ -395,6 +395,22 @@ class Content
         'community' => 'img/dummy/community.jpg',
     ];
 
+    /** Berkas bawaan foto halaman Keberlanjutan (contoh). */
+    public const COMMUNITY_IMAGE = 'img/dummy/community-1.jpg';
+
+    /**
+     * Foto kegiatan di halaman Keberlanjutan: pilihan admin di /admin/keberlanjutan, bila belum ada memakai foto
+     * Keberlanjutan yang dipilih di Beranda, bila belum ada memakai berkas bawaan. Berkas yang hilang dilewati.
+     */
+    public static function communityImage(): string
+    {
+        $valid = fn ($p) => ($p = trim((string) $p)) !== '' && ! str_contains($p, '..') && is_file(\App\Models\Media::absolute($p)) ? $p : '';
+
+        return $valid(PageContentRepo::get('sustainability')['images']['photo'] ?? '')
+            ?: $valid(PageContentRepo::get('home')['images']['community'] ?? '')
+            ?: self::COMMUNITY_IMAGE;
+    }
+
     /** Path foto Beranda untuk satu slot: pilihan admin bila berkasnya ada, selain itu berkas bawaan. */
     public static function homeImage(string $slot): string
     {

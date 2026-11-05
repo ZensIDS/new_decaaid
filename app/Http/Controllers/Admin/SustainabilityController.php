@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\PageContent;
 use App\Support\Content;
+use App\Support\MediaStore;
 use App\Support\PageContentRepo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ class SustainabilityController extends Controller
 {
     protected const PAGE = 'sustainability';
 
+    /** Foto halaman (v102): disimpan di content['images']['photo']; kosong = foto Beranda atau berkas bawaan (Content::communityImage). */
+    public const IMAGE_SLOT = 'photo';
+
     public function edit(): View
     {
         $row  = PageContentRepo::available() ? PageContentRepo::row(self::PAGE) : null;
@@ -31,6 +35,7 @@ class SustainabilityController extends Controller
 
         return view('pages.admin.sustainability.form', [
             'data'      => $data,
+            'photo'     => (string) ($row?->content['images'][self::IMAGE_SLOT] ?? ''),
             'row'       => $row,
             'available' => PageContentRepo::available(),
         ]);
@@ -73,6 +78,7 @@ class SustainabilityController extends Controller
             'join_title.en'     => ['nullable', 'string', 'max:120'],
             'join_text.id'      => ['required', 'string', 'max:400'],
             'join_text.en'      => ['nullable', 'string', 'max:400'],
+            'images.photo'      => ['nullable', 'string', 'max:255'],
         ], [
             'about.required'    => 'Isi minimal satu paragraf "Tentang".',
             'pillars.required'  => 'Isi minimal satu butir "Fokus".',
@@ -97,6 +103,11 @@ class SustainabilityController extends Controller
             'join_title'     => $pair($d['join_title']),
             'join_text'      => $pair($d['join_text']),
         ];
+
+        // Foto dari Media Library: hanya path sah yang berkasnya ada; kosong = foto bawaan.
+        if ($picked = MediaStore::pick($d['images']['photo'] ?? null)) {
+            $content['images'][self::IMAGE_SLOT] = $picked;
+        }
 
         PageContent::updateOrCreate(
             ['page' => self::PAGE],
