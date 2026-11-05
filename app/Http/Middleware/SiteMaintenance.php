@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * B3p (QA17): mode pemeliharaan yang dinyalakan dari admin (bukan `artisan down`).
  * Saat aktif, pengunjung melihat halaman 503. Tetap bisa masuk: alamat /admin/*, siapa pun yang sudah login admin,
- * dan siapa pun yang membuka tautan rahasia /{rahasia} (cookie 12 jam).
+ * alamat IP yang didaftarkan sebagai pengecualian, dan siapa pun yang membuka tautan rahasia /{rahasia} (cookie 12 jam).
  */
 class SiteMaintenance
 {
@@ -33,7 +33,7 @@ class SiteMaintenance
             return $next($request);
         }
 
-        if (hash_equals($token, (string) $request->cookie(self::COOKIE)) || $request->user()) {
+        if (hash_equals($token, (string) $request->cookie(self::COOKIE)) || $request->user() || SystemSettings::ipAllowed($request->ip())) {
             return $next($request);
         }
 

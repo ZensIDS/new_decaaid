@@ -76,6 +76,12 @@
                         @endforeach
                         <p class="text-xs text-slate-500 sm:col-span-2">Kosongkan untuk memakai teks bawaan. Bila EN kosong, versi Inggris memakai teks bawaan Inggris (bukan teks ID).</p>
                     </div>
+                    <div>
+                        <label for="mt-ips" class="{{ $label }}">Pengecualian alamat IP (opsional)</label>
+                        <textarea id="mt-ips" name="maintenance_ips" rows="3" placeholder="{{ "mis.\n203.0.113.10\n2001:db8::1" }}" class="{{ $field }} font-mono">{{ old('maintenance_ips', implode("\n", $m['ips'] ?? [])) }}</textarea>
+                        <p class="mt-1.5 text-xs text-slate-500">Satu alamat per baris (maks. 20). Alamat ini bisa membuka situs tanpa login atau tautan rahasia, cocok untuk kantor dengan IP tetap. IP kamu saat ini: <span class="font-mono">{{ request()->ip() }}</span>. Hati-hati: IP bersama (mis. jaringan seluler) berarti semua orang di jaringan itu ikut lolos.</p>
+                        @error('maintenance_ips')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                    </div>
                     <div class="space-y-3">
                         <div>
                             <label for="secret" class="{{ $label }}">Kata rahasia tautan akses</label>

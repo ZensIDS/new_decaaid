@@ -19,7 +19,7 @@ class SystemSettings
     public static function defaults(): array
     {
         return [
-            'maintenance'  => ['enabled' => false, 'secret' => '', 'title' => ['id' => '', 'en' => ''], 'message' => ['id' => '', 'en' => '']],
+            'maintenance'  => ['enabled' => false, 'secret' => '', 'title' => ['id' => '', 'en' => ''], 'message' => ['id' => '', 'en' => ''], 'ips' => []],
             'analytics'    => ['provider' => 'none', 'id' => '', 'script_url' => ''],
             'verification' => ['google' => '', 'bing' => ''],
         ];
@@ -61,6 +61,22 @@ class SystemSettings
         $v = (array) (self::get()['maintenance'][$field] ?? []);
 
         return trim((string) ($v[$locale] ?? ''));
+    }
+
+    /** Apakah alamat IP termasuk daftar pengecualian pemeliharaan (cocok persis, IPv4 atau IPv6). */
+    public static function ipAllowed(?string $ip): bool
+    {
+        if (! $ip) {
+            return false;
+        }
+
+        foreach ((array) (self::get()['maintenance']['ips'] ?? []) as $allowed) {
+            if (is_string($allowed) && strcasecmp(trim($allowed), $ip) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** Nilai cookie tamu yang membuka situs saat pemeliharaan (diturunkan dari tautan rahasia dan APP_KEY). */

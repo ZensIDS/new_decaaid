@@ -55,6 +55,7 @@ class SystemSettingsController extends Controller
         $d = $request->validate([
             'maintenance_enabled' => ['required', 'in:0,1'],
             'maintenance_secret'  => ['nullable', 'required_if:maintenance_enabled,1', 'regex:/^[A-Za-z0-9-]{8,60}$/'],
+            'maintenance_ips'     => ['nullable', 'string', 'max:2000'],
             'maintenance_title.id'   => ['nullable', 'string', 'max:80'],
             'maintenance_title.en'   => ['nullable', 'string', 'max:80'],
             'maintenance_message.id' => ['nullable', 'string', 'max:400'],
@@ -80,6 +81,17 @@ class SystemSettingsController extends Controller
             'analytics_id'       => 'ID analitik',
         ]);
 
+        // Pengecualian IP: satu alamat per baris (atau dipisah koma/spasi), IPv4 atau IPv6 yang valid, maks. 20.
+        $ips = collect(preg_split('/[\s,;]+/', (string) ($d['maintenance_ips'] ?? ''), -1, PREG_SPLIT_NO_EMPTY))
+            ->map(fn ($x) => strtolower(trim($x)))->unique()->values();
+        $bad = $ips->first(fn ($x) => ! filter_var($x, FILTER_VALIDATE_IP));
+        if ($bad !== null) {
+            throw ValidationException::withMessages(['maintenance_ips' => "\"{$bad}\" bukan alamat IP yang valid. Tulis satu alamat IPv4 atau IPv6 per baris."]);
+        }
+        if ($ips->count() > 20) {
+            throw ValidationException::withMessages(['maintenance_ips' => 'Maksimal 20 alamat IP.']);
+        }
+
         $enabled = $d['maintenance_enabled'] === '1';
         $before  = SystemSettings::get()['maintenance']['enabled'] ?? false;
 
@@ -87,6 +99,7 @@ class SystemSettingsController extends Controller
             'maintenance'  => [
                 'enabled' => $enabled,
                 'secret'  => trim((string) ($d['maintenance_secret'] ?? '')),
+                'ips'     => $ips->all(),
                 'title'   => ['id' => trim((string) ($d['maintenance_title']['id'] ?? '')), 'en' => trim((string) ($d['maintenance_title']['en'] ?? ''))],
                 'message' => ['id' => trim((string) ($d['maintenance_message']['id'] ?? '')), 'en' => trim((string) ($d['maintenance_message']['en'] ?? ''))],
             ],
