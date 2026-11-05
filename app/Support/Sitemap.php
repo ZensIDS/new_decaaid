@@ -20,8 +20,10 @@ class Sitemap
     {
         $pages = [];
 
-        foreach (array_keys(config('site.routes')) as $key) {
-            if (in_array($key, self::SKIP, true) || str_contains(config("site.routes.$key.slug.id"), '{')) {
+        // Kunci rute memuat titik (mis. 'units.show'), jadi JANGAN dibaca lewat config("site.routes.$key...") (notasi titik
+        // menganggapnya jalur bersarang dan hasilnya null). Baca langsung dari array. (v93: perbaikan galat sitemap)
+        foreach ((array) config('site.routes') as $key => $route) {
+            if (in_array($key, self::SKIP, true) || str_contains((string) ($route['slug']['id'] ?? ''), '{')) {
                 continue;
             }
 
