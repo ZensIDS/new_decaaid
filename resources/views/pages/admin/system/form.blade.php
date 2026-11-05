@@ -76,6 +76,31 @@
                         @endforeach
                         <p class="text-xs text-slate-500 sm:col-span-2">Kosongkan untuk memakai teks bawaan. Bila EN kosong, versi Inggris memakai teks bawaan Inggris (bukan teks ID).</p>
                     </div>
+                    <div class="space-y-2">
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label for="mt-from" class="{{ $label }}">Mulai otomatis (opsional)</label>
+                                <input id="mt-from" type="datetime-local" name="maintenance_from" value="{{ old('maintenance_from', $m['from'] ?? '') }}" class="{{ $field }}">
+                                @error('maintenance_from')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                            </div>
+                            <div>
+                                <label for="mt-until" class="{{ $label }}">Selesai otomatis (opsional)</label>
+                                <input id="mt-until" type="datetime-local" name="maintenance_until" value="{{ old('maintenance_until', $m['until'] ?? '') }}" class="{{ $field }}">
+                                @error('maintenance_until')<p class="mt-1.5 text-sm text-[#E5352E]">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                        @php $mtWindow = \App\Support\SystemSettings::inWindow($m); @endphp
+                        <p class="text-xs text-slate-500">
+                            Waktu mengikuti zona {{ config('app.timezone') }} (sekarang {{ now()->format('d M Y H:i') }}). Jadwal hanya berlaku bila saklar di atas menyala dan kata rahasia terisi: pemeliharaan baru aktif pada waktu mulai dan berhenti sendiri pada waktu selesai. Kosongkan keduanya untuk aktif terus sampai kamu mematikannya.
+                            @if ($m['enabled'] && ($m['from'] || $m['until']))
+                                <strong class="text-slate-700">
+                                    @if ($mtWindow === 'waiting') Status: menunggu waktu mulai, situs masih terbuka.
+                                    @elseif ($mtWindow === 'ended') Status: jadwal sudah selesai, situs terbuka; ubah jadwal atau matikan saklar.
+                                    @else Status: sedang aktif sesuai jadwal. @endif
+                                </strong>
+                            @endif
+                        </p>
+                    </div>
                     <div>
                         <label for="mt-ips" class="{{ $label }}">Pengecualian alamat IP (opsional)</label>
                         <textarea id="mt-ips" name="maintenance_ips" rows="3" placeholder="{{ "mis.\n203.0.113.10\n2001:db8::1" }}" class="{{ $field }} font-mono">{{ old('maintenance_ips', implode("\n", $m['ips'] ?? [])) }}</textarea>

@@ -19,7 +19,7 @@ class SystemSettings
     public static function defaults(): array
     {
         return [
-            'maintenance'  => ['enabled' => false, 'secret' => '', 'title' => ['id' => '', 'en' => ''], 'message' => ['id' => '', 'en' => ''], 'ips' => []],
+            'maintenance'  => ['enabled' => false, 'secret' => '', 'title' => ['id' => '', 'en' => ''], 'message' => ['id' => '', 'en' => ''], 'ips' => [], 'from' => '', 'until' => ''],
             'analytics'    => ['provider' => 'none', 'id' => '', 'script_url' => ''],
             'verification' => ['google' => '', 'bing' => ''],
         ];
@@ -52,7 +52,48 @@ class SystemSettings
     {
         $m = self::get()['maintenance'];
 
-        return ! empty($m['enabled']) && filled($m['secret'] ?? null);
+        return ! empty($m['enabled']) && filled($m['secret'] ?? null) && self::inWindow($m) === 'active';
+    }
+
+    /** Waktu (zona aplikasi) dari isian "Y-m-d\TH:i"; null bila kosong atau tidak valid. */
+    public static function parseTime(mixed $value): ?\Carbon\Carbon
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        try {
+            return \Carbon\Carbon::createFromFormat('Y-m-d\TH:i', $value, config('app.timezone'));
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /** Posisi jadwal: 'active' (tanpa jadwal, atau sedang di dalam jendela), 'waiting' (belum mulai), 'ended' (sudah selesai). */
+    public static function inWindow(array $m): string
+    {
+        $from  = self::parseTime($m['from'] ?? null);
+        $until = self::parseTime($m['until'] ?? null);
+
+        if ($from && now()->lt($from)) {
+            return 'waiting';
+        }
+
+        if ($until && now()->gte($until)) {
+            return 'ended';
+        }
+
+        return 'active';
+    }
+
+    /** Detik sampai jadwal selesai (untuk Retry-After); null bila tanpa jadwal selesai. */
+    public static function secondsUntilEnd(): ?int
+    {
+        $until = self::parseTime(self::get()['maintenance']['until'] ?? null);
+
+        return $until && $until->isFuture() ? max(60, now()->diffInSeconds($until)) : null;
     }
 
     /** Judul dan pesan halaman pemeliharaan sesuai bahasa; kosong = teks bawaan di tampilan (tiap bahasa punya bawaannya sendiri). */

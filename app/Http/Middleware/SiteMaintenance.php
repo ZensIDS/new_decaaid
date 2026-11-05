@@ -38,7 +38,7 @@ class SiteMaintenance
         }
 
         return response()->view('pages.errors.503', [], 503)
-            ->header('Retry-After', '3600')
+            ->header('Retry-After', (string) (SystemSettings::secondsUntilEnd() ?? 3600))
             ->header('X-Robots-Tag', 'noindex');
     }
 }
