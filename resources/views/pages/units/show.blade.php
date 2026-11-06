@@ -39,8 +39,8 @@
                             <x-ui.reveal :delay="($loop->index % 3) * 100" class="h-full">
                                 <a href="{{ lroute('units.brand', ['slug' => $detail['slug'], 'brand' => $brand['slug']]) }}"
                                    class="group flex h-full flex-col overflow-hidden rounded-3xl bg-white p-6 shadow-card ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1 hover:shadow-card-hover hover:ring-brand-200">
-                                    <div class="flex aspect-[4/3] items-center justify-center rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-200/70">
-                                        <x-ui.img :src="$brand['logo']" :alt="$brand['name']" :label="$brand['name']" class="h-full w-full object-contain" />
+                                    <div class="flex aspect-[4/3] w-full min-w-0 items-center justify-center overflow-hidden rounded-2xl bg-slate-50 p-6 ring-1 ring-slate-200/70">
+                                        <x-ui.img :src="$brand['logo']" :alt="$brand['name']" :label="$brand['name']" class="h-full max-h-full w-full min-h-0 min-w-0 max-w-full object-contain" />
                                     </div>
                                     <h3 class="mt-6 text-xl leading-tight transition group-hover:text-brand-700">{{ $brand['name'] }}</h3>
                                     @if ($brand['description'])
