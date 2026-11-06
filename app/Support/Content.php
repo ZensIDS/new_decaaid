@@ -387,6 +387,7 @@ class Content
     /** B3e: isi dari database (PageContentRepo) menimpa teks contoh; tanpa data, teks contoh kode dipakai. */
     /** B3e: slot foto Beranda dan berkas bawaannya (dipakai bila admin belum memilih foto dari Media Library). */
     public const HOME_IMAGES = [
+        'hero_bg'   => '', // v106: siluet latar kanan hero (opsional; kosong = foto gedung img/building bila ada)
         'hero_1'    => 'img/dummy/hero.jpg',
         'hero_2'    => 'img/dummy/hero-2.jpg',
         'hero_3'    => 'img/dummy/hero-3.jpg',

@@ -70,6 +70,7 @@ class HomePageController extends Controller
         'hero_1'    => ['Hero: foto utama', 'Foto besar di hero. Lanskap 4:3 paling pas.', 'aspect-[4/3]'],
         'hero_2'    => ['Hero: foto kegiatan', 'Foto kecil kedua di kolase hero. Rasio 4:3.', 'aspect-[4/3]'],
         'hero_3'    => ['Hero: foto tim', 'Foto kecil ketiga di kolase hero. Rasio 4:3.', 'aspect-[4/3]'],
+        'hero_bg'   => ['Hero: siluet latar kanan (opsional)', 'Foto samar di sisi kanan latar hero, menyatu dengan biru (seperti header halaman Pilar Bisnis). Lanskap, minimal 1200 px. Kosong = foto gedung bawaan situs bila ada.', 'aspect-[16/9]'],
         'about_1'   => ['Tentang DECAA.ID: foto pertama', 'Foto kantor di section Tentang. Rasio 4:3.', 'aspect-[4/3]'],
         'about_2'   => ['Tentang DECAA.ID: foto kedua', 'Foto tim di section Tentang. Rasio 4:3.', 'aspect-[4/3]'],
         'community' => ['Keberlanjutan: foto kegiatan', 'Foto kegiatan komunitas. Lanskap 4:3 atau 3:2.', 'aspect-[4/3]'],
