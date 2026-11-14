@@ -16,21 +16,22 @@ use Throwable;
 class DashboardController extends Controller
 {
     /**
-     * Kartu ringkasan masih DUMMY (angka asli menyusul bersama modulnya: pesan B3l,
-     * berita B3d, terjemahan B5). Aktivitas Terbaru sejak BA3 dibaca dari tabel activity_logs.
+     * Kartu ringkasan dibaca dari data asli (pesan, berita, terjemahan otomatis, item dummy).
+     * Aktivitas Terbaru dibaca dari tabel activity_logs. Pintasan dan daftar Kesiapan Konten
+     * tidak lagi ditampilkan di halaman Dashboard (permintaan 14 Nov 2026).
      */
     public function __invoke(): View
     {
         $stats = [
             ['label' => 'Pesan Baru', 'value' => $this->unreadMessages(), 'icon' => 'mail', 'tone' => 'brand', 'note' => 'Belum dibaca'],
             ['label' => 'Berita Draf', 'value' => $this->draftCount(), 'icon' => 'newspaper', 'tone' => 'amber', 'note' => 'Menunggu terbit'],
-            ['label' => 'Terjemahan Belum Ditinjau', 'value' => 0, 'icon' => 'translate', 'tone' => 'violet', 'note' => 'Status Otomatis (modul B5)'],
+            ['label' => 'Terjemahan Belum Ditinjau', 'value' => $this->unreviewedTranslations(), 'icon' => 'translate', 'tone' => 'violet', 'note' => 'Berita berstatus Otomatis'],
             ['label' => 'Item Dummy Tersisa', 'value' => count(array_filter($this->checklist(), fn (array $item) => ! $item['done'])), 'icon' => 'warning', 'tone' => 'red', 'note' => 'Wajib diganti sebelum go-live'],
         ];
 
         $activities = ActivityLog::query()
             ->latest('id')
-            ->limit(8)
+            ->limit(12)
             ->get()
             ->map(fn (ActivityLog $log) => [
                 'who' => $log->user_name ?: 'Sistem',
@@ -39,17 +40,9 @@ class DashboardController extends Controller
             ])
             ->all();
 
-        $shortcuts = [
-            ['label' => 'Tambah Berita', 'icon' => 'newspaper', 'url' => route('admin.news.create')],
-            ['label' => 'Tambah Proyek', 'icon' => 'briefcase'],
-            ['label' => 'Unggah Media', 'icon' => 'photo'],
-        ];
-
         return view('pages.admin.dashboard', [
             'stats' => $stats,
             'activities' => $activities,
-            'shortcuts' => $shortcuts,
-            'checklist' => $this->checklist(),
         ]);
     }
 
@@ -57,6 +50,18 @@ class DashboardController extends Controller
     {
         try {
             return Schema::hasTable('contact_messages') ? \App\Models\ContactMessage::unread()->count() : 0;
+        } catch (Throwable) {
+            return 0;
+        }
+    }
+
+    /** Berita yang terjemahannya dibuat otomatis dan belum ditinjau (status "auto"). */
+    protected function unreviewedTranslations(): int
+    {
+        try {
+            return Schema::hasTable('news') && Schema::hasColumn('news', 'translation_status')
+                ? News::where('translation_status', 'auto')->count()
+                : 0;
         } catch (Throwable) {
             return 0;
         }
