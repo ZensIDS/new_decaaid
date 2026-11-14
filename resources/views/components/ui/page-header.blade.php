@@ -14,7 +14,7 @@
         ->first(fn ($path) => file_exists(public_path($path)));
 @endphp
 
-<section class="relative isolate overflow-hidden bg-brand-950 text-white" aria-labelledby="page-title">
+<section class="no-justify relative isolate overflow-hidden bg-brand-950 text-white" aria-labelledby="page-title">
     {{-- Latar berlapis --}}
     <div class="absolute inset-0 -z-20 bg-gradient-to-br from-brand-900 via-brand-950 to-brand-950"></div>
     <div class="absolute inset-0 -z-20 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_at_20%_30%,#000,transparent_70%)]"></div>

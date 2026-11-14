@@ -57,7 +57,7 @@
     </div>
 
     {{-- Hero artikel -------------------------------------------------------- --}}
-    <section class="relative isolate overflow-hidden bg-brand-950 pb-28 pt-12 text-white md:pb-40 md:pt-16" aria-labelledby="post-title">
+    <section class="no-justify relative isolate overflow-hidden bg-brand-950 pb-28 pt-12 text-white md:pb-40 md:pt-16" aria-labelledby="post-title">
         <div class="absolute inset-0 -z-10 bg-gradient-to-br from-brand-900 via-brand-950 to-brand-950"></div>
         <div class="absolute inset-0 -z-10 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:26px_26px] [mask-image:radial-gradient(ellipse_at_20%_30%,#000,transparent_70%)]"></div>
         <div class="absolute -right-28 -top-32 -z-10 h-96 w-96 rounded-full bg-brand-600/35 blur-3xl"></div>

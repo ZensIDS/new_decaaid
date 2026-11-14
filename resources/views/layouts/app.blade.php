@@ -87,10 +87,29 @@
     {{-- Tanpa JavaScript: tampilkan konten yang biasanya muncul bertahap saat scroll --}}
     <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 
+    {{--
+        Teks rata kanan-kiri (justify) di situs publik (v109, K105). Dipasang sebagai gaya inline agar langsung berlaku tanpa npm run build
+        (CSP style-src mengizinkan 'unsafe-inline'). Prinsip: text-align diwariskan dari <body class="site-justify">, jadi blok yang
+        sengaja rata tengah/kanan/kiri lewat class Tailwind (text-center, text-right, text-left, md:text-center) tetap seperti aslinya.
+        Judul (h1-h6) tetap rata kiri dan tidak dipenggal suku kata, tetapi ikut rata tengah di dalam blok text-center.
+        v110: header dan footer dikecualikan (elemen <header>, <footer>, dan blok bergaya header yang diberi class "no-justify": hero Beranda,
+        header halaman dalam, hero artikel, menu mobile); isinya kembali ke rata kiri bawaan, dan blok text-center di dalamnya tetap tengah. Tombol dan kolom isian
+        tidak mewarisi text-align (bawaan peramban). Teks satu baris tidak berubah; baris terakhir paragraf tetap rata kiri.
+        Dimuat sebelum CSS Vite; aturan di bawah sengaja berspesifisitas rendah (:where) agar utilitas Tailwind selalu menang.
+        Admin memakai layout lain, tidak terpengaruh.
+    --}}
+    <style>
+        body.site-justify{text-align:justify;text-justify:inter-word;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
+        :where(body.site-justify) :where(h1,h2,h3,h4,h5,h6){text-align:start;-webkit-hyphens:manual;hyphens:manual}
+        :where(body.site-justify :where(header,footer,.no-justify)){text-align:start;-webkit-hyphens:manual;hyphens:manual}
+        body.site-justify .text-center :where(h1,h2,h3,h4,h5,h6){text-align:center}
+        @media (min-width:768px){body.site-justify .md\:text-center :where(h1,h2,h3,h4,h5,h6){text-align:center} }
+    </style>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('head')
 </head>
-<body class="flex min-h-screen flex-col">
+<body class="flex min-h-screen flex-col site-justify">
     <a href="#main"
        class="sr-only rounded bg-brand-700 px-4 py-2 text-white focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60]">
         {{ t('a11y.skip') }}

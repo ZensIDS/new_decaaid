@@ -22,7 +22,7 @@
 @section('content')
 
     {{-- 1. HERO ------------------------------------------------------------ --}}
-    <section class="relative isolate overflow-hidden bg-brand-950 text-white" aria-labelledby="hero-title">
+    <section class="no-justify relative isolate overflow-hidden bg-brand-950 text-white" aria-labelledby="hero-title">
         {{-- Latar berlapis: gradasi, pola titik, cahaya lembut --}}
         <div class="absolute inset-0 -z-10 bg-gradient-to-br from-brand-900 via-brand-950 to-brand-950"></div>
         <div class="absolute inset-0 -z-10 opacity-70 [background-image:radial-gradient(rgba(255,255,255,0.16)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:radial-gradient(ellipse_at_25%_45%,#000,transparent_72%)]"></div>

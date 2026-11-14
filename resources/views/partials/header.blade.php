@@ -144,7 +144,7 @@
 
     {{-- Drawer menu mobile (di luar <header> karena backdrop-blur membuat elemen fixed ikut terkurung) --}}
     <div x-cloak x-show="mobile" x-transition.opacity.duration.200ms x-focustrap id="mobile-menu"
-         class="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="{{ t('nav.menu') }}">
+         class="no-justify fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="{{ t('nav.menu') }}">
         <div class="absolute inset-0 bg-brand-950/60" @click="mobile = false"></div>
 
         <div class="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-white shadow-card-hover">
