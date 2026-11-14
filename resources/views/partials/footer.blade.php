@@ -112,7 +112,7 @@
                         <a href="tel:{{ preg_replace('/[^+\d]/', '', $company['phone']) }}" class="{{ $link }}">{{ $company['phone'] }}</a>
                     </li>
                     <li class="flex items-center gap-3">
-                        <x-ui.icon name="phone" class="h-5 w-5 shrink-0 text-accent-400" />
+                        <x-ui.social-icon name="whatsapp" class="h-5 w-5 shrink-0 text-accent-400" />
                         <a href="{{ $company['whatsapp']['url'] }}" target="_blank" rel="noopener noreferrer" class="{{ $link }}">
                             WhatsApp {{ $company['whatsapp']['label'] }}
                         </a>
